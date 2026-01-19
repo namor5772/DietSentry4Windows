@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DietSentry.EatenLogPage">
+
+    <ContentPage.Resources>
+        <x:Array x:Key="SampleEaten" Type="{x:Type x:String}">
+            <x:String>Sample log 1</x:String>
+            <x:String>Sample log 2</x:String>
+            <x:String>Sample log 3</x:String>
+        </x:Array>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="20"
+            Spacing="16">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <Label
+                    Text="Eaten Table"
+                    FontAttributes="Bold"
+                    FontSize="24" />
+                <Button
+                    Grid.Column="1"
+                    Text="Back to Foods Table"
+                    Clicked="OnBackClicked" />
+            </Grid>
+
+            <Frame BorderColor="LightGray" Padding="10">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        Text="Eaten log (placeholder)"
+                        FontAttributes="Bold" />
+                    <CollectionView
+                        ItemsSource="{StaticResource SampleEaten}"
+                        HeightRequest="180">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Label Text="{Binding .}" />
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

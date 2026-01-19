@@ -1,0 +1,10 @@
+
+ Model:            gpt-5.2-codex (reasoning high, summaries auto)           │
+│  Directory:        /mnt/c/Users/roman/ClonedProjects/DietSentry4Windows     │
+│  Approval:         on-request                                               │
+│  Sandbox:          workspace-write                                          │
+│  Agents.md:        AGENTS.md                                                │
+│  Account:          namor5772@gmail.com (Plus)                               │
+│  Session:          019bd4d0-82b6-7700-a662-bcbaf9268939
+
+

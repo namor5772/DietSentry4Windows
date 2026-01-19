@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DietSentry.MainPage">
+
+    <ContentPage.Resources>
+        <x:Array x:Key="SampleFoods" Type="{x:Type x:String}">
+            <x:String>Sample food 1</x:String>
+            <x:String>Sample food 2</x:String>
+            <x:String>Sample food 3</x:String>
+        </x:Array>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="20"
+            Spacing="16">
+            <ScrollView Orientation="Horizontal">
+                <HorizontalStackLayout Spacing="12">
+                    <Label
+                        Text="Foods Table"
+                        FontAttributes="Bold"
+                        FontSize="24"
+                        VerticalOptions="Center" />
+                    <Button
+                        Text="Eaten Table"
+                        Clicked="OnEatenLogClicked" />
+                    <Button
+                        Text="Weight Table"
+                        Clicked="OnWeightTableClicked" />
+                    <Button
+                        Text="Add Solid"
+                        Clicked="OnInsertFoodClicked" />
+                    <Button
+                        Text="Add Liquid"
+                        Clicked="OnInsertLiquidFoodClicked" />
+                    <Button
+                        Text="Add Recipe"
+                        Clicked="OnAddRecipeClicked" />
+                    <Button
+                        Text="JSON"
+                        Clicked="OnAddFoodByJsonClicked" />
+                    <Button
+                        Text="Utilities"
+                        Clicked="OnUtilitiesClicked" />
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <HorizontalStackLayout Spacing="8">
+                <Entry
+                    x:Name="FoodFilterEntry"
+                    Placeholder="Enter food filter text"
+                    HorizontalOptions="FillAndExpand" />
+                <Button
+                    Text="Clear"
+                    Clicked="OnClearFilterClicked" />
+            </HorizontalStackLayout>
+
+            <Frame BorderColor="LightGray" Padding="10">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        Text="Foods (placeholder)"
+                        FontAttributes="Bold" />
+                    <CollectionView
+                        ItemsSource="{StaticResource SampleFoods}"
+                        HeightRequest="180">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Label Text="{Binding .}" />
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Label
+                Text="Actions for selected food"
+                FontAttributes="Bold" />
+
+            <Grid
+                ColumnDefinitions="*,*"
+                RowDefinitions="Auto,Auto,Auto"
+                ColumnSpacing="10"
+                RowSpacing="10">
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Text="Log"
+                    Clicked="OnLogClicked" />
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Text="Edit"
+                    Clicked="OnEditFoodClicked" />
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Text="Copy"
+                    Clicked="OnCopyFoodClicked" />
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Text="Convert"
+                    Clicked="OnConvertClicked" />
+                <Button
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Text="Delete"
+                    Clicked="OnDeleteClicked" />
+            </Grid>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
