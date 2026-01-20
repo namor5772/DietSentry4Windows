@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DietSentry.LogFoodPage">
+
+    <VerticalStackLayout
+        Padding="20"
+        Spacing="12">
+        <Label
+            x:Name="FoodNameLabel"
+            FontAttributes="Bold"
+            FontSize="18" />
+        <HorizontalStackLayout Spacing="8">
+            <Entry
+                x:Name="AmountEntry"
+                Placeholder="Amount"
+                Keyboard="Numeric"
+                HorizontalOptions="FillAndExpand" />
+            <Label
+                x:Name="UnitLabel"
+                VerticalOptions="Center" />
+        </HorizontalStackLayout>
+        <HorizontalStackLayout Spacing="12">
+            <DatePicker x:Name="LogDatePicker" />
+            <TimePicker x:Name="LogTimePicker" />
+        </HorizontalStackLayout>
+        <FlexLayout
+            Direction="Row"
+            Wrap="Wrap"
+            AlignItems="Start"
+            JustifyContent="Start">
+            <Button
+                Text="Confirm"
+                Clicked="OnConfirmClicked"
+                Margin="0,0,4,4" />
+            <Button
+                Text="Cancel"
+                Clicked="OnCancelClicked"
+                Margin="0,0,4,4" />
+        </FlexLayout>
+    </VerticalStackLayout>
+
+</ContentPage>

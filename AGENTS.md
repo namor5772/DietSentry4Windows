@@ -33,3 +33,6 @@
 ## Security & Configuration Tips
 - App identifiers and versions live in `DietSentry4Windows/DietSentry/DietSentry.csproj`; update them deliberately.
 - Avoid committing secrets or API keys; prefer environment-specific configuration outside source control.
+
+## Additional Resources
+- the reference-android directory holds the source *.kt files for my original Android app, which is intended to help in creating this app that is essentially a rewrite of that app using .NET MAUI.
