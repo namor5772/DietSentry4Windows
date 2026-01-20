@@ -18,6 +18,28 @@ namespace DietSentry
         public ObservableCollection<Food> Foods { get; } = new();
         public bool ShowNipOnly => _nutritionDisplayMode == NutritionDisplayMode.Nip;
         public bool ShowAll => _nutritionDisplayMode == NutritionDisplayMode.All;
+        public Food? SelectedFood
+        {
+            get => _selectedFood;
+            private set
+            {
+                if (_selectedFood == value)
+                {
+                    return;
+                }
+
+                _selectedFood = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowSelectionPanel));
+                OnPropertyChanged(nameof(SelectedFoodDescription));
+            }
+        }
+
+        public bool ShowSelectionPanel => SelectedFood != null;
+
+        public string SelectedFoodDescription => SelectedFood == null
+            ? string.Empty
+            : SelectedFood.FoodDescription;
         public bool ShowLogPanel
         {
             get => _showLogPanel;
@@ -74,14 +96,14 @@ namespace DietSentry
 
         private async void OnLogClicked(object? sender, EventArgs e)
         {
-            if (_selectedFood == null)
+            if (SelectedFood == null)
             {
                 await DisplayAlertAsync("Select a food", "Choose a food to log.", "OK");
                 return;
             }
 
-            LogFoodNameLabel.Text = FoodDescriptionFormatter.GetDisplayName(_selectedFood.FoodDescription);
-            LogFoodUnitLabel.Text = FoodDescriptionFormatter.GetUnit(_selectedFood.FoodDescription);
+            LogFoodNameLabel.Text = FoodDescriptionFormatter.GetDisplayName(SelectedFood.FoodDescription);
+            LogFoodUnitLabel.Text = FoodDescriptionFormatter.GetUnit(SelectedFood.FoodDescription);
             LogAmountEntry.Text = string.Empty;
             LogDatePicker.Date = DateTime.Now.Date;
             LogTimePicker.Time = DateTime.Now.TimeOfDay;
@@ -157,7 +179,7 @@ namespace DietSentry
                     Foods.Add(food);
                 }
 
-                _selectedFood = null;
+                SelectedFood = null;
                 if (FoodsCollectionView != null)
                 {
                     FoodsCollectionView.SelectedItem = null;
@@ -171,12 +193,12 @@ namespace DietSentry
 
         private void OnFoodSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            _selectedFood = e.CurrentSelection.Count > 0 ? e.CurrentSelection[0] as Food : null;
+            SelectedFood = e.CurrentSelection.Count > 0 ? e.CurrentSelection[0] as Food : null;
         }
 
         private async void OnLogConfirmClicked(object? sender, EventArgs e)
         {
-            if (_selectedFood == null)
+            if (SelectedFood == null)
             {
                 await DisplayAlertAsync("Select a food", "Choose a food to log.", "OK");
                 return;
@@ -201,7 +223,7 @@ namespace DietSentry
                 DateTimeKind.Local);
 
             await DatabaseInitializer.EnsureDatabaseAsync();
-            var logged = await _databaseService.LogEatenFoodAsync(_selectedFood, amount, dateTime);
+            var logged = await _databaseService.LogEatenFoodAsync(SelectedFood, amount, dateTime);
             if (!logged)
             {
                 await DisplayAlertAsync("Error", "Unable to log the selected food.", "OK");

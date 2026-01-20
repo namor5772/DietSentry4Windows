@@ -238,6 +238,57 @@ namespace DietSentry
             });
         }
 
+        public Task<bool> InsertWeightAsync(string dateWeight, double weight, string comments)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = @"
+                    INSERT INTO Weight (DateWeight, Weight, Comments)
+                    VALUES (@DateWeight, @Weight, @Comments)";
+                command.Parameters.AddWithValue("@DateWeight", dateWeight);
+                command.Parameters.AddWithValue("@Weight", RoundToTwoDecimals(weight));
+                command.Parameters.AddWithValue("@Comments", comments);
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
+        public Task<bool> UpdateWeightAsync(int weightId, string dateWeight, double weight, string comments)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = @"
+                    UPDATE Weight
+                    SET DateWeight = @DateWeight,
+                        Weight = @Weight,
+                        Comments = @Comments
+                    WHERE WeightId = @WeightId";
+                command.Parameters.AddWithValue("@DateWeight", dateWeight);
+                command.Parameters.AddWithValue("@Weight", RoundToTwoDecimals(weight));
+                command.Parameters.AddWithValue("@Comments", comments);
+                command.Parameters.AddWithValue("@WeightId", weightId);
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
+        public Task<bool> DeleteWeightAsync(int weightId)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "DELETE FROM Weight WHERE WeightId = @WeightId";
+                command.Parameters.AddWithValue("@WeightId", weightId);
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
         private static IReadOnlyList<Food> ReadFoods(SqliteCommand command)
         {
             var foods = new List<Food>();

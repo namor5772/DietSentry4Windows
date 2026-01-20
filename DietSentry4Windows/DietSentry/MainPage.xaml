@@ -8,12 +8,32 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <local:NumericFormatConverter x:Key="NumericFormatConverter" />
+            <Style
+                x:Key="SelectionActionButtonStyle"
+                TargetType="Button">
+                <Setter
+                    Property="Margin"
+                    Value="0,0,8,8" />
+                <Setter
+                    Property="WidthRequest"
+                    Value="79" />
+            </Style>
+            <Style
+                x:Key="TopRowButtonStyle"
+                TargetType="Button">
+                <Setter
+                    Property="Margin"
+                    Value="0,0,4,4" />
+                <Setter
+                    Property="WidthRequest"
+                    Value="112" />
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid
         Padding="20"
-        RowDefinitions="Auto,Auto,Auto,*,Auto,Auto"
+        RowDefinitions="Auto,Auto,Auto,*,Auto"
         RowSpacing="16">
         <Grid
             Grid.Row="0"
@@ -34,43 +54,43 @@
                     <Button
                         Text="Eaten Table"
                         Clicked="OnEatenLogClicked"
-                        Margin="0,0,4,4" />
+                        Style="{StaticResource TopRowButtonStyle}" />
                     <Button
                         Text="Weight Table"
                         Clicked="OnWeightTableClicked"
-                        Margin="0,0,4,4" />
+                        Style="{StaticResource TopRowButtonStyle}" />
                     <Button
                         Text="Add Solid"
                         Clicked="OnInsertFoodClicked"
-                        Margin="0,0,4,4" />
+                        Style="{StaticResource TopRowButtonStyle}" />
                     <Button
                         Text="Add Liquid"
                         Clicked="OnInsertLiquidFoodClicked"
-                        Margin="0,0,4,4" />
+                        Style="{StaticResource TopRowButtonStyle}" />
                     <Button
                         Text="Add Recipe"
                         Clicked="OnAddRecipeClicked"
-                        Margin="0,0,4,4" />
+                        Style="{StaticResource TopRowButtonStyle}" />
                     <Button
                         Text="JSON"
                         Clicked="OnAddFoodByJsonClicked"
-                        Margin="0,0,4,4" />
+                        Style="{StaticResource TopRowButtonStyle}" />
                     <Button
                         Text="Export db"
                         Clicked="OnExportDbClicked"
-                        Margin="0,0,4,4" />
+                        Style="{StaticResource TopRowButtonStyle}" />
                     <Button
                         Text="Import db"
                         Clicked="OnImportDbClicked"
-                        Margin="0,0,4,4" />
+                        Style="{StaticResource TopRowButtonStyle}" />
                     <Button
                         Text="Export csv"
                         Clicked="OnExportCsvClicked"
-                        Margin="0,0,4,4" />
+                        Style="{StaticResource TopRowButtonStyle}" />
                     <Button
                         Text="Utilities"
                         Clicked="OnUtilitiesClicked"
-                        Margin="0,0,4,4" />
+                        Style="{StaticResource TopRowButtonStyle}" />
                 </FlexLayout>
         </Grid>
 
@@ -428,42 +448,48 @@
             </Grid>
         </Frame>
 
-        <Label
+        <Frame
             Grid.Row="4"
-            Text="Actions for selected food"
-            FontAttributes="Bold" />
-
-        <FlexLayout
-            Grid.Row="5"
-            Direction="Row"
-            Wrap="Wrap"
-            AlignItems="Start"
-            JustifyContent="Start">
-            <Button
-                Text="Log"
-                Clicked="OnLogClicked"
-                Margin="0,0,4,4" />
-            <Button
-                Text="Edit"
-                Clicked="OnEditFoodClicked"
-                Margin="0,0,4,4" />
-            <Button
-                Text="Copy"
-                Clicked="OnCopyFoodClicked"
-                Margin="0,0,4,4" />
-            <Button
-                Text="Convert"
-                Clicked="OnConvertClicked"
-                Margin="0,0,4,4" />
-            <Button
-                Text="Delete"
-                Clicked="OnDeleteClicked"
-                Margin="0,0,4,4" />
-        </FlexLayout>
+            BorderColor="LightGray"
+            Padding="10"
+            IsVisible="{Binding ShowSelectionPanel}">
+            <VerticalStackLayout Spacing="8">
+                <Label
+                    Text="{Binding SelectedFoodDescription}"
+                    FontAttributes="Bold"
+                    HorizontalTextAlignment="Center" />
+                <FlexLayout
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Start"
+                    JustifyContent="Center">
+                    <Button
+                        Text="LOG"
+                        Clicked="OnLogClicked"
+                        Style="{StaticResource SelectionActionButtonStyle}" />
+                    <Button
+                        Text="Edit"
+                        Clicked="OnEditFoodClicked"
+                        Style="{StaticResource SelectionActionButtonStyle}" />
+                    <Button
+                        Text="Copy"
+                        Clicked="OnCopyFoodClicked"
+                        Style="{StaticResource SelectionActionButtonStyle}" />
+                    <Button
+                        Text="Convert"
+                        Clicked="OnConvertClicked"
+                        Style="{StaticResource SelectionActionButtonStyle}" />
+                    <Button
+                        Text="Delete"
+                        Clicked="OnDeleteClicked"
+                        Style="{StaticResource SelectionActionButtonStyle}" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Frame>
 
         <Grid
             Grid.Row="0"
-            Grid.RowSpan="6"
+            Grid.RowSpan="5"
             IsVisible="{Binding ShowLogPanel}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
@@ -476,7 +502,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="520"
+                WidthRequest="364"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -492,12 +518,14 @@
                         FontSize="18" />
                     <Grid
                         ColumnDefinitions="Auto,Auto,Auto,*"
-                        ColumnSpacing="8">
+                        ColumnSpacing="8"
+                        RowDefinitions="Auto,Auto"
+                        RowSpacing="8">
                         <Entry
                             x:Name="LogAmountEntry"
                             Placeholder="Amount"
                             Keyboard="Numeric"
-                            WidthRequest="80"
+                            WidthRequest="95"
                             HorizontalOptions="FillAndExpand"
                             Grid.Column="0" />
                         <Label
@@ -511,16 +539,18 @@
                         <TimePicker
                             x:Name="LogTimePicker"
                             VerticalOptions="Center"
-                            HorizontalOptions="FillAndExpand"
-                            MinimumWidthRequest="200"
-                            Margin="0,15,0,0"
-                            Grid.Column="3" />
+                            Format="HH:mm"
+                            HorizontalOptions="Start"
+                            MinimumWidthRequest="112"
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="4" />
                     </Grid>
                     <FlexLayout
                         Direction="Row"
                         Wrap="Wrap"
-                        AlignItems="Start"
-                        JustifyContent="Start">
+                        AlignItems="Center"
+                        JustifyContent="Center">
                         <Button
                             Text="Confirm"
                             Clicked="OnLogConfirmClicked"
