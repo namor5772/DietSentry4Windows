@@ -1,48 +1,967 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DietSentry.EatenLogPage">
+             xmlns:local="clr-namespace:DietSentry"
+             x:Class="DietSentry.EatenLogPage"
+             x:Name="EatenPage">
 
     <ContentPage.Resources>
-        <x:Array x:Key="SampleEaten" Type="{x:Type x:String}">
-            <x:String>Sample log 1</x:String>
-            <x:String>Sample log 2</x:String>
-            <x:String>Sample log 3</x:String>
-        </x:Array>
+        <ResourceDictionary>
+            <local:NumericFormatConverter x:Key="NumericFormatConverter" />
+        </ResourceDictionary>
     </ContentPage.Resources>
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="20"
-            Spacing="16">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <Label
-                    Text="Eaten Table"
-                    FontAttributes="Bold"
-                    FontSize="24" />
-                <Button
-                    Grid.Column="1"
-                    Text="Back to Foods Table"
-                    Clicked="OnBackClicked" />
-            </Grid>
+    <Grid
+        Padding="20"
+        RowDefinitions="Auto,Auto,Auto,*,Auto"
+        RowSpacing="16">
+        <Grid
+            Grid.Row="0"
+            ColumnDefinitions="Auto,Auto,*"
+            ColumnSpacing="12">
+            <Label
+                Grid.Column="0"
+                Text="Eaten Table"
+                FontAttributes="Bold"
+                FontSize="24"
+                VerticalOptions="Start" />
+            <Button
+                Grid.Column="1"
+                Text="Foods Table"
+                HorizontalOptions="Start"
+                Clicked="OnBackClicked" />
+        </Grid>
 
-            <Frame BorderColor="LightGray" Padding="10">
-                <VerticalStackLayout Spacing="8">
+        <HorizontalStackLayout
+            Grid.Row="1"
+            Spacing="8">
+            <RadioButton
+                x:Name="MinModeRadio"
+                Content="Min"
+                GroupName="EatenNutritionMode"
+                CheckedChanged="OnNutritionModeChanged" />
+            <RadioButton
+                x:Name="NipModeRadio"
+                Content="NIP"
+                GroupName="EatenNutritionMode"
+                CheckedChanged="OnNutritionModeChanged" />
+            <RadioButton
+                x:Name="AllModeRadio"
+                Content="All"
+                GroupName="EatenNutritionMode"
+                CheckedChanged="OnNutritionModeChanged" />
+        </HorizontalStackLayout>
+
+        <Grid
+            Grid.Row="2"
+            ColumnDefinitions="Auto,Auto,Auto,Auto,*"
+            ColumnSpacing="8">
+            <CheckBox
+                x:Name="DailyTotalsCheckBox"
+                CheckedChanged="OnDailyTotalsChanged" />
+            <Label
+                Grid.Column="1"
+                Text="Daily totals"
+                VerticalOptions="Center" />
+            <CheckBox
+                Grid.Column="2"
+                x:Name="FilterByDateCheckBox"
+                CheckedChanged="OnFilterByDateChanged" />
+            <Label
+                Grid.Column="3"
+                Text="Filter by date"
+                VerticalOptions="Center" />
+            <DatePicker
+                Grid.Column="4"
+                x:Name="FilterDatePicker"
+                DateSelected="OnFilterDateSelected"
+                IsEnabled="{Binding FilterByDate}" />
+        </Grid>
+
+        <Frame
+            Grid.Row="3"
+            BorderColor="LightGray"
+            Padding="10">
+            <Grid RowDefinitions="*">
+                <CollectionView
+                    x:Name="EatenCollectionView"
+                    Grid.Row="0"
+                    ItemsSource="{Binding EatenFoods}"
+                    ItemSizingStrategy="MeasureAllItems"
+                    SelectionMode="Single"
+                    SelectionChanged="OnEatenSelectionChanged"
+                    IsVisible="{Binding ShowEatenFoods}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="local:EatenFood">
+                            <Frame
+                                BorderColor="LightGray"
+                                Padding="10">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding DateTimeDisplay}" />
+                                    <Label
+                                        Text="{Binding FoodDescription}"
+                                        FontAttributes="Bold" />
+                                    <Label IsVisible="{Binding Source={x:Reference EatenPage}, Path=ShowMinOnly}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding AmountEaten, Converter={StaticResource NumericFormatConverter}}" />
+                                                <Span Text="{Binding UnitLabel}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Grid
+                                        ColumnDefinitions="Auto,*"
+                                        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                                        ColumnSpacing="12"
+                                        RowSpacing="2"
+                                        IsVisible="{Binding Source={x:Reference EatenPage}, Path=ShowNipOnly}">
+                                        <Label
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Text="{Binding AmountLabel}" />
+                                        <Label
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Text="{Binding AmountEaten, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Text="Energy (kJ):" />
+                                        <Label
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Text="{Binding Energy, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="2"
+                                            Grid.Column="0"
+                                            Text="Protein (g):" />
+                                        <Label
+                                            Grid.Row="2"
+                                            Grid.Column="1"
+                                            Text="{Binding Protein, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="3"
+                                            Grid.Column="0"
+                                            Text="Fat, total (g):" />
+                                        <Label
+                                            Grid.Row="3"
+                                            Grid.Column="1"
+                                            Text="{Binding FatTotal, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="4"
+                                            Grid.Column="0"
+                                            Text="- Saturated (g):" />
+                                        <Label
+                                            Grid.Row="4"
+                                            Grid.Column="1"
+                                            Text="{Binding SaturatedFat, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="5"
+                                            Grid.Column="0"
+                                            Text="Carbohydrate (g):" />
+                                        <Label
+                                            Grid.Row="5"
+                                            Grid.Column="1"
+                                            Text="{Binding Carbohydrate, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="6"
+                                            Grid.Column="0"
+                                            Text="- Sugars (g):" />
+                                        <Label
+                                            Grid.Row="6"
+                                            Grid.Column="1"
+                                            Text="{Binding Sugars, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="7"
+                                            Grid.Column="0"
+                                            Text="Sodium (mg):" />
+                                        <Label
+                                            Grid.Row="7"
+                                            Grid.Column="1"
+                                            Text="{Binding SodiumNa, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                    </Grid>
+                                    <Grid
+                                        ColumnDefinitions="Auto,*"
+                                        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                                        ColumnSpacing="12"
+                                        RowSpacing="2"
+                                        IsVisible="{Binding Source={x:Reference EatenPage}, Path=ShowAll}">
+                                        <Label
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Text="{Binding AmountLabel}" />
+                                        <Label
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Text="{Binding AmountEaten, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Text="Energy (kJ):" />
+                                        <Label
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Text="{Binding Energy, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="2"
+                                            Grid.Column="0"
+                                            Text="Protein (g):" />
+                                        <Label
+                                            Grid.Row="2"
+                                            Grid.Column="1"
+                                            Text="{Binding Protein, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="3"
+                                            Grid.Column="0"
+                                            Text="Fat, total (g):" />
+                                        <Label
+                                            Grid.Row="3"
+                                            Grid.Column="1"
+                                            Text="{Binding FatTotal, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="4"
+                                            Grid.Column="0"
+                                            Text="- Saturated (g):" />
+                                        <Label
+                                            Grid.Row="4"
+                                            Grid.Column="1"
+                                            Text="{Binding SaturatedFat, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="5"
+                                            Grid.Column="0"
+                                            Text="- Trans (mg):" />
+                                        <Label
+                                            Grid.Row="5"
+                                            Grid.Column="1"
+                                            Text="{Binding TransFat, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="6"
+                                            Grid.Column="0"
+                                            Text="- Polyunsaturated (g):" />
+                                        <Label
+                                            Grid.Row="6"
+                                            Grid.Column="1"
+                                            Text="{Binding PolyunsaturatedFat, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="7"
+                                            Grid.Column="0"
+                                            Text="- Monounsaturated (g):" />
+                                        <Label
+                                            Grid.Row="7"
+                                            Grid.Column="1"
+                                            Text="{Binding MonounsaturatedFat, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="8"
+                                            Grid.Column="0"
+                                            Text="Carbohydrate (g):" />
+                                        <Label
+                                            Grid.Row="8"
+                                            Grid.Column="1"
+                                            Text="{Binding Carbohydrate, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="9"
+                                            Grid.Column="0"
+                                            Text="- Sugars (g):" />
+                                        <Label
+                                            Grid.Row="9"
+                                            Grid.Column="1"
+                                            Text="{Binding Sugars, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="10"
+                                            Grid.Column="0"
+                                            Text="Sodium (mg):" />
+                                        <Label
+                                            Grid.Row="10"
+                                            Grid.Column="1"
+                                            Text="{Binding SodiumNa, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="11"
+                                            Grid.Column="0"
+                                            Text="Dietary Fibre (g):" />
+                                        <Label
+                                            Grid.Row="11"
+                                            Grid.Column="1"
+                                            Text="{Binding DietaryFibre, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="12"
+                                            Grid.Column="0"
+                                            Text="Calcium (mg):" />
+                                        <Label
+                                            Grid.Row="12"
+                                            Grid.Column="1"
+                                            Text="{Binding CalciumCa, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="13"
+                                            Grid.Column="0"
+                                            Text="Potassium (mg):" />
+                                        <Label
+                                            Grid.Row="13"
+                                            Grid.Column="1"
+                                            Text="{Binding PotassiumK, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="14"
+                                            Grid.Column="0"
+                                            Text="Thiamin B1 (mg):" />
+                                        <Label
+                                            Grid.Row="14"
+                                            Grid.Column="1"
+                                            Text="{Binding ThiaminB1, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="15"
+                                            Grid.Column="0"
+                                            Text="Riboflavin B2 (mg):" />
+                                        <Label
+                                            Grid.Row="15"
+                                            Grid.Column="1"
+                                            Text="{Binding RiboflavinB2, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="16"
+                                            Grid.Column="0"
+                                            Text="Niacin B3 (mg):" />
+                                        <Label
+                                            Grid.Row="16"
+                                            Grid.Column="1"
+                                            Text="{Binding NiacinB3, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="17"
+                                            Grid.Column="0"
+                                            Text="Folate (ug):" />
+                                        <Label
+                                            Grid.Row="17"
+                                            Grid.Column="1"
+                                            Text="{Binding Folate, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="18"
+                                            Grid.Column="0"
+                                            Text="Iron (mg):" />
+                                        <Label
+                                            Grid.Row="18"
+                                            Grid.Column="1"
+                                            Text="{Binding IronFe, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="19"
+                                            Grid.Column="0"
+                                            Text="Magnesium (mg):" />
+                                        <Label
+                                            Grid.Row="19"
+                                            Grid.Column="1"
+                                            Text="{Binding MagnesiumMg, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="20"
+                                            Grid.Column="0"
+                                            Text="Vitamin C (mg):" />
+                                        <Label
+                                            Grid.Row="20"
+                                            Grid.Column="1"
+                                            Text="{Binding VitaminC, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="21"
+                                            Grid.Column="0"
+                                            Text="Caffeine (mg):" />
+                                        <Label
+                                            Grid.Row="21"
+                                            Grid.Column="1"
+                                            Text="{Binding Caffeine, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="22"
+                                            Grid.Column="0"
+                                            Text="Cholesterol (mg):" />
+                                        <Label
+                                            Grid.Row="22"
+                                            Grid.Column="1"
+                                            Text="{Binding Cholesterol, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="23"
+                                            Grid.Column="0"
+                                            Text="Alcohol (g):" />
+                                        <Label
+                                            Grid.Row="23"
+                                            Grid.Column="1"
+                                            Text="{Binding Alcohol, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <CollectionView
+                    x:Name="DailyTotalsCollectionView"
+                    Grid.Row="0"
+                    ItemsSource="{Binding DailyTotals}"
+                    ItemSizingStrategy="MeasureAllItems"
+                    SelectionMode="None"
+                    IsVisible="{Binding ShowDailyTotals}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="local:DailyTotals">
+                            <Frame
+                                BorderColor="LightGray"
+                                Padding="10">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding Date}" />
+                                    <Label
+                                        Text="Daily totals"
+                                        FontAttributes="Bold" />
+                                    <VerticalStackLayout
+                                        Spacing="4"
+                                        IsVisible="{Binding Source={x:Reference EatenPage}, Path=ShowAll}">
+                                        <Grid
+                                            ColumnDefinitions="Auto,*"
+                                            ColumnSpacing="12"
+                                            IsVisible="{Binding HasComments}">
+                                            <Label Text="Comments:" />
+                                            <Label
+                                                Grid.Column="1"
+                                                Text="{Binding Comments}"
+                                                LineBreakMode="WordWrap" />
+                                        </Grid>
+                                        <Grid
+                                            ColumnDefinitions="Auto,*"
+                                            ColumnSpacing="12">
+                                            <Label Text="My weight (kg)" />
+                                            <Label
+                                                Grid.Column="1"
+                                                Text="{Binding WeightDisplay}"
+                                                HorizontalTextAlignment="End" />
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                    <Grid
+                                        ColumnDefinitions="Auto,*"
+                                        RowDefinitions="Auto,Auto,Auto,Auto"
+                                        ColumnSpacing="12"
+                                        RowSpacing="2"
+                                        IsVisible="{Binding Source={x:Reference EatenPage}, Path=ShowMinOnly}">
+                                        <Label
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Text="{Binding AmountLabel}" />
+                                        <Label
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Text="{Binding AmountEaten, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Text="Energy (kJ):" />
+                                        <Label
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Text="{Binding Energy, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="2"
+                                            Grid.Column="0"
+                                            Text="Fat, total (g):" />
+                                        <Label
+                                            Grid.Row="2"
+                                            Grid.Column="1"
+                                            Text="{Binding FatTotal, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="3"
+                                            Grid.Column="0"
+                                            Text="Dietary Fibre (g):" />
+                                        <Label
+                                            Grid.Row="3"
+                                            Grid.Column="1"
+                                            Text="{Binding DietaryFibre, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                    </Grid>
+                                    <Grid
+                                        ColumnDefinitions="Auto,*"
+                                        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                                        ColumnSpacing="12"
+                                        RowSpacing="2"
+                                        IsVisible="{Binding Source={x:Reference EatenPage}, Path=ShowNipOnly}">
+                                        <Label
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Text="{Binding AmountLabel}" />
+                                        <Label
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Text="{Binding AmountEaten, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Text="Energy (kJ):" />
+                                        <Label
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Text="{Binding Energy, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="2"
+                                            Grid.Column="0"
+                                            Text="Protein (g):" />
+                                        <Label
+                                            Grid.Row="2"
+                                            Grid.Column="1"
+                                            Text="{Binding Protein, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="3"
+                                            Grid.Column="0"
+                                            Text="Fat, total (g):" />
+                                        <Label
+                                            Grid.Row="3"
+                                            Grid.Column="1"
+                                            Text="{Binding FatTotal, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="4"
+                                            Grid.Column="0"
+                                            Text="- Saturated (g):" />
+                                        <Label
+                                            Grid.Row="4"
+                                            Grid.Column="1"
+                                            Text="{Binding SaturatedFat, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="5"
+                                            Grid.Column="0"
+                                            Text="Carbohydrate (g):" />
+                                        <Label
+                                            Grid.Row="5"
+                                            Grid.Column="1"
+                                            Text="{Binding Carbohydrate, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="6"
+                                            Grid.Column="0"
+                                            Text="- Sugars (g):" />
+                                        <Label
+                                            Grid.Row="6"
+                                            Grid.Column="1"
+                                            Text="{Binding Sugars, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="7"
+                                            Grid.Column="0"
+                                            Text="Sodium (mg):" />
+                                        <Label
+                                            Grid.Row="7"
+                                            Grid.Column="1"
+                                            Text="{Binding SodiumNa, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                    </Grid>
+                                    <Grid
+                                        ColumnDefinitions="Auto,*"
+                                        RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                                        ColumnSpacing="12"
+                                        RowSpacing="2"
+                                        IsVisible="{Binding Source={x:Reference EatenPage}, Path=ShowAll}">
+                                        <Label
+                                            Grid.Row="0"
+                                            Grid.Column="0"
+                                            Text="{Binding AmountLabel}" />
+                                        <Label
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Text="{Binding AmountEaten, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Text="Energy (kJ):" />
+                                        <Label
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Text="{Binding Energy, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="2"
+                                            Grid.Column="0"
+                                            Text="Protein (g):" />
+                                        <Label
+                                            Grid.Row="2"
+                                            Grid.Column="1"
+                                            Text="{Binding Protein, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="3"
+                                            Grid.Column="0"
+                                            Text="Fat, total (g):" />
+                                        <Label
+                                            Grid.Row="3"
+                                            Grid.Column="1"
+                                            Text="{Binding FatTotal, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="4"
+                                            Grid.Column="0"
+                                            Text="- Saturated (g):" />
+                                        <Label
+                                            Grid.Row="4"
+                                            Grid.Column="1"
+                                            Text="{Binding SaturatedFat, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="5"
+                                            Grid.Column="0"
+                                            Text="- Trans (mg):" />
+                                        <Label
+                                            Grid.Row="5"
+                                            Grid.Column="1"
+                                            Text="{Binding TransFat, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="6"
+                                            Grid.Column="0"
+                                            Text="- Polyunsaturated (g):" />
+                                        <Label
+                                            Grid.Row="6"
+                                            Grid.Column="1"
+                                            Text="{Binding PolyunsaturatedFat, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="7"
+                                            Grid.Column="0"
+                                            Text="- Monounsaturated (g):" />
+                                        <Label
+                                            Grid.Row="7"
+                                            Grid.Column="1"
+                                            Text="{Binding MonounsaturatedFat, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="8"
+                                            Grid.Column="0"
+                                            Text="Carbohydrate (g):" />
+                                        <Label
+                                            Grid.Row="8"
+                                            Grid.Column="1"
+                                            Text="{Binding Carbohydrate, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="9"
+                                            Grid.Column="0"
+                                            Text="- Sugars (g):" />
+                                        <Label
+                                            Grid.Row="9"
+                                            Grid.Column="1"
+                                            Text="{Binding Sugars, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="10"
+                                            Grid.Column="0"
+                                            Text="Sodium (mg):" />
+                                        <Label
+                                            Grid.Row="10"
+                                            Grid.Column="1"
+                                            Text="{Binding SodiumNa, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="11"
+                                            Grid.Column="0"
+                                            Text="Dietary Fibre (g):" />
+                                        <Label
+                                            Grid.Row="11"
+                                            Grid.Column="1"
+                                            Text="{Binding DietaryFibre, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="12"
+                                            Grid.Column="0"
+                                            Text="Calcium (mg):" />
+                                        <Label
+                                            Grid.Row="12"
+                                            Grid.Column="1"
+                                            Text="{Binding CalciumCa, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="13"
+                                            Grid.Column="0"
+                                            Text="Potassium (mg):" />
+                                        <Label
+                                            Grid.Row="13"
+                                            Grid.Column="1"
+                                            Text="{Binding PotassiumK, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="14"
+                                            Grid.Column="0"
+                                            Text="Thiamin B1 (mg):" />
+                                        <Label
+                                            Grid.Row="14"
+                                            Grid.Column="1"
+                                            Text="{Binding ThiaminB1, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="15"
+                                            Grid.Column="0"
+                                            Text="Riboflavin B2 (mg):" />
+                                        <Label
+                                            Grid.Row="15"
+                                            Grid.Column="1"
+                                            Text="{Binding RiboflavinB2, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="16"
+                                            Grid.Column="0"
+                                            Text="Niacin B3 (mg):" />
+                                        <Label
+                                            Grid.Row="16"
+                                            Grid.Column="1"
+                                            Text="{Binding NiacinB3, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="17"
+                                            Grid.Column="0"
+                                            Text="Folate (ug):" />
+                                        <Label
+                                            Grid.Row="17"
+                                            Grid.Column="1"
+                                            Text="{Binding Folate, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="18"
+                                            Grid.Column="0"
+                                            Text="Iron (mg):" />
+                                        <Label
+                                            Grid.Row="18"
+                                            Grid.Column="1"
+                                            Text="{Binding IronFe, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="19"
+                                            Grid.Column="0"
+                                            Text="Magnesium (mg):" />
+                                        <Label
+                                            Grid.Row="19"
+                                            Grid.Column="1"
+                                            Text="{Binding MagnesiumMg, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="20"
+                                            Grid.Column="0"
+                                            Text="Vitamin C (mg):" />
+                                        <Label
+                                            Grid.Row="20"
+                                            Grid.Column="1"
+                                            Text="{Binding VitaminC, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="21"
+                                            Grid.Column="0"
+                                            Text="Caffeine (mg):" />
+                                        <Label
+                                            Grid.Row="21"
+                                            Grid.Column="1"
+                                            Text="{Binding Caffeine, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="22"
+                                            Grid.Column="0"
+                                            Text="Cholesterol (mg):" />
+                                        <Label
+                                            Grid.Row="22"
+                                            Grid.Column="1"
+                                            Text="{Binding Cholesterol, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                        <Label
+                                            Grid.Row="23"
+                                            Grid.Column="0"
+                                            Text="Alcohol (g):" />
+                                        <Label
+                                            Grid.Row="23"
+                                            Grid.Column="1"
+                                            Text="{Binding Alcohol, Converter={StaticResource NumericFormatConverter}}"
+                                            HorizontalTextAlignment="End" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Frame>
+
+        <Frame
+            Grid.Row="4"
+            BorderColor="LightGray"
+            Padding="10"
+            IsVisible="{Binding ShowSelectionPanel}">
+            <VerticalStackLayout Spacing="8">
+                <Label
+                    Text="{Binding SelectedEatenFood.FoodDescription}"
+                    FontAttributes="Bold"
+                    HorizontalTextAlignment="Center" />
+                <Label
+                    Text="{Binding SelectedEatenFoodTimestamp}"
+                    HorizontalTextAlignment="Center" />
+                <HorizontalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="12">
+                    <Button
+                        Text="Edit"
+                        Clicked="OnEditSelectedClicked" />
+                    <Button
+                        Text="Delete"
+                        Clicked="OnDeleteSelectedClicked" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
+
+        <Grid
+            Grid.Row="0"
+            Grid.RowSpan="5"
+            IsVisible="{Binding ShowEditPanel}">
+            <BoxView Color="#80000000">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnEditBackdropTapped" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Frame
+                Padding="16"
+                CornerRadius="12"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                WidthRequest="520"
+                HasShadow="True">
+                <Frame.Shadow>
+                    <Shadow
+                        Brush="#40000000"
+                        Offset="0,8"
+                        Radius="12"
+                        Opacity="0.6" />
+                </Frame.Shadow>
+                <VerticalStackLayout Spacing="12">
                     <Label
-                        Text="Eaten log (placeholder)"
-                        FontAttributes="Bold" />
-                    <CollectionView
-                        ItemsSource="{StaticResource SampleEaten}"
-                        HeightRequest="180">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Label Text="{Binding .}" />
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                        x:Name="EditFoodNameLabel"
+                        FontAttributes="Bold"
+                        FontSize="18" />
+                    <Grid
+                        ColumnDefinitions="Auto,Auto,Auto,*"
+                        ColumnSpacing="8">
+                        <Entry
+                            x:Name="EditAmountEntry"
+                            Placeholder="Amount"
+                            Keyboard="Numeric"
+                            WidthRequest="80"
+                            HorizontalOptions="FillAndExpand"
+                            Grid.Column="0" />
+                        <Label
+                            x:Name="EditUnitLabel"
+                            VerticalOptions="Center"
+                            Grid.Column="1" />
+                        <DatePicker
+                            x:Name="EditDatePicker"
+                            VerticalOptions="Center"
+                            Grid.Column="2" />
+                        <TimePicker
+                            x:Name="EditTimePicker"
+                            VerticalOptions="Center"
+                            HorizontalOptions="FillAndExpand"
+                            MinimumWidthRequest="200"
+                            Margin="0,15,0,0"
+                            Grid.Column="3" />
+                    </Grid>
+                    <FlexLayout
+                        Direction="Row"
+                        Wrap="Wrap"
+                        AlignItems="Start"
+                        JustifyContent="Start">
+                        <Button
+                            Text="Confirm"
+                            Clicked="OnEditConfirmClicked"
+                            Margin="0,0,4,4" />
+                        <Button
+                            Text="Cancel"
+                            Clicked="OnEditCancelClicked"
+                            Margin="0,0,4,4" />
+                    </FlexLayout>
                 </VerticalStackLayout>
             </Frame>
-        </VerticalStackLayout>
-    </ScrollView>
+        </Grid>
+
+        <Grid
+            Grid.Row="0"
+            Grid.RowSpan="5"
+            IsVisible="{Binding ShowDeletePanel}">
+            <BoxView Color="#80000000">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnDeleteBackdropTapped" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Frame
+                Padding="16"
+                CornerRadius="12"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                WidthRequest="420"
+                HasShadow="True">
+                <Frame.Shadow>
+                    <Shadow
+                        Brush="#40000000"
+                        Offset="0,8"
+                        Radius="12"
+                        Opacity="0.6" />
+                </Frame.Shadow>
+                <VerticalStackLayout Spacing="12">
+                    <Label
+                        Text="Delete Eaten Food?"
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        HorizontalTextAlignment="Center" />
+                    <Label
+                        x:Name="DeleteDescriptionLabel"
+                        HorizontalTextAlignment="Center" />
+                    <Label
+                        x:Name="DeleteAmountLabel"
+                        HorizontalTextAlignment="Center" />
+                    <FlexLayout
+                        Direction="Row"
+                        Wrap="Wrap"
+                        AlignItems="Start"
+                        JustifyContent="Start">
+                        <Button
+                            Text="Confirm"
+                            Clicked="OnDeleteConfirmClicked"
+                            Margin="0,0,4,4" />
+                        <Button
+                            Text="Cancel"
+                            Clicked="OnDeleteCancelClicked"
+                            Margin="0,0,4,4" />
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+    </Grid>
 
 </ContentPage>

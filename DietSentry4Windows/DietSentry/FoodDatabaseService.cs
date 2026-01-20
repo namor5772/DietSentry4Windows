@@ -126,6 +126,118 @@ namespace DietSentry
             });
         }
 
+        public Task<IReadOnlyList<EatenFood>> GetEatenFoodsAsync()
+        {
+            return Task.Run<IReadOnlyList<EatenFood>>(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM Eaten ORDER BY EatenTs DESC";
+                return ReadEatenFoods(command);
+            });
+        }
+
+        public Task<bool> UpdateEatenFoodAsync(EatenFood eatenFood, double newAmount, DateTime newDateTime)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText =
+                    "UPDATE Eaten SET " +
+                    "DateEaten = @DateEaten, " +
+                    "TimeEaten = @TimeEaten, " +
+                    "EatenTs = @EatenTs, " +
+                    "AmountEaten = @AmountEaten, " +
+                    "Energy = @Energy, " +
+                    "Protein = @Protein, " +
+                    "FatTotal = @FatTotal, " +
+                    "SaturatedFat = @SaturatedFat, " +
+                    "TransFat = @TransFat, " +
+                    "PolyunsaturatedFat = @PolyunsaturatedFat, " +
+                    "MonounsaturatedFat = @MonounsaturatedFat, " +
+                    "Carbohydrate = @Carbohydrate, " +
+                    "Sugars = @Sugars, " +
+                    "DietaryFibre = @DietaryFibre, " +
+                    "SodiumNa = @SodiumNa, " +
+                    "CalciumCa = @CalciumCa, " +
+                    "PotassiumK = @PotassiumK, " +
+                    "ThiaminB1 = @ThiaminB1, " +
+                    "RiboflavinB2 = @RiboflavinB2, " +
+                    "NiacinB3 = @NiacinB3, " +
+                    "Folate = @Folate, " +
+                    "IronFe = @IronFe, " +
+                    "MagnesiumMg = @MagnesiumMg, " +
+                    "VitaminC = @VitaminC, " +
+                    "Caffeine = @Caffeine, " +
+                    "Cholesterol = @Cholesterol, " +
+                    "Alcohol = @Alcohol " +
+                    "WHERE EatenId = @EatenId";
+
+                var scale = eatenFood.AmountEaten <= 0
+                    ? 0
+                    : newAmount / eatenFood.AmountEaten;
+
+                command.Parameters.AddWithValue("@DateEaten", newDateTime.ToString("d-MMM-yy", CultureInfo.CurrentCulture));
+                command.Parameters.AddWithValue("@TimeEaten", newDateTime.ToString("HH:mm", CultureInfo.CurrentCulture));
+                command.Parameters.AddWithValue("@EatenTs", CalculateEatenTimestampMinutes(newDateTime));
+                command.Parameters.AddWithValue("@AmountEaten", newAmount);
+                command.Parameters.AddWithValue("@Energy", RoundToTwoDecimals(eatenFood.Energy * scale));
+                command.Parameters.AddWithValue("@Protein", RoundToTwoDecimals(eatenFood.Protein * scale));
+                command.Parameters.AddWithValue("@FatTotal", RoundToTwoDecimals(eatenFood.FatTotal * scale));
+                command.Parameters.AddWithValue("@SaturatedFat", RoundToTwoDecimals(eatenFood.SaturatedFat * scale));
+                command.Parameters.AddWithValue("@TransFat", RoundToTwoDecimals(eatenFood.TransFat * scale));
+                command.Parameters.AddWithValue("@PolyunsaturatedFat", RoundToTwoDecimals(eatenFood.PolyunsaturatedFat * scale));
+                command.Parameters.AddWithValue("@MonounsaturatedFat", RoundToTwoDecimals(eatenFood.MonounsaturatedFat * scale));
+                command.Parameters.AddWithValue("@Carbohydrate", RoundToTwoDecimals(eatenFood.Carbohydrate * scale));
+                command.Parameters.AddWithValue("@Sugars", RoundToTwoDecimals(eatenFood.Sugars * scale));
+                command.Parameters.AddWithValue("@DietaryFibre", RoundToTwoDecimals(eatenFood.DietaryFibre * scale));
+                command.Parameters.AddWithValue("@SodiumNa", RoundToTwoDecimals(eatenFood.SodiumNa * scale));
+                command.Parameters.AddWithValue("@CalciumCa", RoundToTwoDecimals(eatenFood.CalciumCa * scale));
+                command.Parameters.AddWithValue("@PotassiumK", RoundToTwoDecimals(eatenFood.PotassiumK * scale));
+                command.Parameters.AddWithValue("@ThiaminB1", RoundToTwoDecimals(eatenFood.ThiaminB1 * scale));
+                command.Parameters.AddWithValue("@RiboflavinB2", RoundToTwoDecimals(eatenFood.RiboflavinB2 * scale));
+                command.Parameters.AddWithValue("@NiacinB3", RoundToTwoDecimals(eatenFood.NiacinB3 * scale));
+                command.Parameters.AddWithValue("@Folate", RoundToTwoDecimals(eatenFood.Folate * scale));
+                command.Parameters.AddWithValue("@IronFe", RoundToTwoDecimals(eatenFood.IronFe * scale));
+                command.Parameters.AddWithValue("@MagnesiumMg", RoundToTwoDecimals(eatenFood.MagnesiumMg * scale));
+                command.Parameters.AddWithValue("@VitaminC", RoundToTwoDecimals(eatenFood.VitaminC * scale));
+                command.Parameters.AddWithValue("@Caffeine", RoundToTwoDecimals(eatenFood.Caffeine * scale));
+                command.Parameters.AddWithValue("@Cholesterol", RoundToTwoDecimals(eatenFood.Cholesterol * scale));
+                command.Parameters.AddWithValue("@Alcohol", RoundToTwoDecimals(eatenFood.Alcohol * scale));
+                command.Parameters.AddWithValue("@EatenId", eatenFood.EatenId);
+
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
+        public Task<bool> DeleteEatenFoodAsync(int eatenId)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "DELETE FROM Eaten WHERE EatenId = @EatenId";
+                command.Parameters.AddWithValue("@EatenId", eatenId);
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
+        public Task<IReadOnlyList<WeightEntry>> GetWeightEntriesAsync()
+        {
+            return Task.Run<IReadOnlyList<WeightEntry>>(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "SELECT WeightId, DateWeight, Weight, Comments FROM Weight ORDER BY WeightId DESC";
+                return ReadWeightEntries(command);
+            });
+        }
+
         private static IReadOnlyList<Food> ReadFoods(SqliteCommand command)
         {
             var foods = new List<Food>();
@@ -191,6 +303,102 @@ namespace DietSentry
             }
 
             return foods;
+        }
+
+        private static IReadOnlyList<EatenFood> ReadEatenFoods(SqliteCommand command)
+        {
+            var foods = new List<EatenFood>();
+            using var reader = command.ExecuteReader();
+            var eatenIdOrdinal = reader.GetOrdinal("EatenId");
+            var dateEatenOrdinal = reader.GetOrdinal("DateEaten");
+            var timeEatenOrdinal = reader.GetOrdinal("TimeEaten");
+            var eatenTsOrdinal = reader.GetOrdinal("EatenTs");
+            var amountEatenOrdinal = reader.GetOrdinal("AmountEaten");
+            var foodDescriptionOrdinal = reader.GetOrdinal("FoodDescription");
+            var energyOrdinal = reader.GetOrdinal("Energy");
+            var proteinOrdinal = reader.GetOrdinal("Protein");
+            var fatTotalOrdinal = reader.GetOrdinal("FatTotal");
+            var saturatedFatOrdinal = reader.GetOrdinal("SaturatedFat");
+            var transFatOrdinal = reader.GetOrdinal("TransFat");
+            var polyunsaturatedFatOrdinal = reader.GetOrdinal("PolyunsaturatedFat");
+            var monounsaturatedFatOrdinal = reader.GetOrdinal("MonounsaturatedFat");
+            var carbohydrateOrdinal = reader.GetOrdinal("Carbohydrate");
+            var sugarsOrdinal = reader.GetOrdinal("Sugars");
+            var dietaryFibreOrdinal = reader.GetOrdinal("DietaryFibre");
+            var sodiumOrdinal = reader.GetOrdinal("SodiumNa");
+            var calciumOrdinal = reader.GetOrdinal("CalciumCa");
+            var potassiumOrdinal = reader.GetOrdinal("PotassiumK");
+            var thiaminOrdinal = reader.GetOrdinal("ThiaminB1");
+            var riboflavinOrdinal = reader.GetOrdinal("RiboflavinB2");
+            var niacinOrdinal = reader.GetOrdinal("NiacinB3");
+            var folateOrdinal = reader.GetOrdinal("Folate");
+            var ironOrdinal = reader.GetOrdinal("IronFe");
+            var magnesiumOrdinal = reader.GetOrdinal("MagnesiumMg");
+            var vitaminCOrdinal = reader.GetOrdinal("VitaminC");
+            var caffeineOrdinal = reader.GetOrdinal("Caffeine");
+            var cholesterolOrdinal = reader.GetOrdinal("Cholesterol");
+            var alcoholOrdinal = reader.GetOrdinal("Alcohol");
+
+            while (reader.Read())
+            {
+                foods.Add(new EatenFood
+                {
+                    EatenId = reader.GetInt32(eatenIdOrdinal),
+                    DateEaten = reader.GetString(dateEatenOrdinal),
+                    TimeEaten = reader.GetString(timeEatenOrdinal),
+                    EatenTs = reader.GetInt32(eatenTsOrdinal),
+                    AmountEaten = reader.GetDouble(amountEatenOrdinal),
+                    FoodDescription = reader.GetString(foodDescriptionOrdinal),
+                    Energy = reader.GetDouble(energyOrdinal),
+                    Protein = reader.GetDouble(proteinOrdinal),
+                    FatTotal = reader.GetDouble(fatTotalOrdinal),
+                    SaturatedFat = reader.GetDouble(saturatedFatOrdinal),
+                    TransFat = reader.GetDouble(transFatOrdinal),
+                    PolyunsaturatedFat = reader.GetDouble(polyunsaturatedFatOrdinal),
+                    MonounsaturatedFat = reader.GetDouble(monounsaturatedFatOrdinal),
+                    Carbohydrate = reader.GetDouble(carbohydrateOrdinal),
+                    Sugars = reader.GetDouble(sugarsOrdinal),
+                    DietaryFibre = reader.GetDouble(dietaryFibreOrdinal),
+                    SodiumNa = reader.GetDouble(sodiumOrdinal),
+                    CalciumCa = reader.GetDouble(calciumOrdinal),
+                    PotassiumK = reader.GetDouble(potassiumOrdinal),
+                    ThiaminB1 = reader.GetDouble(thiaminOrdinal),
+                    RiboflavinB2 = reader.GetDouble(riboflavinOrdinal),
+                    NiacinB3 = reader.GetDouble(niacinOrdinal),
+                    Folate = reader.GetDouble(folateOrdinal),
+                    IronFe = reader.GetDouble(ironOrdinal),
+                    MagnesiumMg = reader.GetDouble(magnesiumOrdinal),
+                    VitaminC = reader.GetDouble(vitaminCOrdinal),
+                    Caffeine = reader.GetDouble(caffeineOrdinal),
+                    Cholesterol = reader.GetDouble(cholesterolOrdinal),
+                    Alcohol = reader.GetDouble(alcoholOrdinal)
+                });
+            }
+
+            return foods;
+        }
+
+        private static IReadOnlyList<WeightEntry> ReadWeightEntries(SqliteCommand command)
+        {
+            var weights = new List<WeightEntry>();
+            using var reader = command.ExecuteReader();
+            var weightIdOrdinal = reader.GetOrdinal("WeightId");
+            var dateWeightOrdinal = reader.GetOrdinal("DateWeight");
+            var weightOrdinal = reader.GetOrdinal("Weight");
+            var commentsOrdinal = reader.GetOrdinal("Comments");
+
+            while (reader.Read())
+            {
+                weights.Add(new WeightEntry
+                {
+                    WeightId = reader.GetInt32(weightIdOrdinal),
+                    DateWeight = reader.IsDBNull(dateWeightOrdinal) ? string.Empty : reader.GetString(dateWeightOrdinal),
+                    Weight = reader.IsDBNull(weightOrdinal) ? 0 : reader.GetDouble(weightOrdinal),
+                    Comments = reader.IsDBNull(commentsOrdinal) ? string.Empty : reader.GetString(commentsOrdinal)
+                });
+            }
+
+            return weights;
         }
 
         private static double RoundToTwoDecimals(double value)
