@@ -1,21 +1,524 @@
+using System;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace DietSentry
 {
     public partial class AddRecipePage : ContentPage
     {
+        private readonly FoodDatabaseService _databaseService = new();
+        private Food? _selectedFood;
+        private RecipeItem? _selectedRecipe;
+        private bool _showAddIngredientPanel;
+        private bool _showEditIngredientPanel;
+        private bool _showEditNotesPanel;
+        private string _ingredientsHeaderText = "Ingredients 0.0 (g) Total";
+        private string _recipeNotes = string.Empty;
+
+        public ObservableCollection<Food> Foods { get; } = new();
+        public ObservableCollection<RecipeItem> RecipeItems { get; } = new();
+
+        public Food? SelectedFood
+        {
+            get => _selectedFood;
+            private set
+            {
+                if (_selectedFood == value)
+                {
+                    return;
+                }
+
+                _selectedFood = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SelectedFoodDescription));
+                OnPropertyChanged(nameof(SelectedFoodUnitLabel));
+            }
+        }
+
+        public RecipeItem? SelectedRecipe
+        {
+            get => _selectedRecipe;
+            private set
+            {
+                if (_selectedRecipe == value)
+                {
+                    return;
+                }
+
+                _selectedRecipe = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowRecipeSelectionPanel));
+                OnPropertyChanged(nameof(SelectedRecipeDescription));
+                OnPropertyChanged(nameof(SelectedRecipeAmountDisplay));
+                OnPropertyChanged(nameof(SelectedRecipeUnitLabel));
+            }
+        }
+
+        public bool ShowRecipeSelectionPanel => SelectedRecipe != null;
+
+        public string SelectedFoodDescription => SelectedFood?.FoodDescription ?? string.Empty;
+
+        public string SelectedFoodUnitLabel => SelectedFood == null
+            ? "g"
+            : FoodDescriptionFormatter.GetUnit(SelectedFood.FoodDescription);
+
+        public string SelectedRecipeDescription => SelectedRecipe?.FoodDescription ?? string.Empty;
+
+        public string SelectedRecipeUnitLabel => SelectedRecipe == null
+            ? "g"
+            : SelectedRecipe.UnitLabel;
+
+        public string SelectedRecipeAmountDisplay => SelectedRecipe == null
+            ? string.Empty
+            : $"Amount: {SelectedRecipe.Amount.ToString("N1", CultureInfo.InvariantCulture)} {SelectedRecipe.UnitLabel}";
+
+        public string IngredientsHeaderText
+        {
+            get => _ingredientsHeaderText;
+            private set
+            {
+                if (_ingredientsHeaderText == value)
+                {
+                    return;
+                }
+
+                _ingredientsHeaderText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowAddIngredientPanel
+        {
+            get => _showAddIngredientPanel;
+            private set
+            {
+                if (_showAddIngredientPanel == value)
+                {
+                    return;
+                }
+
+                _showAddIngredientPanel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowEditIngredientPanel
+        {
+            get => _showEditIngredientPanel;
+            private set
+            {
+                if (_showEditIngredientPanel == value)
+                {
+                    return;
+                }
+
+                _showEditIngredientPanel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowEditNotesPanel
+        {
+            get => _showEditNotesPanel;
+            private set
+            {
+                if (_showEditNotesPanel == value)
+                {
+                    return;
+                }
+
+                _showEditNotesPanel = value;
+                OnPropertyChanged();
+            }
+        }
+
         public AddRecipePage()
         {
             InitializeComponent();
+            BindingContext = this;
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            await DatabaseInitializer.EnsureDatabaseAsync();
+            await LoadFoodsAsync(FoodFilterEntry?.Text);
+            await LoadRecipesAsync();
+            DescriptionEntry?.Focus();
+        }
+
+        private async Task LoadFoodsAsync(string? query)
+        {
+            IReadOnlyList<Food> foods;
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                foods = await _databaseService.SearchFoodsAsync(query);
+            }
+            else
+            {
+                foods = await _databaseService.GetFoodsAsync();
+            }
+
+            Foods.Clear();
+            foreach (var food in foods)
+            {
+                Foods.Add(food);
+            }
+        }
+
+        private async Task LoadRecipesAsync()
+        {
+            var recipes = await _databaseService.GetRecipeItemsAsync();
+            RecipeItems.Clear();
+            foreach (var recipe in recipes)
+            {
+                RecipeItems.Add(recipe);
+            }
+
+            UpdateIngredientsHeader();
+        }
+
+        private void UpdateIngredientsHeader()
+        {
+            var total = RecipeItems.Sum(item => item.Amount);
+            IngredientsHeaderText =
+                $"Ingredients {total.ToString("N1", CultureInfo.InvariantCulture)} (g) Total";
+        }
+
+        private async void OnFoodFilterCompleted(object? sender, EventArgs e)
+        {
+            await LoadFoodsAsync(FoodFilterEntry?.Text);
+        }
+
+        private async void OnClearFilterClicked(object? sender, EventArgs e)
+        {
+            FoodFilterEntry.Text = string.Empty;
+            await LoadFoodsAsync(string.Empty);
+        }
+
+        private async void OnFoodSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection.Count == 0)
+            {
+                return;
+            }
+
+            SelectedFood = e.CurrentSelection[0] as Food;
+            FoodsCollectionView.SelectedItem = null;
+            SelectedRecipe = null;
+            if (SelectedFood == null)
+            {
+                return;
+            }
+
+            var unit = FoodDescriptionFormatter.GetUnit(SelectedFood.FoodDescription);
+            if (unit.Equals("mL", StringComparison.OrdinalIgnoreCase))
+            {
+                await DisplayAlertAsync(
+                    "CANNOT ADD THIS FOOD",
+                    "Only foods measured in grams can be added to a recipe",
+                    "OK");
+                SelectedFood = null;
+                return;
+            }
+
+            AddIngredientAmountEntry.Text = string.Empty;
+            ShowAddIngredientPanel = true;
+        }
+
+        private async void OnAddIngredientConfirmClicked(object? sender, EventArgs e)
+        {
+            if (SelectedFood == null)
+            {
+                ShowAddIngredientPanel = false;
+                return;
+            }
+
+            if (!TryParsePositiveDouble(AddIngredientAmountEntry.Text, out var amount))
+            {
+                await DisplayAlertAsync("Invalid amount", "Enter a valid amount.", "OK");
+                return;
+            }
+
+            var inserted = await _databaseService.InsertRecipeItemFromFoodAsync(SelectedFood, amount);
+            if (!inserted)
+            {
+                await DisplayAlertAsync("Error", "Unable to add item to recipe.", "OK");
+            }
+
+            ShowAddIngredientPanel = false;
+            SelectedFood = null;
+            await LoadRecipesAsync();
+        }
+
+        private void OnAddIngredientCancelClicked(object? sender, EventArgs e)
+        {
+            ShowAddIngredientPanel = false;
+            SelectedFood = null;
+        }
+
+        private void OnAddIngredientBackdropTapped(object? sender, EventArgs e)
+        {
+            ShowAddIngredientPanel = false;
+            SelectedFood = null;
+        }
+
+        private void OnRecipeSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            SelectedRecipe = e.CurrentSelection.Count > 0 ? e.CurrentSelection[0] as RecipeItem : null;
+        }
+
+        private void OnEditRecipeClicked(object? sender, EventArgs e)
+        {
+            if (SelectedRecipe == null)
+            {
+                return;
+            }
+
+            EditIngredientAmountEntry.Text = SelectedRecipe.Amount.ToString("N1", CultureInfo.InvariantCulture);
+            ShowEditIngredientPanel = true;
+        }
+
+        private async void OnDeleteRecipeClicked(object? sender, EventArgs e)
+        {
+            if (SelectedRecipe == null)
+            {
+                return;
+            }
+
+            var deleted = await _databaseService.DeleteRecipeItemAsync(SelectedRecipe.RecipeId);
+            if (!deleted)
+            {
+                await DisplayAlertAsync("Error", "Unable to delete recipe item.", "OK");
+            }
+
+            SelectedRecipe = null;
+            await LoadRecipesAsync();
+        }
+
+        private async void OnEditIngredientConfirmClicked(object? sender, EventArgs e)
+        {
+            if (SelectedRecipe == null)
+            {
+                ShowEditIngredientPanel = false;
+                return;
+            }
+
+            if (!TryParsePositiveDouble(EditIngredientAmountEntry.Text, out var newAmount))
+            {
+                await DisplayAlertAsync("Invalid amount", "Enter a valid amount.", "OK");
+                return;
+            }
+
+            var factor = SelectedRecipe.Amount <= 0 ? 0 : newAmount / SelectedRecipe.Amount;
+            var updatedRecipe = SelectedRecipe with
+            {
+                Amount = newAmount,
+                Energy = SelectedRecipe.Energy * factor,
+                Protein = SelectedRecipe.Protein * factor,
+                FatTotal = SelectedRecipe.FatTotal * factor,
+                SaturatedFat = SelectedRecipe.SaturatedFat * factor,
+                TransFat = SelectedRecipe.TransFat * factor,
+                PolyunsaturatedFat = SelectedRecipe.PolyunsaturatedFat * factor,
+                MonounsaturatedFat = SelectedRecipe.MonounsaturatedFat * factor,
+                Carbohydrate = SelectedRecipe.Carbohydrate * factor,
+                Sugars = SelectedRecipe.Sugars * factor,
+                DietaryFibre = SelectedRecipe.DietaryFibre * factor,
+                Sodium = SelectedRecipe.Sodium * factor,
+                CalciumCa = SelectedRecipe.CalciumCa * factor,
+                PotassiumK = SelectedRecipe.PotassiumK * factor,
+                ThiaminB1 = SelectedRecipe.ThiaminB1 * factor,
+                RiboflavinB2 = SelectedRecipe.RiboflavinB2 * factor,
+                NiacinB3 = SelectedRecipe.NiacinB3 * factor,
+                Folate = SelectedRecipe.Folate * factor,
+                IronFe = SelectedRecipe.IronFe * factor,
+                MagnesiumMg = SelectedRecipe.MagnesiumMg * factor,
+                VitaminC = SelectedRecipe.VitaminC * factor,
+                Caffeine = SelectedRecipe.Caffeine * factor,
+                Cholesterol = SelectedRecipe.Cholesterol * factor,
+                Alcohol = SelectedRecipe.Alcohol * factor
+            };
+
+            var updated = await _databaseService.UpdateRecipeItemAsync(updatedRecipe);
+            if (!updated)
+            {
+                await DisplayAlertAsync("Error", "Unable to update recipe item.", "OK");
+            }
+
+            ShowEditIngredientPanel = false;
+            SelectedRecipe = null;
+            await LoadRecipesAsync();
+        }
+
+        private void OnEditIngredientCancelClicked(object? sender, EventArgs e)
+        {
+            ShowEditIngredientPanel = false;
+        }
+
+        private void OnEditIngredientBackdropTapped(object? sender, EventArgs e)
+        {
+            ShowEditIngredientPanel = false;
+        }
+
+        private void OnSetNotesClicked(object? sender, EventArgs e)
+        {
+            _recipeNotes = string.Join(
+                Environment.NewLine,
+                RecipeItems.Select(recipe =>
+                {
+                    var rounded = (int)Math.Round(recipe.Amount, MidpointRounding.AwayFromZero);
+                    return $"{rounded} g : {recipe.FoodDescription}";
+                }));
+        }
+
+        private void OnEditNotesClicked(object? sender, EventArgs e)
+        {
+            RecipeNotesEditor.Text = _recipeNotes;
+            ShowEditNotesPanel = true;
+        }
+
+        private void OnEditNotesConfirmClicked(object? sender, EventArgs e)
+        {
+            _recipeNotes = RecipeNotesEditor.Text?.Trim() ?? string.Empty;
+            ShowEditNotesPanel = false;
+        }
+
+        private void OnEditNotesCancelClicked(object? sender, EventArgs e)
+        {
+            ShowEditNotesPanel = false;
+        }
+
+        private void OnEditNotesBackdropTapped(object? sender, EventArgs e)
+        {
+            ShowEditNotesPanel = false;
         }
 
         private async void OnConfirmClicked(object? sender, EventArgs e)
         {
-            await DisplayAlertAsync("Not implemented", "Add recipe is not wired yet.", "OK");
-            await Shell.Current.GoToAsync("//foodSearch");
+            var description = DescriptionEntry.Text?.Trim() ?? string.Empty;
+            var sanitizedDescription = SanitizeRecipeDescription(description);
+            if (string.IsNullOrWhiteSpace(sanitizedDescription))
+            {
+                await DisplayAlertAsync("Missing description", "Please enter a description.", "OK");
+                return;
+            }
+
+            var totalAmount = RecipeItems.Sum(item => item.Amount);
+            if (totalAmount <= 0)
+            {
+                await DisplayAlertAsync("Missing ingredients", "Add at least one ingredient.", "OK");
+                return;
+            }
+
+            var scale = 100.0 / totalAmount;
+            var recipeWeightText = Math.Round(totalAmount, 0, MidpointRounding.AwayFromZero)
+                .ToString("0", CultureInfo.InvariantCulture);
+            var recipeDescription = $"{sanitizedDescription} {{recipe={recipeWeightText}g}}";
+
+            var totalEnergy = RecipeItems.Sum(item => item.Energy);
+            var totalProtein = RecipeItems.Sum(item => item.Protein);
+            var totalFat = RecipeItems.Sum(item => item.FatTotal);
+            var totalSaturated = RecipeItems.Sum(item => item.SaturatedFat);
+            var totalTrans = RecipeItems.Sum(item => item.TransFat);
+            var totalPoly = RecipeItems.Sum(item => item.PolyunsaturatedFat);
+            var totalMono = RecipeItems.Sum(item => item.MonounsaturatedFat);
+            var totalCarb = RecipeItems.Sum(item => item.Carbohydrate);
+            var totalSugars = RecipeItems.Sum(item => item.Sugars);
+            var totalFibre = RecipeItems.Sum(item => item.DietaryFibre);
+            var totalSodium = RecipeItems.Sum(item => item.Sodium);
+            var totalCalcium = RecipeItems.Sum(item => item.CalciumCa);
+            var totalPotassium = RecipeItems.Sum(item => item.PotassiumK);
+            var totalThiamin = RecipeItems.Sum(item => item.ThiaminB1);
+            var totalRiboflavin = RecipeItems.Sum(item => item.RiboflavinB2);
+            var totalNiacin = RecipeItems.Sum(item => item.NiacinB3);
+            var totalFolate = RecipeItems.Sum(item => item.Folate);
+            var totalIron = RecipeItems.Sum(item => item.IronFe);
+            var totalMagnesium = RecipeItems.Sum(item => item.MagnesiumMg);
+            var totalVitaminC = RecipeItems.Sum(item => item.VitaminC);
+            var totalCaffeine = RecipeItems.Sum(item => item.Caffeine);
+            var totalCholesterol = RecipeItems.Sum(item => item.Cholesterol);
+            var totalAlcohol = RecipeItems.Sum(item => item.Alcohol);
+
+            var recipeFood = new Food
+            {
+                FoodDescription = recipeDescription,
+                Energy = totalEnergy * scale,
+                Protein = totalProtein * scale,
+                FatTotal = totalFat * scale,
+                SaturatedFat = totalSaturated * scale,
+                TransFat = totalTrans * scale,
+                PolyunsaturatedFat = totalPoly * scale,
+                MonounsaturatedFat = totalMono * scale,
+                Carbohydrate = totalCarb * scale,
+                Sugars = totalSugars * scale,
+                DietaryFibre = totalFibre * scale,
+                Sodium = totalSodium * scale,
+                CalciumCa = totalCalcium * scale,
+                PotassiumK = totalPotassium * scale,
+                ThiaminB1 = totalThiamin * scale,
+                RiboflavinB2 = totalRiboflavin * scale,
+                NiacinB3 = totalNiacin * scale,
+                Folate = totalFolate * scale,
+                IronFe = totalIron * scale,
+                MagnesiumMg = totalMagnesium * scale,
+                VitaminC = totalVitaminC * scale,
+                Caffeine = totalCaffeine * scale,
+                Cholesterol = totalCholesterol * scale,
+                Alcohol = totalAlcohol * scale,
+                Notes = _recipeNotes
+            };
+
+            var insertedId = await _databaseService.InsertFoodReturningIdAsync(recipeFood);
+            if (insertedId == null)
+            {
+                await DisplayAlertAsync("Error", "Unable to save recipe to Foods table.", "OK");
+                return;
+            }
+
+            var updated = await _databaseService.UpdateRecipeFoodIdForTemporaryRecordsAsync(insertedId.Value);
+            if (!updated)
+            {
+                await DisplayAlertAsync("Error", "Recipe items not linked to new food.", "OK");
+                await _databaseService.DeleteRecipesWithFoodIdZeroAsync();
+            }
+
+            await LoadRecipesAsync();
+            var route =
+                $"//foodSearch?foodInsertedDescription={Uri.EscapeDataString(recipeDescription)}";
+            await Shell.Current.GoToAsync(route);
         }
 
         private async void OnBackClicked(object? sender, EventArgs e)
         {
+            await _databaseService.DeleteRecipesWithFoodIdZeroAsync();
             await Shell.Current.GoToAsync("//foodSearch");
+        }
+
+        private static bool TryParsePositiveDouble(string? input, out double value)
+        {
+            var normalized = (input ?? string.Empty)
+                .Trim()
+                .Replace(" ", "")
+                .Replace(',', '.');
+            if (string.IsNullOrEmpty(normalized))
+            {
+                value = 0;
+                return false;
+            }
+
+            var parsed = double.TryParse(
+                normalized,
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out value);
+            return parsed && value > 0;
+        }
+
+        private static string SanitizeRecipeDescription(string description)
+        {
+            return FoodDescriptionFormatter.GetDisplayName(description).Trim();
         }
     }
 }

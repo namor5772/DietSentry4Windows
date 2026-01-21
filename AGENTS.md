@@ -35,4 +35,7 @@
 - Avoid committing secrets or API keys; prefer environment-specific configuration outside source control.
 
 ## Additional Resources
-- the reference-android directory holds the source *.kt files for my original Android app, which is intended to help in creating this app that is essentially a rewrite of that app using .NET MAUI.
+- the `reference-android/` directory holds the source *.kt files for my original Android app, which is intended to help in creating this app that is essentially a rewrite of that app using .NET MAUI.
+
+## Do Not Edit
+- Never modify `MAUIcodexall.txt` or anything under `reference-android/`.

@@ -120,6 +120,237 @@ namespace DietSentry
             });
         }
 
+        public Task<int?> InsertFoodReturningIdAsync(Food food)
+        {
+            return Task.Run<int?>(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText =
+                    "INSERT INTO Foods (" +
+                    "FoodDescription, Energy, Protein, FatTotal, SaturatedFat, TransFat, " +
+                    "PolyunsaturatedFat, MonounsaturatedFat, Carbohydrate, Sugars, DietaryFibre, " +
+                    "SodiumNa, CalciumCa, PotassiumK, ThiaminB1, RiboflavinB2, NiacinB3, Folate, " +
+                    "IronFe, MagnesiumMg, VitaminC, Caffeine, Cholesterol, Alcohol, notes" +
+                    ") VALUES (" +
+                    "@FoodDescription, @Energy, @Protein, @FatTotal, @SaturatedFat, @TransFat, " +
+                    "@PolyunsaturatedFat, @MonounsaturatedFat, @Carbohydrate, @Sugars, @DietaryFibre, " +
+                    "@SodiumNa, @CalciumCa, @PotassiumK, @ThiaminB1, @RiboflavinB2, @NiacinB3, @Folate, " +
+                    "@IronFe, @MagnesiumMg, @VitaminC, @Caffeine, @Cholesterol, @Alcohol, @Notes" +
+                    ")";
+                command.Parameters.AddWithValue("@FoodDescription", food.FoodDescription);
+                command.Parameters.AddWithValue("@Energy", RoundToTwoDecimals(food.Energy));
+                command.Parameters.AddWithValue("@Protein", RoundToTwoDecimals(food.Protein));
+                command.Parameters.AddWithValue("@FatTotal", RoundToTwoDecimals(food.FatTotal));
+                command.Parameters.AddWithValue("@SaturatedFat", RoundToTwoDecimals(food.SaturatedFat));
+                command.Parameters.AddWithValue("@TransFat", RoundToTwoDecimals(food.TransFat));
+                command.Parameters.AddWithValue("@PolyunsaturatedFat", RoundToTwoDecimals(food.PolyunsaturatedFat));
+                command.Parameters.AddWithValue("@MonounsaturatedFat", RoundToTwoDecimals(food.MonounsaturatedFat));
+                command.Parameters.AddWithValue("@Carbohydrate", RoundToTwoDecimals(food.Carbohydrate));
+                command.Parameters.AddWithValue("@Sugars", RoundToTwoDecimals(food.Sugars));
+                command.Parameters.AddWithValue("@DietaryFibre", RoundToTwoDecimals(food.DietaryFibre));
+                command.Parameters.AddWithValue("@SodiumNa", RoundToTwoDecimals(food.Sodium));
+                command.Parameters.AddWithValue("@CalciumCa", RoundToTwoDecimals(food.CalciumCa));
+                command.Parameters.AddWithValue("@PotassiumK", RoundToTwoDecimals(food.PotassiumK));
+                command.Parameters.AddWithValue("@ThiaminB1", RoundToTwoDecimals(food.ThiaminB1));
+                command.Parameters.AddWithValue("@RiboflavinB2", RoundToTwoDecimals(food.RiboflavinB2));
+                command.Parameters.AddWithValue("@NiacinB3", RoundToTwoDecimals(food.NiacinB3));
+                command.Parameters.AddWithValue("@Folate", RoundToTwoDecimals(food.Folate));
+                command.Parameters.AddWithValue("@IronFe", RoundToTwoDecimals(food.IronFe));
+                command.Parameters.AddWithValue("@MagnesiumMg", RoundToTwoDecimals(food.MagnesiumMg));
+                command.Parameters.AddWithValue("@VitaminC", RoundToTwoDecimals(food.VitaminC));
+                command.Parameters.AddWithValue("@Caffeine", RoundToTwoDecimals(food.Caffeine));
+                command.Parameters.AddWithValue("@Cholesterol", RoundToTwoDecimals(food.Cholesterol));
+                command.Parameters.AddWithValue("@Alcohol", RoundToTwoDecimals(food.Alcohol));
+                command.Parameters.AddWithValue("@Notes", food.Notes);
+                if (command.ExecuteNonQuery() <= 0)
+                {
+                    return null;
+                }
+
+                using var idCommand = connection.CreateCommand();
+                idCommand.CommandText = "SELECT last_insert_rowid();";
+                var result = idCommand.ExecuteScalar();
+                return result == null ? null : Convert.ToInt32(result, CultureInfo.InvariantCulture);
+            });
+        }
+
+        public Task<bool> InsertRecipeItemFromFoodAsync(
+            Food food,
+            double amount,
+            int foodId = 0,
+            int copyFlag = 0)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText =
+                    "INSERT INTO Recipe (" +
+                    "FoodId, CopyFg, Amount, FoodDescription, Energy, Protein, FatTotal, " +
+                    "SaturatedFat, TransFat, PolyunsaturatedFat, MonounsaturatedFat, Carbohydrate, " +
+                    "Sugars, DietaryFibre, SodiumNa, CalciumCa, PotassiumK, ThiaminB1, RiboflavinB2, " +
+                    "NiacinB3, Folate, IronFe, MagnesiumMg, VitaminC, Caffeine, Cholesterol, Alcohol" +
+                    ") VALUES (" +
+                    "@FoodId, @CopyFg, @Amount, @FoodDescription, @Energy, @Protein, @FatTotal, " +
+                    "@SaturatedFat, @TransFat, @PolyunsaturatedFat, @MonounsaturatedFat, @Carbohydrate, " +
+                    "@Sugars, @DietaryFibre, @SodiumNa, @CalciumCa, @PotassiumK, @ThiaminB1, @RiboflavinB2, " +
+                    "@NiacinB3, @Folate, @IronFe, @MagnesiumMg, @VitaminC, @Caffeine, @Cholesterol, @Alcohol" +
+                    ")";
+                var scale = amount / 100.0;
+                command.Parameters.AddWithValue("@FoodId", foodId);
+                command.Parameters.AddWithValue("@CopyFg", copyFlag);
+                command.Parameters.AddWithValue("@Amount", amount);
+                command.Parameters.AddWithValue("@FoodDescription", food.FoodDescription);
+                command.Parameters.AddWithValue("@Energy", RoundToTwoDecimals(food.Energy * scale));
+                command.Parameters.AddWithValue("@Protein", RoundToTwoDecimals(food.Protein * scale));
+                command.Parameters.AddWithValue("@FatTotal", RoundToTwoDecimals(food.FatTotal * scale));
+                command.Parameters.AddWithValue("@SaturatedFat", RoundToTwoDecimals(food.SaturatedFat * scale));
+                command.Parameters.AddWithValue("@TransFat", RoundToTwoDecimals(food.TransFat * scale));
+                command.Parameters.AddWithValue("@PolyunsaturatedFat", RoundToTwoDecimals(food.PolyunsaturatedFat * scale));
+                command.Parameters.AddWithValue("@MonounsaturatedFat", RoundToTwoDecimals(food.MonounsaturatedFat * scale));
+                command.Parameters.AddWithValue("@Carbohydrate", RoundToTwoDecimals(food.Carbohydrate * scale));
+                command.Parameters.AddWithValue("@Sugars", RoundToTwoDecimals(food.Sugars * scale));
+                command.Parameters.AddWithValue("@DietaryFibre", RoundToTwoDecimals(food.DietaryFibre * scale));
+                command.Parameters.AddWithValue("@SodiumNa", RoundToTwoDecimals(food.Sodium * scale));
+                command.Parameters.AddWithValue("@CalciumCa", RoundToTwoDecimals(food.CalciumCa * scale));
+                command.Parameters.AddWithValue("@PotassiumK", RoundToTwoDecimals(food.PotassiumK * scale));
+                command.Parameters.AddWithValue("@ThiaminB1", RoundToTwoDecimals(food.ThiaminB1 * scale));
+                command.Parameters.AddWithValue("@RiboflavinB2", RoundToTwoDecimals(food.RiboflavinB2 * scale));
+                command.Parameters.AddWithValue("@NiacinB3", RoundToTwoDecimals(food.NiacinB3 * scale));
+                command.Parameters.AddWithValue("@Folate", RoundToTwoDecimals(food.Folate * scale));
+                command.Parameters.AddWithValue("@IronFe", RoundToTwoDecimals(food.IronFe * scale));
+                command.Parameters.AddWithValue("@MagnesiumMg", RoundToTwoDecimals(food.MagnesiumMg * scale));
+                command.Parameters.AddWithValue("@VitaminC", RoundToTwoDecimals(food.VitaminC * scale));
+                command.Parameters.AddWithValue("@Caffeine", RoundToTwoDecimals(food.Caffeine * scale));
+                command.Parameters.AddWithValue("@Cholesterol", RoundToTwoDecimals(food.Cholesterol * scale));
+                command.Parameters.AddWithValue("@Alcohol", RoundToTwoDecimals(food.Alcohol * scale));
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
+        public Task<IReadOnlyList<RecipeItem>> GetRecipeItemsAsync(int foodId = 0)
+        {
+            return Task.Run<IReadOnlyList<RecipeItem>>(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM Recipe WHERE FoodId = @FoodId ORDER BY RecipeId DESC";
+                command.Parameters.AddWithValue("@FoodId", foodId);
+                return ReadRecipeItems(command);
+            });
+        }
+
+        public Task<bool> UpdateRecipeItemAsync(RecipeItem recipeItem)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText =
+                    "UPDATE Recipe SET " +
+                    "FoodId = @FoodId, " +
+                    "CopyFg = @CopyFg, " +
+                    "Amount = @Amount, " +
+                    "FoodDescription = @FoodDescription, " +
+                    "Energy = @Energy, " +
+                    "Protein = @Protein, " +
+                    "FatTotal = @FatTotal, " +
+                    "SaturatedFat = @SaturatedFat, " +
+                    "TransFat = @TransFat, " +
+                    "PolyunsaturatedFat = @PolyunsaturatedFat, " +
+                    "MonounsaturatedFat = @MonounsaturatedFat, " +
+                    "Carbohydrate = @Carbohydrate, " +
+                    "Sugars = @Sugars, " +
+                    "DietaryFibre = @DietaryFibre, " +
+                    "SodiumNa = @SodiumNa, " +
+                    "CalciumCa = @CalciumCa, " +
+                    "PotassiumK = @PotassiumK, " +
+                    "ThiaminB1 = @ThiaminB1, " +
+                    "RiboflavinB2 = @RiboflavinB2, " +
+                    "NiacinB3 = @NiacinB3, " +
+                    "Folate = @Folate, " +
+                    "IronFe = @IronFe, " +
+                    "MagnesiumMg = @MagnesiumMg, " +
+                    "VitaminC = @VitaminC, " +
+                    "Caffeine = @Caffeine, " +
+                    "Cholesterol = @Cholesterol, " +
+                    "Alcohol = @Alcohol " +
+                    "WHERE RecipeId = @RecipeId";
+                command.Parameters.AddWithValue("@RecipeId", recipeItem.RecipeId);
+                command.Parameters.AddWithValue("@FoodId", recipeItem.FoodId);
+                command.Parameters.AddWithValue("@CopyFg", recipeItem.CopyFg);
+                command.Parameters.AddWithValue("@Amount", recipeItem.Amount);
+                command.Parameters.AddWithValue("@FoodDescription", recipeItem.FoodDescription);
+                command.Parameters.AddWithValue("@Energy", RoundToTwoDecimals(recipeItem.Energy));
+                command.Parameters.AddWithValue("@Protein", RoundToTwoDecimals(recipeItem.Protein));
+                command.Parameters.AddWithValue("@FatTotal", RoundToTwoDecimals(recipeItem.FatTotal));
+                command.Parameters.AddWithValue("@SaturatedFat", RoundToTwoDecimals(recipeItem.SaturatedFat));
+                command.Parameters.AddWithValue("@TransFat", RoundToTwoDecimals(recipeItem.TransFat));
+                command.Parameters.AddWithValue("@PolyunsaturatedFat", RoundToTwoDecimals(recipeItem.PolyunsaturatedFat));
+                command.Parameters.AddWithValue("@MonounsaturatedFat", RoundToTwoDecimals(recipeItem.MonounsaturatedFat));
+                command.Parameters.AddWithValue("@Carbohydrate", RoundToTwoDecimals(recipeItem.Carbohydrate));
+                command.Parameters.AddWithValue("@Sugars", RoundToTwoDecimals(recipeItem.Sugars));
+                command.Parameters.AddWithValue("@DietaryFibre", RoundToTwoDecimals(recipeItem.DietaryFibre));
+                command.Parameters.AddWithValue("@SodiumNa", RoundToTwoDecimals(recipeItem.Sodium));
+                command.Parameters.AddWithValue("@CalciumCa", RoundToTwoDecimals(recipeItem.CalciumCa));
+                command.Parameters.AddWithValue("@PotassiumK", RoundToTwoDecimals(recipeItem.PotassiumK));
+                command.Parameters.AddWithValue("@ThiaminB1", RoundToTwoDecimals(recipeItem.ThiaminB1));
+                command.Parameters.AddWithValue("@RiboflavinB2", RoundToTwoDecimals(recipeItem.RiboflavinB2));
+                command.Parameters.AddWithValue("@NiacinB3", RoundToTwoDecimals(recipeItem.NiacinB3));
+                command.Parameters.AddWithValue("@Folate", RoundToTwoDecimals(recipeItem.Folate));
+                command.Parameters.AddWithValue("@IronFe", RoundToTwoDecimals(recipeItem.IronFe));
+                command.Parameters.AddWithValue("@MagnesiumMg", RoundToTwoDecimals(recipeItem.MagnesiumMg));
+                command.Parameters.AddWithValue("@VitaminC", RoundToTwoDecimals(recipeItem.VitaminC));
+                command.Parameters.AddWithValue("@Caffeine", RoundToTwoDecimals(recipeItem.Caffeine));
+                command.Parameters.AddWithValue("@Cholesterol", RoundToTwoDecimals(recipeItem.Cholesterol));
+                command.Parameters.AddWithValue("@Alcohol", RoundToTwoDecimals(recipeItem.Alcohol));
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
+        public Task<bool> DeleteRecipeItemAsync(int recipeId)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "DELETE FROM Recipe WHERE RecipeId = @RecipeId";
+                command.Parameters.AddWithValue("@RecipeId", recipeId);
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
+        public Task<bool> DeleteRecipesWithFoodIdZeroAsync()
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "DELETE FROM Recipe WHERE FoodId = 0";
+                return command.ExecuteNonQuery() >= 0;
+            });
+        }
+
+        public Task<bool> UpdateRecipeFoodIdForTemporaryRecordsAsync(int newFoodId)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "UPDATE Recipe SET FoodId = @FoodId WHERE FoodId = 0";
+                command.Parameters.AddWithValue("@FoodId", newFoodId);
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
         public Task<bool> LogEatenFoodAsync(Food food, double amount, DateTime dateTime)
         {
             return Task.Run(() =>
@@ -498,6 +729,77 @@ namespace DietSentry
             }
 
             return weights;
+        }
+
+        private static IReadOnlyList<RecipeItem> ReadRecipeItems(SqliteCommand command)
+        {
+            var recipes = new List<RecipeItem>();
+            using var reader = command.ExecuteReader();
+            var recipeIdOrdinal = reader.GetOrdinal("RecipeId");
+            var foodIdOrdinal = reader.GetOrdinal("FoodId");
+            var copyFgOrdinal = reader.GetOrdinal("CopyFg");
+            var amountOrdinal = reader.GetOrdinal("Amount");
+            var foodDescriptionOrdinal = reader.GetOrdinal("FoodDescription");
+            var energyOrdinal = reader.GetOrdinal("Energy");
+            var proteinOrdinal = reader.GetOrdinal("Protein");
+            var fatTotalOrdinal = reader.GetOrdinal("FatTotal");
+            var saturatedFatOrdinal = reader.GetOrdinal("SaturatedFat");
+            var transFatOrdinal = reader.GetOrdinal("TransFat");
+            var polyunsaturatedFatOrdinal = reader.GetOrdinal("PolyunsaturatedFat");
+            var monounsaturatedFatOrdinal = reader.GetOrdinal("MonounsaturatedFat");
+            var carbohydrateOrdinal = reader.GetOrdinal("Carbohydrate");
+            var sugarsOrdinal = reader.GetOrdinal("Sugars");
+            var dietaryFibreOrdinal = reader.GetOrdinal("DietaryFibre");
+            var sodiumOrdinal = reader.GetOrdinal("SodiumNa");
+            var calciumOrdinal = reader.GetOrdinal("CalciumCa");
+            var potassiumOrdinal = reader.GetOrdinal("PotassiumK");
+            var thiaminOrdinal = reader.GetOrdinal("ThiaminB1");
+            var riboflavinOrdinal = reader.GetOrdinal("RiboflavinB2");
+            var niacinOrdinal = reader.GetOrdinal("NiacinB3");
+            var folateOrdinal = reader.GetOrdinal("Folate");
+            var ironOrdinal = reader.GetOrdinal("IronFe");
+            var magnesiumOrdinal = reader.GetOrdinal("MagnesiumMg");
+            var vitaminCOrdinal = reader.GetOrdinal("VitaminC");
+            var caffeineOrdinal = reader.GetOrdinal("Caffeine");
+            var cholesterolOrdinal = reader.GetOrdinal("Cholesterol");
+            var alcoholOrdinal = reader.GetOrdinal("Alcohol");
+
+            while (reader.Read())
+            {
+                recipes.Add(new RecipeItem
+                {
+                    RecipeId = reader.GetInt32(recipeIdOrdinal),
+                    FoodId = reader.GetInt32(foodIdOrdinal),
+                    CopyFg = reader.GetInt32(copyFgOrdinal),
+                    Amount = reader.GetDouble(amountOrdinal),
+                    FoodDescription = reader.GetString(foodDescriptionOrdinal),
+                    Energy = reader.GetDouble(energyOrdinal),
+                    Protein = reader.GetDouble(proteinOrdinal),
+                    FatTotal = reader.GetDouble(fatTotalOrdinal),
+                    SaturatedFat = reader.GetDouble(saturatedFatOrdinal),
+                    TransFat = reader.GetDouble(transFatOrdinal),
+                    PolyunsaturatedFat = reader.GetDouble(polyunsaturatedFatOrdinal),
+                    MonounsaturatedFat = reader.GetDouble(monounsaturatedFatOrdinal),
+                    Carbohydrate = reader.GetDouble(carbohydrateOrdinal),
+                    Sugars = reader.GetDouble(sugarsOrdinal),
+                    DietaryFibre = reader.GetDouble(dietaryFibreOrdinal),
+                    Sodium = reader.GetDouble(sodiumOrdinal),
+                    CalciumCa = reader.GetDouble(calciumOrdinal),
+                    PotassiumK = reader.GetDouble(potassiumOrdinal),
+                    ThiaminB1 = reader.GetDouble(thiaminOrdinal),
+                    RiboflavinB2 = reader.GetDouble(riboflavinOrdinal),
+                    NiacinB3 = reader.GetDouble(niacinOrdinal),
+                    Folate = reader.GetDouble(folateOrdinal),
+                    IronFe = reader.GetDouble(ironOrdinal),
+                    MagnesiumMg = reader.GetDouble(magnesiumOrdinal),
+                    VitaminC = reader.GetDouble(vitaminCOrdinal),
+                    Caffeine = reader.GetDouble(caffeineOrdinal),
+                    Cholesterol = reader.GetDouble(cholesterolOrdinal),
+                    Alcohol = reader.GetDouble(alcoholOrdinal)
+                });
+            }
+
+            return recipes;
         }
 
         private static double RoundToTwoDecimals(double value)

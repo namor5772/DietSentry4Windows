@@ -874,7 +874,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="520"
+                WidthRequest="364"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -890,12 +890,14 @@
                         FontSize="18" />
                     <Grid
                         ColumnDefinitions="Auto,Auto,Auto,*"
-                        ColumnSpacing="8">
+                        ColumnSpacing="8"
+                        RowDefinitions="Auto,Auto"
+                        RowSpacing="8">
                         <Entry
                             x:Name="EditAmountEntry"
                             Placeholder="Amount"
                             Keyboard="Numeric"
-                            WidthRequest="80"
+                            WidthRequest="95"
                             HorizontalOptions="FillAndExpand"
                             Grid.Column="0" />
                         <Label
@@ -905,20 +907,23 @@
                         <DatePicker
                             x:Name="EditDatePicker"
                             VerticalOptions="Center"
+                            Grid.Row="0"
                             Grid.Column="2" />
                         <TimePicker
                             x:Name="EditTimePicker"
                             VerticalOptions="Center"
-                            HorizontalOptions="FillAndExpand"
-                            MinimumWidthRequest="200"
-                            Margin="0,15,0,0"
-                            Grid.Column="3" />
+                            Format="HH:mm"
+                            HorizontalOptions="Start"
+                            MinimumWidthRequest="112"
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="4" />
                     </Grid>
                     <FlexLayout
                         Direction="Row"
                         Wrap="Wrap"
-                        AlignItems="Start"
-                        JustifyContent="Start">
+                        AlignItems="Center"
+                        JustifyContent="Center">
                         <Button
                             Text="Confirm"
                             Clicked="OnEditConfirmClicked"

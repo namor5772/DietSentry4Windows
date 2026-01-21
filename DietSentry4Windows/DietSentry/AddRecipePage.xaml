@@ -1,36 +1,399 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="DietSentry.AddRecipePage">
+             xmlns:local="clr-namespace:DietSentry"
+             x:Class="DietSentry.AddRecipePage"
+             x:Name="AddRecipeScreen">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="20"
-            Spacing="16">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <Label
-                    Text="Add Recipe"
-                    FontAttributes="Bold"
-                    FontSize="24" />
-                <Button
-                    Grid.Column="1"
-                    Text="Back to Foods Table"
-                    Clicked="OnBackClicked" />
-            </Grid>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:NumericFormatConverter x:Key="NumericFormatConverter" />
+            <Style
+                x:Key="TopRowButtonStyle"
+                TargetType="Button">
+                <Setter
+                    Property="Margin"
+                    Value="0,0,4,4" />
+                <Setter
+                    Property="WidthRequest"
+                    Value="112" />
+            </Style>
+            <Style
+                x:Key="SelectionActionButtonStyle"
+                TargetType="Button">
+                <Setter
+                    Property="Margin"
+                    Value="0,0,8,0" />
+                <Setter
+                    Property="WidthRequest"
+                    Value="79" />
+            </Style>
+            <Style
+                x:Key="FooterButtonStyle"
+                TargetType="Button">
+                <Setter
+                    Property="Margin"
+                    Value="0,0,8,8" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
+    <Grid
+        Padding="20"
+        RowDefinitions="Auto,Auto,Auto,*,Auto,*,Auto,Auto"
+        RowSpacing="12">
+        <Grid
+            Grid.Row="0"
+            ColumnDefinitions="Auto,Auto,*"
+            ColumnSpacing="12">
+            <Label
+                Grid.Column="0"
+                Text="Add Recipe"
+                FontAttributes="Bold"
+                FontSize="24"
+                VerticalOptions="Start" />
+            <Button
+                Grid.Column="1"
+                Text="Foods Table"
+                Clicked="OnBackClicked"
+                Style="{StaticResource TopRowButtonStyle}" />
+        </Grid>
+
+        <Grid
+            Grid.Row="1"
+            ColumnDefinitions="Auto,*"
+            ColumnSpacing="12">
+            <Label
+                Grid.Column="0"
+                Text="Description"
+                VerticalOptions="Center" />
             <Entry
+                x:Name="DescriptionEntry"
+                Grid.Column="1"
                 Placeholder="Recipe description" />
+        </Grid>
 
-            <Editor
-                Placeholder="Ingredient list (placeholder)"
-                AutoSize="TextChanges"
-                HeightRequest="160" />
+        <Grid
+            Grid.Row="2"
+            ColumnDefinitions="*,Auto"
+            ColumnSpacing="8">
+            <Entry
+                x:Name="FoodFilterEntry"
+                Placeholder="Enter food filter text"
+                Completed="OnFoodFilterCompleted" />
+            <Button
+                Grid.Column="1"
+                Text="Clear"
+                Clicked="OnClearFilterClicked" />
+        </Grid>
 
+        <Frame
+            Grid.Row="3"
+            BorderColor="LightGray"
+            Padding="10">
+            <CollectionView
+                x:Name="FoodsCollectionView"
+                ItemsSource="{Binding Foods}"
+                SelectionMode="Single"
+                SelectionChanged="OnFoodSelectionChanged">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="local:Food">
+                        <VerticalStackLayout
+                            Spacing="4"
+                            Padding="4">
+                            <Label
+                                Text="{Binding FoodDescription}"
+                                FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Frame>
+
+        <Label
+            Grid.Row="4"
+            Text="{Binding IngredientsHeaderText}"
+            FontAttributes="Bold" />
+
+        <Frame
+            Grid.Row="5"
+            BorderColor="LightGray"
+            Padding="10">
+            <CollectionView
+                x:Name="RecipesCollectionView"
+                ItemsSource="{Binding RecipeItems}"
+                SelectionMode="Single"
+                SelectionChanged="OnRecipeSelectionChanged">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="local:RecipeItem">
+                        <VerticalStackLayout
+                            Spacing="4"
+                            Padding="4">
+                            <Label
+                                Text="{Binding FoodDescription}"
+                                FontAttributes="Bold" />
+                            <Grid
+                                ColumnDefinitions="Auto,*"
+                                RowDefinitions="Auto,Auto,Auto,Auto"
+                                ColumnSpacing="12"
+                                RowSpacing="2">
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Text="{Binding UnitLabel, StringFormat='Amount ({0}):'}" />
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Text="{Binding Amount, Converter={StaticResource NumericFormatConverter}}"
+                                    HorizontalTextAlignment="End" />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Text="Energy (kJ):" />
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Text="{Binding Energy, Converter={StaticResource NumericFormatConverter}}"
+                                    HorizontalTextAlignment="End" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    Text="Fat (g):" />
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Text="{Binding FatTotal, Converter={StaticResource NumericFormatConverter}}"
+                                    HorizontalTextAlignment="End" />
+                                <Label
+                                    Grid.Row="3"
+                                    Grid.Column="0"
+                                    Text="Fibre (g):" />
+                                <Label
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Text="{Binding DietaryFibre, Converter={StaticResource NumericFormatConverter}}"
+                                    HorizontalTextAlignment="End" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Frame>
+
+        <Frame
+            Grid.Row="6"
+            BorderColor="LightGray"
+            Padding="10"
+            IsVisible="{Binding ShowRecipeSelectionPanel}">
+            <VerticalStackLayout Spacing="8">
+                <Label
+                    Text="{Binding SelectedRecipeDescription}"
+                    FontAttributes="Bold"
+                    HorizontalTextAlignment="Center" />
+                <Label
+                    Text="{Binding SelectedRecipeAmountDisplay}"
+                    HorizontalTextAlignment="Center" />
+                <HorizontalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="12">
+                    <Button
+                        Text="Edit"
+                        Clicked="OnEditRecipeClicked"
+                        Style="{StaticResource SelectionActionButtonStyle}" />
+                    <Button
+                        Text="Delete"
+                        Clicked="OnDeleteRecipeClicked"
+                        Style="{StaticResource SelectionActionButtonStyle}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
+
+        <FlexLayout
+            Grid.Row="7"
+            Direction="Row"
+            Wrap="Wrap"
+            AlignItems="Center"
+            JustifyContent="Start">
+            <Button
+                Text="Set notes"
+                Clicked="OnSetNotesClicked"
+                Style="{StaticResource FooterButtonStyle}" />
+            <Button
+                Text="Edit notes"
+                Clicked="OnEditNotesClicked"
+                Style="{StaticResource FooterButtonStyle}" />
             <Button
                 Text="Confirm"
-                Clicked="OnConfirmClicked" />
+                Clicked="OnConfirmClicked"
+                Style="{StaticResource FooterButtonStyle}" />
+        </FlexLayout>
 
-        </VerticalStackLayout>
-    </ScrollView>
+        <Grid
+            Grid.Row="0"
+            Grid.RowSpan="8"
+            IsVisible="{Binding ShowAddIngredientPanel}">
+            <BoxView Color="#80000000">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnAddIngredientBackdropTapped" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Frame
+                Padding="16"
+                CornerRadius="12"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                WidthRequest="420"
+                HasShadow="True">
+                <Frame.Shadow>
+                    <Shadow
+                        Brush="#40000000"
+                        Offset="0,8"
+                        Radius="12"
+                        Opacity="0.6" />
+                </Frame.Shadow>
+                <VerticalStackLayout Spacing="12">
+                    <Label
+                        Text="{Binding SelectedFoodDescription}"
+                        FontAttributes="Bold"
+                        FontSize="18" />
+                    <Grid
+                        ColumnDefinitions="Auto,*"
+                        ColumnSpacing="8">
+                        <Label
+                            Grid.Column="0"
+                            Text="{Binding SelectedFoodUnitLabel, StringFormat='Amount ({0})'}"
+                            VerticalOptions="Center" />
+                        <Entry
+                            x:Name="AddIngredientAmountEntry"
+                            Grid.Column="1"
+                            Placeholder="Amount"
+                            Keyboard="Numeric"
+                            WidthRequest="120" />
+                    </Grid>
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
+                        Spacing="12">
+                        <Button
+                            Text="Confirm"
+                            Clicked="OnAddIngredientConfirmClicked"
+                            Style="{StaticResource SelectionActionButtonStyle}" />
+                        <Button
+                            Text="Cancel"
+                            Clicked="OnAddIngredientCancelClicked"
+                            Style="{StaticResource SelectionActionButtonStyle}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+
+        <Grid
+            Grid.Row="0"
+            Grid.RowSpan="8"
+            IsVisible="{Binding ShowEditIngredientPanel}">
+            <BoxView Color="#80000000">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnEditIngredientBackdropTapped" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Frame
+                Padding="16"
+                CornerRadius="12"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                WidthRequest="420"
+                HasShadow="True">
+                <Frame.Shadow>
+                    <Shadow
+                        Brush="#40000000"
+                        Offset="0,8"
+                        Radius="12"
+                        Opacity="0.6" />
+                </Frame.Shadow>
+                <VerticalStackLayout Spacing="12">
+                    <Label
+                        Text="{Binding SelectedRecipeDescription}"
+                        FontAttributes="Bold"
+                        FontSize="18" />
+                    <Grid
+                        ColumnDefinitions="Auto,*"
+                        ColumnSpacing="8">
+                        <Label
+                            Grid.Column="0"
+                            Text="{Binding SelectedRecipeUnitLabel, StringFormat='Amount ({0})'}"
+                            VerticalOptions="Center" />
+                        <Entry
+                            x:Name="EditIngredientAmountEntry"
+                            Grid.Column="1"
+                            Placeholder="Amount"
+                            Keyboard="Numeric"
+                            WidthRequest="120" />
+                    </Grid>
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
+                        Spacing="12">
+                        <Button
+                            Text="Confirm"
+                            Clicked="OnEditIngredientConfirmClicked"
+                            Style="{StaticResource SelectionActionButtonStyle}" />
+                        <Button
+                            Text="Cancel"
+                            Clicked="OnEditIngredientCancelClicked"
+                            Style="{StaticResource SelectionActionButtonStyle}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+
+        <Grid
+            Grid.Row="0"
+            Grid.RowSpan="8"
+            IsVisible="{Binding ShowEditNotesPanel}">
+            <BoxView Color="#80000000">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnEditNotesBackdropTapped" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Frame
+                Padding="16"
+                CornerRadius="12"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                WidthRequest="520"
+                HasShadow="True">
+                <Frame.Shadow>
+                    <Shadow
+                        Brush="#40000000"
+                        Offset="0,8"
+                        Radius="12"
+                        Opacity="0.6" />
+                </Frame.Shadow>
+                <VerticalStackLayout Spacing="12">
+                    <Label
+                        Text="Recipe Notes"
+                        FontAttributes="Bold"
+                        FontSize="18" />
+                    <Editor
+                        x:Name="RecipeNotesEditor"
+                        AutoSize="TextChanges"
+                        HeightRequest="160" />
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
+                        Spacing="12">
+                        <Button
+                            Text="Confirm"
+                            Clicked="OnEditNotesConfirmClicked"
+                            Style="{StaticResource SelectionActionButtonStyle}" />
+                        <Button
+                            Text="Cancel"
+                            Clicked="OnEditNotesCancelClicked"
+                            Style="{StaticResource SelectionActionButtonStyle}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
+    </Grid>
 
 </ContentPage>

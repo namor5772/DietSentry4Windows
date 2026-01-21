@@ -294,8 +294,7 @@ namespace DietSentry
                 return;
             }
 
-            DeleteDateLabel.Text = SelectedWeightDateDisplay;
-            DeleteWeightLabel.Text = SelectedWeightValueDisplay;
+            DeleteDetailsLabel.Text = $"{SelectedWeightDateDisplay}    {SelectedWeightValueDisplay}";
             ShowDeletePanel = true;
         }
 

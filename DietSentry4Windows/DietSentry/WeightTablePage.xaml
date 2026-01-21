@@ -171,7 +171,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="520"
+                WidthRequest="364"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -182,7 +182,7 @@
                 </Frame.Shadow>
                 <VerticalStackLayout Spacing="12">
                     <Label
-                        Text="Add weight"
+                        Text="Add Weight table record"
                         FontAttributes="Bold"
                         FontSize="18"
                         HorizontalTextAlignment="Center" />
@@ -237,7 +237,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="520"
+                WidthRequest="364"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -248,7 +248,7 @@
                 </Frame.Shadow>
                 <VerticalStackLayout Spacing="12">
                     <Label
-                        Text="Edit weight"
+                        Text="Edit Weight table record"
                         FontAttributes="Bold"
                         FontSize="18"
                         HorizontalTextAlignment="Center" />
@@ -304,7 +304,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="420"
+                WidthRequest="364"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -315,15 +315,12 @@
                 </Frame.Shadow>
                 <VerticalStackLayout Spacing="12">
                     <Label
-                        Text="Delete weight?"
+                        Text="Delete Weight table record?"
                         FontAttributes="Bold"
                         FontSize="18"
                         HorizontalTextAlignment="Center" />
                     <Label
-                        x:Name="DeleteDateLabel"
-                        HorizontalTextAlignment="Center" />
-                    <Label
-                        x:Name="DeleteWeightLabel"
+                        x:Name="DeleteDetailsLabel"
                         HorizontalTextAlignment="Center" />
                     <FlexLayout
                         Direction="Row"
