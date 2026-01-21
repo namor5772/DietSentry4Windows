@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
@@ -6,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace DietSentry
 {
-    public partial class AddRecipePage : ContentPage
+    [QueryProperty(nameof(EditRecipeFoodId), "editRecipeFoodId")]
+    public partial class AddRecipePage : ContentPage, IQueryAttributable
     {
         private readonly FoodDatabaseService _databaseService = new();
         private Food? _selectedFood;
@@ -16,9 +18,55 @@ namespace DietSentry
         private bool _showEditNotesPanel;
         private string _ingredientsHeaderText = "Ingredients 0.0 (g) Total";
         private string _recipeNotes = string.Empty;
+        private string _screenTitle = "Add Recipe";
+        private int? _editingFoodId;
+        private bool _recipesPrepared;
 
         public ObservableCollection<Food> Foods { get; } = new();
         public ObservableCollection<RecipeItem> RecipeItems { get; } = new();
+
+        public string ScreenTitle
+        {
+            get => _screenTitle;
+            private set
+            {
+                if (_screenTitle == value)
+                {
+                    return;
+                }
+
+                _screenTitle = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string? EditRecipeFoodId
+        {
+            get => _editingFoodId?.ToString(CultureInfo.InvariantCulture);
+            set
+            {
+                var previousId = _editingFoodId;
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _editingFoodId = null;
+                }
+                else if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
+                {
+                    _editingFoodId = id;
+                }
+                else
+                {
+                    _editingFoodId = null;
+                }
+
+                if (previousId != _editingFoodId)
+                {
+                    _recipesPrepared = false;
+                }
+
+                UpdateScreenTitle();
+            }
+        }
 
         public Food? SelectedFood
         {
@@ -138,12 +186,33 @@ namespace DietSentry
         {
             InitializeComponent();
             BindingContext = this;
+            UpdateScreenTitle();
+        }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue("editRecipeFoodId", out var value))
+            {
+                EditRecipeFoodId = value?.ToString();
+            }
+            else
+            {
+                EditRecipeFoodId = null;
+            }
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            UpdateScreenTitle();
+            if (!_editingFoodId.HasValue && _recipesPrepared)
+            {
+                _recipesPrepared = false;
+                DescriptionEntry.Text = string.Empty;
+                _recipeNotes = string.Empty;
+            }
             await DatabaseInitializer.EnsureDatabaseAsync();
+            await PrepareEditingAsync();
             await LoadFoodsAsync(FoodFilterEntry?.Text);
             await LoadRecipesAsync();
             DescriptionEntry?.Focus();
@@ -170,7 +239,9 @@ namespace DietSentry
 
         private async Task LoadRecipesAsync()
         {
-            var recipes = await _databaseService.GetRecipeItemsAsync();
+            var recipes = _editingFoodId.HasValue
+                ? await _databaseService.GetCopiedRecipeItemsAsync(_editingFoodId.Value)
+                : await _databaseService.GetRecipeItemsAsync();
             RecipeItems.Clear();
             foreach (var recipe in recipes)
             {
@@ -242,7 +313,11 @@ namespace DietSentry
                 return;
             }
 
-            var inserted = await _databaseService.InsertRecipeItemFromFoodAsync(SelectedFood, amount);
+            var inserted = await _databaseService.InsertRecipeItemFromFoodAsync(
+                SelectedFood,
+                amount,
+                _editingFoodId ?? 0,
+                _editingFoodId.HasValue ? 1 : 0);
             if (!inserted)
             {
                 await DisplayAlertAsync("Error", "Unable to add item to recipe.", "OK");
@@ -395,6 +470,33 @@ namespace DietSentry
             ShowEditNotesPanel = false;
         }
 
+        private async Task PrepareEditingAsync()
+        {
+            if (!_editingFoodId.HasValue || _recipesPrepared)
+            {
+                return;
+            }
+
+            var food = await _databaseService.GetFoodByIdAsync(_editingFoodId.Value);
+            if (food == null)
+            {
+                await DisplayAlertAsync("Not found", "The selected recipe could not be loaded.", "OK");
+                await Shell.Current.GoToAsync("//foodSearch");
+                return;
+            }
+
+            DescriptionEntry.Text = FoodDescriptionFormatter.GetDisplayName(food.FoodDescription);
+            _recipeNotes = food.Notes ?? string.Empty;
+
+            var copied = await _databaseService.CopyRecipesForFoodAsync(_editingFoodId.Value);
+            if (!copied)
+            {
+                await DisplayAlertAsync("Error", "Unable to prepare recipe items for editing.", "OK");
+            }
+
+            _recipesPrepared = true;
+        }
+
         private async void OnConfirmClicked(object? sender, EventArgs e)
         {
             var description = DescriptionEntry.Text?.Trim() ?? string.Empty;
@@ -443,6 +545,7 @@ namespace DietSentry
 
             var recipeFood = new Food
             {
+                FoodId = _editingFoodId ?? 0,
                 FoodDescription = recipeDescription,
                 Energy = totalEnergy * scale,
                 Protein = totalProtein * scale,
@@ -470,18 +573,37 @@ namespace DietSentry
                 Notes = _recipeNotes
             };
 
-            var insertedId = await _databaseService.InsertFoodReturningIdAsync(recipeFood);
-            if (insertedId == null)
+            if (_editingFoodId.HasValue)
             {
-                await DisplayAlertAsync("Error", "Unable to save recipe to Foods table.", "OK");
-                return;
-            }
+                var updatedFood = await _databaseService.UpdateFoodAsync(recipeFood);
+                if (!updatedFood)
+                {
+                    await DisplayAlertAsync("Error", "Unable to update recipe food.", "OK");
+                    return;
+                }
 
-            var updated = await _databaseService.UpdateRecipeFoodIdForTemporaryRecordsAsync(insertedId.Value);
-            if (!updated)
+                var replaced = await _databaseService.ReplaceOriginalRecipesWithCopiesAsync(_editingFoodId.Value);
+                if (!replaced)
+                {
+                    await DisplayAlertAsync("Error", "Unable to update recipe items.", "OK");
+                    return;
+                }
+            }
+            else
             {
-                await DisplayAlertAsync("Error", "Recipe items not linked to new food.", "OK");
-                await _databaseService.DeleteRecipesWithFoodIdZeroAsync();
+                var insertedId = await _databaseService.InsertFoodReturningIdAsync(recipeFood);
+                if (insertedId == null)
+                {
+                    await DisplayAlertAsync("Error", "Unable to save recipe to Foods table.", "OK");
+                    return;
+                }
+
+                var updated = await _databaseService.UpdateRecipeFoodIdForTemporaryRecordsAsync(insertedId.Value);
+                if (!updated)
+                {
+                    await DisplayAlertAsync("Error", "Recipe items not linked to new food.", "OK");
+                    await _databaseService.DeleteRecipesWithFoodIdZeroAsync();
+                }
             }
 
             await LoadRecipesAsync();
@@ -492,7 +614,14 @@ namespace DietSentry
 
         private async void OnBackClicked(object? sender, EventArgs e)
         {
-            await _databaseService.DeleteRecipesWithFoodIdZeroAsync();
+            if (_editingFoodId.HasValue)
+            {
+                await _databaseService.DeleteCopiedRecipesAsync(_editingFoodId.Value);
+            }
+            else
+            {
+                await _databaseService.DeleteRecipesWithFoodIdZeroAsync();
+            }
             await Shell.Current.GoToAsync("//foodSearch");
         }
 
@@ -519,6 +648,11 @@ namespace DietSentry
         private static string SanitizeRecipeDescription(string description)
         {
             return FoodDescriptionFormatter.GetDisplayName(description).Trim();
+        }
+
+        private void UpdateScreenTitle()
+        {
+            ScreenTitle = _editingFoodId.HasValue ? "Editing Recipe" : "Add Recipe";
         }
     }
 }

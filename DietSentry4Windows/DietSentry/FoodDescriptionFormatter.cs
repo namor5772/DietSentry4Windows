@@ -15,6 +15,16 @@ namespace DietSentry
             return MlSuffixRegex.IsMatch(description) ? "mL" : "g";
         }
 
+        public static bool IsLiquidDescription(string description)
+        {
+            return MlSuffixRegex.IsMatch(description);
+        }
+
+        public static bool IsRecipeDescription(string description)
+        {
+            return RecipeMarkerRegex.IsMatch(description);
+        }
+
         public static string GetDisplayName(string description)
         {
             var cleaned = TrailingMarkersRegex.Replace(description, "");

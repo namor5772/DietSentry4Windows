@@ -1,16 +1,129 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 
 namespace DietSentry
 {
-    public partial class AddLiquidFoodPage : ContentPage
+    [QueryProperty(nameof(EditFoodId), "editFoodId")]
+    public partial class AddLiquidFoodPage : ContentPage, IQueryAttributable
     {
         private readonly FoodDatabaseService _databaseService = new();
+        private int? _editFoodId;
+        private bool _loadedEditData;
+        private string _screenTitle = "Add Liquid Food";
+
+        public string ScreenTitle
+        {
+            get => _screenTitle;
+            private set
+            {
+                if (_screenTitle == value)
+                {
+                    return;
+                }
+
+                _screenTitle = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string? EditFoodId
+        {
+            get => _editFoodId?.ToString(CultureInfo.InvariantCulture);
+            set
+            {
+                var previousId = _editFoodId;
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _editFoodId = null;
+                }
+                else if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
+                {
+                    _editFoodId = id;
+                }
+                else
+                {
+                    _editFoodId = null;
+                }
+
+                if (previousId != _editFoodId)
+                {
+                    _loadedEditData = false;
+                }
+
+                UpdateScreenTitle();
+            }
+        }
 
         public AddLiquidFoodPage()
         {
             InitializeComponent();
+            BindingContext = this;
+            UpdateScreenTitle();
+        }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue("editFoodId", out var value))
+            {
+                EditFoodId = value?.ToString();
+            }
+            else
+            {
+                EditFoodId = null;
+            }
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            UpdateScreenTitle();
+            if (!_editFoodId.HasValue && _loadedEditData)
+            {
+                ClearForm();
+                _loadedEditData = false;
+            }
+            if (!_editFoodId.HasValue || _loadedEditData)
+            {
+                return;
+            }
+
+            await DatabaseInitializer.EnsureDatabaseAsync();
+            var food = await _databaseService.GetFoodByIdAsync(_editFoodId.Value);
+            if (food == null)
+            {
+                await DisplayAlertAsync("Not found", "The selected food could not be loaded.", "OK");
+                await Shell.Current.GoToAsync("//foodSearch");
+                return;
+            }
+
+            DescriptionEntry.Text = FoodDescriptionFormatter.GetDisplayName(food.FoodDescription);
+            EnergyEntry.Text = FormatNumber(food.Energy);
+            ProteinEntry.Text = FormatNumber(food.Protein);
+            FatTotalEntry.Text = FormatNumber(food.FatTotal);
+            SaturatedFatEntry.Text = FormatNumber(food.SaturatedFat);
+            TransFatEntry.Text = FormatNumber(food.TransFat);
+            PolyunsaturatedFatEntry.Text = FormatNumber(food.PolyunsaturatedFat);
+            MonounsaturatedFatEntry.Text = FormatNumber(food.MonounsaturatedFat);
+            CarbohydrateEntry.Text = FormatNumber(food.Carbohydrate);
+            SugarsEntry.Text = FormatNumber(food.Sugars);
+            DietaryFibreEntry.Text = FormatNumber(food.DietaryFibre);
+            SodiumEntry.Text = FormatNumber(food.Sodium);
+            CalciumEntry.Text = FormatNumber(food.CalciumCa);
+            PotassiumEntry.Text = FormatNumber(food.PotassiumK);
+            ThiaminB1Entry.Text = FormatNumber(food.ThiaminB1);
+            RiboflavinB2Entry.Text = FormatNumber(food.RiboflavinB2);
+            NiacinB3Entry.Text = FormatNumber(food.NiacinB3);
+            FolateEntry.Text = FormatNumber(food.Folate);
+            IronEntry.Text = FormatNumber(food.IronFe);
+            MagnesiumEntry.Text = FormatNumber(food.MagnesiumMg);
+            VitaminCEntry.Text = FormatNumber(food.VitaminC);
+            CaffeineEntry.Text = FormatNumber(food.Caffeine);
+            CholesterolEntry.Text = FormatNumber(food.Cholesterol);
+            AlcoholEntry.Text = FormatNumber(food.Alcohol);
+            NotesEditor.Text = food.Notes;
+            _loadedEditData = true;
         }
 
         private async void OnConfirmClicked(object? sender, EventArgs e)
@@ -72,6 +185,7 @@ namespace DietSentry
             var processedDescription = EnsureLiquidMarker(description);
             var food = new Food
             {
+                FoodId = _editFoodId ?? 0,
                 FoodDescription = processedDescription,
                 Energy = energy.Value,
                 Protein = protein.Value,
@@ -100,8 +214,10 @@ namespace DietSentry
             };
 
             await DatabaseInitializer.EnsureDatabaseAsync();
-            var inserted = await _databaseService.InsertFoodAsync(food);
-            if (!inserted)
+            var saved = _editFoodId.HasValue
+                ? await _databaseService.UpdateFoodAsync(food)
+                : await _databaseService.InsertFoodAsync(food);
+            if (!saved)
             {
                 await DisplayAlertAsync("Error", "Unable to save the food.", "OK");
                 return;
@@ -156,6 +272,45 @@ namespace DietSentry
         private async void OnBackClicked(object? sender, EventArgs e)
         {
             await Shell.Current.GoToAsync("//foodSearch");
+        }
+
+        private void UpdateScreenTitle()
+        {
+            ScreenTitle = _editFoodId.HasValue ? "Editing Liquid Food" : "Add Liquid Food";
+        }
+
+        private static string FormatNumber(double value)
+        {
+            return value.ToString("0.##", CultureInfo.InvariantCulture);
+        }
+
+        private void ClearForm()
+        {
+            DescriptionEntry.Text = string.Empty;
+            EnergyEntry.Text = string.Empty;
+            ProteinEntry.Text = string.Empty;
+            FatTotalEntry.Text = string.Empty;
+            SaturatedFatEntry.Text = string.Empty;
+            TransFatEntry.Text = string.Empty;
+            PolyunsaturatedFatEntry.Text = string.Empty;
+            MonounsaturatedFatEntry.Text = string.Empty;
+            CarbohydrateEntry.Text = string.Empty;
+            SugarsEntry.Text = string.Empty;
+            DietaryFibreEntry.Text = string.Empty;
+            SodiumEntry.Text = string.Empty;
+            CalciumEntry.Text = string.Empty;
+            PotassiumEntry.Text = string.Empty;
+            ThiaminB1Entry.Text = string.Empty;
+            RiboflavinB2Entry.Text = string.Empty;
+            NiacinB3Entry.Text = string.Empty;
+            FolateEntry.Text = string.Empty;
+            IronEntry.Text = string.Empty;
+            MagnesiumEntry.Text = string.Empty;
+            VitaminCEntry.Text = string.Empty;
+            CaffeineEntry.Text = string.Empty;
+            CholesterolEntry.Text = string.Empty;
+            AlcoholEntry.Text = string.Empty;
+            NotesEditor.Text = string.Empty;
         }
     }
 }

@@ -120,6 +120,71 @@ namespace DietSentry
             });
         }
 
+        public Task<bool> UpdateFoodAsync(Food food)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText =
+                    "UPDATE Foods SET " +
+                    "FoodDescription = @FoodDescription, " +
+                    "Energy = @Energy, " +
+                    "Protein = @Protein, " +
+                    "FatTotal = @FatTotal, " +
+                    "SaturatedFat = @SaturatedFat, " +
+                    "TransFat = @TransFat, " +
+                    "PolyunsaturatedFat = @PolyunsaturatedFat, " +
+                    "MonounsaturatedFat = @MonounsaturatedFat, " +
+                    "Carbohydrate = @Carbohydrate, " +
+                    "Sugars = @Sugars, " +
+                    "DietaryFibre = @DietaryFibre, " +
+                    "SodiumNa = @SodiumNa, " +
+                    "CalciumCa = @CalciumCa, " +
+                    "PotassiumK = @PotassiumK, " +
+                    "ThiaminB1 = @ThiaminB1, " +
+                    "RiboflavinB2 = @RiboflavinB2, " +
+                    "NiacinB3 = @NiacinB3, " +
+                    "Folate = @Folate, " +
+                    "IronFe = @IronFe, " +
+                    "MagnesiumMg = @MagnesiumMg, " +
+                    "VitaminC = @VitaminC, " +
+                    "Caffeine = @Caffeine, " +
+                    "Cholesterol = @Cholesterol, " +
+                    "Alcohol = @Alcohol, " +
+                    "notes = @Notes " +
+                    "WHERE FoodId = @FoodId";
+                command.Parameters.AddWithValue("@FoodId", food.FoodId);
+                command.Parameters.AddWithValue("@FoodDescription", food.FoodDescription);
+                command.Parameters.AddWithValue("@Energy", RoundToTwoDecimals(food.Energy));
+                command.Parameters.AddWithValue("@Protein", RoundToTwoDecimals(food.Protein));
+                command.Parameters.AddWithValue("@FatTotal", RoundToTwoDecimals(food.FatTotal));
+                command.Parameters.AddWithValue("@SaturatedFat", RoundToTwoDecimals(food.SaturatedFat));
+                command.Parameters.AddWithValue("@TransFat", RoundToTwoDecimals(food.TransFat));
+                command.Parameters.AddWithValue("@PolyunsaturatedFat", RoundToTwoDecimals(food.PolyunsaturatedFat));
+                command.Parameters.AddWithValue("@MonounsaturatedFat", RoundToTwoDecimals(food.MonounsaturatedFat));
+                command.Parameters.AddWithValue("@Carbohydrate", RoundToTwoDecimals(food.Carbohydrate));
+                command.Parameters.AddWithValue("@Sugars", RoundToTwoDecimals(food.Sugars));
+                command.Parameters.AddWithValue("@DietaryFibre", RoundToTwoDecimals(food.DietaryFibre));
+                command.Parameters.AddWithValue("@SodiumNa", RoundToTwoDecimals(food.Sodium));
+                command.Parameters.AddWithValue("@CalciumCa", RoundToTwoDecimals(food.CalciumCa));
+                command.Parameters.AddWithValue("@PotassiumK", RoundToTwoDecimals(food.PotassiumK));
+                command.Parameters.AddWithValue("@ThiaminB1", RoundToTwoDecimals(food.ThiaminB1));
+                command.Parameters.AddWithValue("@RiboflavinB2", RoundToTwoDecimals(food.RiboflavinB2));
+                command.Parameters.AddWithValue("@NiacinB3", RoundToTwoDecimals(food.NiacinB3));
+                command.Parameters.AddWithValue("@Folate", RoundToTwoDecimals(food.Folate));
+                command.Parameters.AddWithValue("@IronFe", RoundToTwoDecimals(food.IronFe));
+                command.Parameters.AddWithValue("@MagnesiumMg", RoundToTwoDecimals(food.MagnesiumMg));
+                command.Parameters.AddWithValue("@VitaminC", RoundToTwoDecimals(food.VitaminC));
+                command.Parameters.AddWithValue("@Caffeine", RoundToTwoDecimals(food.Caffeine));
+                command.Parameters.AddWithValue("@Cholesterol", RoundToTwoDecimals(food.Cholesterol));
+                command.Parameters.AddWithValue("@Alcohol", RoundToTwoDecimals(food.Alcohol));
+                command.Parameters.AddWithValue("@Notes", food.Notes);
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
         public Task<int?> InsertFoodReturningIdAsync(Food food)
         {
             return Task.Run<int?>(() =>
@@ -173,6 +238,20 @@ namespace DietSentry
                 idCommand.CommandText = "SELECT last_insert_rowid();";
                 var result = idCommand.ExecuteScalar();
                 return result == null ? null : Convert.ToInt32(result, CultureInfo.InvariantCulture);
+            });
+        }
+
+        public Task<Food?> GetFoodByIdAsync(int foodId)
+        {
+            return Task.Run<Food?>(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "SELECT * FROM Foods WHERE FoodId = @FoodId";
+                command.Parameters.AddWithValue("@FoodId", foodId);
+                var foods = ReadFoods(command);
+                return foods.Count > 0 ? foods[0] : null;
             });
         }
 
@@ -239,6 +318,20 @@ namespace DietSentry
                 connection.Open();
                 using var command = connection.CreateCommand();
                 command.CommandText = "SELECT * FROM Recipe WHERE FoodId = @FoodId ORDER BY RecipeId DESC";
+                command.Parameters.AddWithValue("@FoodId", foodId);
+                return ReadRecipeItems(command);
+            });
+        }
+
+        public Task<IReadOnlyList<RecipeItem>> GetCopiedRecipeItemsAsync(int foodId)
+        {
+            return Task.Run<IReadOnlyList<RecipeItem>>(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText =
+                    "SELECT * FROM Recipe WHERE CopyFg = 1 AND FoodId = @FoodId ORDER BY RecipeId DESC";
                 command.Parameters.AddWithValue("@FoodId", foodId);
                 return ReadRecipeItems(command);
             });
@@ -338,6 +431,19 @@ namespace DietSentry
             });
         }
 
+        public Task<bool> DeleteCopiedRecipesAsync(int foodId)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "DELETE FROM Recipe WHERE FoodId = @FoodId AND CopyFg = 1";
+                command.Parameters.AddWithValue("@FoodId", foodId);
+                return command.ExecuteNonQuery() >= 0;
+            });
+        }
+
         public Task<bool> UpdateRecipeFoodIdForTemporaryRecordsAsync(int newFoodId)
         {
             return Task.Run(() =>
@@ -348,6 +454,117 @@ namespace DietSentry
                 command.CommandText = "UPDATE Recipe SET FoodId = @FoodId WHERE FoodId = 0";
                 command.Parameters.AddWithValue("@FoodId", newFoodId);
                 return command.ExecuteNonQuery() > 0;
+            });
+        }
+
+        public Task<bool> CopyRecipesForFoodAsync(int foodId)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var transaction = connection.BeginTransaction();
+                try
+                {
+                    using var deleteCommand = connection.CreateCommand();
+                    deleteCommand.Transaction = transaction;
+                    deleteCommand.CommandText = "DELETE FROM Recipe WHERE FoodId = @FoodId AND CopyFg = 1";
+                    deleteCommand.Parameters.AddWithValue("@FoodId", foodId);
+                    deleteCommand.ExecuteNonQuery();
+
+                    using var selectCommand = connection.CreateCommand();
+                    selectCommand.Transaction = transaction;
+                    selectCommand.CommandText =
+                        "SELECT * FROM Recipe WHERE FoodId = @FoodId AND CopyFg != 1";
+                    selectCommand.Parameters.AddWithValue("@FoodId", foodId);
+                    var recipes = ReadRecipeItems(selectCommand);
+
+                    foreach (var recipe in recipes)
+                    {
+                        using var insertCommand = connection.CreateCommand();
+                        insertCommand.Transaction = transaction;
+                        insertCommand.CommandText =
+                            "INSERT INTO Recipe (" +
+                            "FoodId, CopyFg, Amount, FoodDescription, Energy, Protein, FatTotal, " +
+                            "SaturatedFat, TransFat, PolyunsaturatedFat, MonounsaturatedFat, Carbohydrate, " +
+                            "Sugars, DietaryFibre, SodiumNa, CalciumCa, PotassiumK, ThiaminB1, RiboflavinB2, " +
+                            "NiacinB3, Folate, IronFe, MagnesiumMg, VitaminC, Caffeine, Cholesterol, Alcohol" +
+                            ") VALUES (" +
+                            "@FoodId, 1, @Amount, @FoodDescription, @Energy, @Protein, @FatTotal, " +
+                            "@SaturatedFat, @TransFat, @PolyunsaturatedFat, @MonounsaturatedFat, @Carbohydrate, " +
+                            "@Sugars, @DietaryFibre, @SodiumNa, @CalciumCa, @PotassiumK, @ThiaminB1, @RiboflavinB2, " +
+                            "@NiacinB3, @Folate, @IronFe, @MagnesiumMg, @VitaminC, @Caffeine, @Cholesterol, @Alcohol" +
+                            ")";
+                        insertCommand.Parameters.AddWithValue("@FoodId", recipe.FoodId);
+                        insertCommand.Parameters.AddWithValue("@Amount", recipe.Amount);
+                        insertCommand.Parameters.AddWithValue("@FoodDescription", recipe.FoodDescription);
+                        insertCommand.Parameters.AddWithValue("@Energy", RoundToTwoDecimals(recipe.Energy));
+                        insertCommand.Parameters.AddWithValue("@Protein", RoundToTwoDecimals(recipe.Protein));
+                        insertCommand.Parameters.AddWithValue("@FatTotal", RoundToTwoDecimals(recipe.FatTotal));
+                        insertCommand.Parameters.AddWithValue("@SaturatedFat", RoundToTwoDecimals(recipe.SaturatedFat));
+                        insertCommand.Parameters.AddWithValue("@TransFat", RoundToTwoDecimals(recipe.TransFat));
+                        insertCommand.Parameters.AddWithValue("@PolyunsaturatedFat", RoundToTwoDecimals(recipe.PolyunsaturatedFat));
+                        insertCommand.Parameters.AddWithValue("@MonounsaturatedFat", RoundToTwoDecimals(recipe.MonounsaturatedFat));
+                        insertCommand.Parameters.AddWithValue("@Carbohydrate", RoundToTwoDecimals(recipe.Carbohydrate));
+                        insertCommand.Parameters.AddWithValue("@Sugars", RoundToTwoDecimals(recipe.Sugars));
+                        insertCommand.Parameters.AddWithValue("@DietaryFibre", RoundToTwoDecimals(recipe.DietaryFibre));
+                        insertCommand.Parameters.AddWithValue("@SodiumNa", RoundToTwoDecimals(recipe.Sodium));
+                        insertCommand.Parameters.AddWithValue("@CalciumCa", RoundToTwoDecimals(recipe.CalciumCa));
+                        insertCommand.Parameters.AddWithValue("@PotassiumK", RoundToTwoDecimals(recipe.PotassiumK));
+                        insertCommand.Parameters.AddWithValue("@ThiaminB1", RoundToTwoDecimals(recipe.ThiaminB1));
+                        insertCommand.Parameters.AddWithValue("@RiboflavinB2", RoundToTwoDecimals(recipe.RiboflavinB2));
+                        insertCommand.Parameters.AddWithValue("@NiacinB3", RoundToTwoDecimals(recipe.NiacinB3));
+                        insertCommand.Parameters.AddWithValue("@Folate", RoundToTwoDecimals(recipe.Folate));
+                        insertCommand.Parameters.AddWithValue("@IronFe", RoundToTwoDecimals(recipe.IronFe));
+                        insertCommand.Parameters.AddWithValue("@MagnesiumMg", RoundToTwoDecimals(recipe.MagnesiumMg));
+                        insertCommand.Parameters.AddWithValue("@VitaminC", RoundToTwoDecimals(recipe.VitaminC));
+                        insertCommand.Parameters.AddWithValue("@Caffeine", RoundToTwoDecimals(recipe.Caffeine));
+                        insertCommand.Parameters.AddWithValue("@Cholesterol", RoundToTwoDecimals(recipe.Cholesterol));
+                        insertCommand.Parameters.AddWithValue("@Alcohol", RoundToTwoDecimals(recipe.Alcohol));
+                        insertCommand.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            });
+        }
+
+        public Task<bool> ReplaceOriginalRecipesWithCopiesAsync(int foodId)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var transaction = connection.BeginTransaction();
+                try
+                {
+                    using var deleteCommand = connection.CreateCommand();
+                    deleteCommand.Transaction = transaction;
+                    deleteCommand.CommandText = "DELETE FROM Recipe WHERE FoodId = @FoodId AND CopyFg = 0";
+                    deleteCommand.Parameters.AddWithValue("@FoodId", foodId);
+                    deleteCommand.ExecuteNonQuery();
+
+                    using var updateCommand = connection.CreateCommand();
+                    updateCommand.Transaction = transaction;
+                    updateCommand.CommandText =
+                        "UPDATE Recipe SET CopyFg = 0 WHERE FoodId = @FoodId AND CopyFg = 1";
+                    updateCommand.Parameters.AddWithValue("@FoodId", foodId);
+                    var updated = updateCommand.ExecuteNonQuery() >= 0;
+
+                    transaction.Commit();
+                    return updated;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
             });
         }
 

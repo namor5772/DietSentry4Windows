@@ -135,7 +135,25 @@ namespace DietSentry
 
         private async void OnEditFoodClicked(object? sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("editFood");
+            if (SelectedFood == null)
+            {
+                await DisplayAlertAsync("Select a food", "Choose a food to edit.", "OK");
+                return;
+            }
+
+            if (FoodDescriptionFormatter.IsRecipeDescription(SelectedFood.FoodDescription))
+            {
+                await Shell.Current.GoToAsync($"addRecipe?editRecipeFoodId={SelectedFood.FoodId}");
+                return;
+            }
+
+            if (FoodDescriptionFormatter.IsLiquidDescription(SelectedFood.FoodDescription))
+            {
+                await Shell.Current.GoToAsync($"insertLiquidFood?editFoodId={SelectedFood.FoodId}");
+                return;
+            }
+
+            await Shell.Current.GoToAsync($"insertSolidFood?editFoodId={SelectedFood.FoodId}");
         }
 
         private async void OnInsertFoodClicked(object? sender, EventArgs e)

@@ -48,7 +48,7 @@
             ColumnSpacing="12">
             <Label
                 Grid.Column="0"
-                Text="Add Recipe"
+                Text="{Binding ScreenTitle}"
                 FontAttributes="Bold"
                 FontSize="24"
                 VerticalOptions="Start" />

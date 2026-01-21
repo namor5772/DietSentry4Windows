@@ -28,7 +28,7 @@
             ColumnSpacing="12">
             <Label
                 Grid.Column="0"
-                Text="Add Liquid Food"
+                Text="{Binding ScreenTitle}"
                 FontAttributes="Bold"
                 FontSize="24"
                 VerticalOptions="Start" />
