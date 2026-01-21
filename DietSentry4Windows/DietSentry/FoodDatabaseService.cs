@@ -568,6 +568,81 @@ namespace DietSentry
             });
         }
 
+        public Task<bool> DuplicateRecipesToFoodIdZeroAsync(int foodId)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var transaction = connection.BeginTransaction();
+                try
+                {
+                    using var deleteCommand = connection.CreateCommand();
+                    deleteCommand.Transaction = transaction;
+                    deleteCommand.CommandText = "DELETE FROM Recipe WHERE FoodId = 0 AND CopyFg = 0";
+                    deleteCommand.ExecuteNonQuery();
+
+                    using var selectCommand = connection.CreateCommand();
+                    selectCommand.Transaction = transaction;
+                    selectCommand.CommandText = "SELECT * FROM Recipe WHERE FoodId = @FoodId";
+                    selectCommand.Parameters.AddWithValue("@FoodId", foodId);
+                    var recipes = ReadRecipeItems(selectCommand);
+
+                    foreach (var recipe in recipes)
+                    {
+                        using var insertCommand = connection.CreateCommand();
+                        insertCommand.Transaction = transaction;
+                        insertCommand.CommandText =
+                            "INSERT INTO Recipe (" +
+                            "FoodId, CopyFg, Amount, FoodDescription, Energy, Protein, FatTotal, " +
+                            "SaturatedFat, TransFat, PolyunsaturatedFat, MonounsaturatedFat, Carbohydrate, " +
+                            "Sugars, DietaryFibre, SodiumNa, CalciumCa, PotassiumK, ThiaminB1, RiboflavinB2, " +
+                            "NiacinB3, Folate, IronFe, MagnesiumMg, VitaminC, Caffeine, Cholesterol, Alcohol" +
+                            ") VALUES (" +
+                            "0, 0, @Amount, @FoodDescription, @Energy, @Protein, @FatTotal, " +
+                            "@SaturatedFat, @TransFat, @PolyunsaturatedFat, @MonounsaturatedFat, @Carbohydrate, " +
+                            "@Sugars, @DietaryFibre, @SodiumNa, @CalciumCa, @PotassiumK, @ThiaminB1, @RiboflavinB2, " +
+                            "@NiacinB3, @Folate, @IronFe, @MagnesiumMg, @VitaminC, @Caffeine, @Cholesterol, @Alcohol" +
+                            ")";
+                        insertCommand.Parameters.AddWithValue("@Amount", recipe.Amount);
+                        insertCommand.Parameters.AddWithValue("@FoodDescription", recipe.FoodDescription);
+                        insertCommand.Parameters.AddWithValue("@Energy", RoundToTwoDecimals(recipe.Energy));
+                        insertCommand.Parameters.AddWithValue("@Protein", RoundToTwoDecimals(recipe.Protein));
+                        insertCommand.Parameters.AddWithValue("@FatTotal", RoundToTwoDecimals(recipe.FatTotal));
+                        insertCommand.Parameters.AddWithValue("@SaturatedFat", RoundToTwoDecimals(recipe.SaturatedFat));
+                        insertCommand.Parameters.AddWithValue("@TransFat", RoundToTwoDecimals(recipe.TransFat));
+                        insertCommand.Parameters.AddWithValue("@PolyunsaturatedFat", RoundToTwoDecimals(recipe.PolyunsaturatedFat));
+                        insertCommand.Parameters.AddWithValue("@MonounsaturatedFat", RoundToTwoDecimals(recipe.MonounsaturatedFat));
+                        insertCommand.Parameters.AddWithValue("@Carbohydrate", RoundToTwoDecimals(recipe.Carbohydrate));
+                        insertCommand.Parameters.AddWithValue("@Sugars", RoundToTwoDecimals(recipe.Sugars));
+                        insertCommand.Parameters.AddWithValue("@DietaryFibre", RoundToTwoDecimals(recipe.DietaryFibre));
+                        insertCommand.Parameters.AddWithValue("@SodiumNa", RoundToTwoDecimals(recipe.Sodium));
+                        insertCommand.Parameters.AddWithValue("@CalciumCa", RoundToTwoDecimals(recipe.CalciumCa));
+                        insertCommand.Parameters.AddWithValue("@PotassiumK", RoundToTwoDecimals(recipe.PotassiumK));
+                        insertCommand.Parameters.AddWithValue("@ThiaminB1", RoundToTwoDecimals(recipe.ThiaminB1));
+                        insertCommand.Parameters.AddWithValue("@RiboflavinB2", RoundToTwoDecimals(recipe.RiboflavinB2));
+                        insertCommand.Parameters.AddWithValue("@NiacinB3", RoundToTwoDecimals(recipe.NiacinB3));
+                        insertCommand.Parameters.AddWithValue("@Folate", RoundToTwoDecimals(recipe.Folate));
+                        insertCommand.Parameters.AddWithValue("@IronFe", RoundToTwoDecimals(recipe.IronFe));
+                        insertCommand.Parameters.AddWithValue("@MagnesiumMg", RoundToTwoDecimals(recipe.MagnesiumMg));
+                        insertCommand.Parameters.AddWithValue("@VitaminC", RoundToTwoDecimals(recipe.VitaminC));
+                        insertCommand.Parameters.AddWithValue("@Caffeine", RoundToTwoDecimals(recipe.Caffeine));
+                        insertCommand.Parameters.AddWithValue("@Cholesterol", RoundToTwoDecimals(recipe.Cholesterol));
+                        insertCommand.Parameters.AddWithValue("@Alcohol", RoundToTwoDecimals(recipe.Alcohol));
+                        insertCommand.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            });
+        }
+
         public Task<bool> LogEatenFoodAsync(Food food, double amount, DateTime dateTime)
         {
             return Task.Run(() =>

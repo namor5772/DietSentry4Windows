@@ -188,7 +188,25 @@ namespace DietSentry
 
         private async void OnCopyFoodClicked(object? sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("copyFood");
+            if (SelectedFood == null)
+            {
+                await DisplayAlertAsync("Select a food", "Choose a food to copy.", "OK");
+                return;
+            }
+
+            if (FoodDescriptionFormatter.IsRecipeDescription(SelectedFood.FoodDescription))
+            {
+                await Shell.Current.GoToAsync($"addRecipe?copyRecipeFoodId={SelectedFood.FoodId}");
+                return;
+            }
+
+            if (FoodDescriptionFormatter.IsLiquidDescription(SelectedFood.FoodDescription))
+            {
+                await Shell.Current.GoToAsync($"insertLiquidFood?copyFoodId={SelectedFood.FoodId}");
+                return;
+            }
+
+            await Shell.Current.GoToAsync($"insertSolidFood?copyFoodId={SelectedFood.FoodId}");
         }
 
         private async void OnAddRecipeClicked(object? sender, EventArgs e)

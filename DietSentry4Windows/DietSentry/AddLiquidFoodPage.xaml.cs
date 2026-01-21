@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 namespace DietSentry
 {
     [QueryProperty(nameof(EditFoodId), "editFoodId")]
+    [QueryProperty(nameof(CopyFoodId), "copyFoodId")]
     public partial class AddLiquidFoodPage : ContentPage, IQueryAttributable
     {
         private readonly FoodDatabaseService _databaseService = new();
         private int? _editFoodId;
-        private bool _loadedEditData;
+        private int? _copyFoodId;
+        private bool _loadedFoodData;
         private string _screenTitle = "Add Liquid Food";
 
         public string ScreenTitle
@@ -49,7 +51,45 @@ namespace DietSentry
 
                 if (previousId != _editFoodId)
                 {
-                    _loadedEditData = false;
+                    _loadedFoodData = false;
+                }
+
+                if (_editFoodId.HasValue)
+                {
+                    _copyFoodId = null;
+                }
+
+                UpdateScreenTitle();
+            }
+        }
+
+        public string? CopyFoodId
+        {
+            get => _copyFoodId?.ToString(CultureInfo.InvariantCulture);
+            set
+            {
+                var previousId = _copyFoodId;
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _copyFoodId = null;
+                }
+                else if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
+                {
+                    _copyFoodId = id;
+                }
+                else
+                {
+                    _copyFoodId = null;
+                }
+
+                if (previousId != _copyFoodId)
+                {
+                    _loadedFoodData = false;
+                }
+
+                if (_copyFoodId.HasValue)
+                {
+                    _editFoodId = null;
                 }
 
                 UpdateScreenTitle();
@@ -73,24 +113,34 @@ namespace DietSentry
             {
                 EditFoodId = null;
             }
+
+            if (query.TryGetValue("copyFoodId", out var copyValue))
+            {
+                CopyFoodId = copyValue?.ToString();
+            }
+            else
+            {
+                CopyFoodId = null;
+            }
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             UpdateScreenTitle();
-            if (!_editFoodId.HasValue && _loadedEditData)
+            if (!_editFoodId.HasValue && !_copyFoodId.HasValue && _loadedFoodData)
             {
                 ClearForm();
-                _loadedEditData = false;
+                _loadedFoodData = false;
             }
-            if (!_editFoodId.HasValue || _loadedEditData)
+            if ((!_editFoodId.HasValue && !_copyFoodId.HasValue) || _loadedFoodData)
             {
                 return;
             }
 
             await DatabaseInitializer.EnsureDatabaseAsync();
-            var food = await _databaseService.GetFoodByIdAsync(_editFoodId.Value);
+            var foodId = _editFoodId ?? _copyFoodId ?? 0;
+            var food = await _databaseService.GetFoodByIdAsync(foodId);
             if (food == null)
             {
                 await DisplayAlertAsync("Not found", "The selected food could not be loaded.", "OK");
@@ -123,7 +173,7 @@ namespace DietSentry
             CholesterolEntry.Text = FormatNumber(food.Cholesterol);
             AlcoholEntry.Text = FormatNumber(food.Alcohol);
             NotesEditor.Text = food.Notes;
-            _loadedEditData = true;
+            _loadedFoodData = true;
         }
 
         private async void OnConfirmClicked(object? sender, EventArgs e)
@@ -276,7 +326,18 @@ namespace DietSentry
 
         private void UpdateScreenTitle()
         {
-            ScreenTitle = _editFoodId.HasValue ? "Editing Liquid Food" : "Add Liquid Food";
+            if (_editFoodId.HasValue)
+            {
+                ScreenTitle = "Editing Liquid Food";
+            }
+            else if (_copyFoodId.HasValue)
+            {
+                ScreenTitle = "Copying Liquid Food";
+            }
+            else
+            {
+                ScreenTitle = "Add Liquid Food";
+            }
         }
 
         private static string FormatNumber(double value)
