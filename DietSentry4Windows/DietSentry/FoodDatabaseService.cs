@@ -72,6 +72,54 @@ namespace DietSentry
             });
         }
 
+        public Task<bool> InsertFoodAsync(Food food)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText =
+                    "INSERT INTO Foods (" +
+                    "FoodDescription, Energy, Protein, FatTotal, SaturatedFat, TransFat, " +
+                    "PolyunsaturatedFat, MonounsaturatedFat, Carbohydrate, Sugars, DietaryFibre, " +
+                    "SodiumNa, CalciumCa, PotassiumK, ThiaminB1, RiboflavinB2, NiacinB3, Folate, " +
+                    "IronFe, MagnesiumMg, VitaminC, Caffeine, Cholesterol, Alcohol, notes" +
+                    ") VALUES (" +
+                    "@FoodDescription, @Energy, @Protein, @FatTotal, @SaturatedFat, @TransFat, " +
+                    "@PolyunsaturatedFat, @MonounsaturatedFat, @Carbohydrate, @Sugars, @DietaryFibre, " +
+                    "@SodiumNa, @CalciumCa, @PotassiumK, @ThiaminB1, @RiboflavinB2, @NiacinB3, @Folate, " +
+                    "@IronFe, @MagnesiumMg, @VitaminC, @Caffeine, @Cholesterol, @Alcohol, @Notes" +
+                    ")";
+                command.Parameters.AddWithValue("@FoodDescription", food.FoodDescription);
+                command.Parameters.AddWithValue("@Energy", RoundToTwoDecimals(food.Energy));
+                command.Parameters.AddWithValue("@Protein", RoundToTwoDecimals(food.Protein));
+                command.Parameters.AddWithValue("@FatTotal", RoundToTwoDecimals(food.FatTotal));
+                command.Parameters.AddWithValue("@SaturatedFat", RoundToTwoDecimals(food.SaturatedFat));
+                command.Parameters.AddWithValue("@TransFat", RoundToTwoDecimals(food.TransFat));
+                command.Parameters.AddWithValue("@PolyunsaturatedFat", RoundToTwoDecimals(food.PolyunsaturatedFat));
+                command.Parameters.AddWithValue("@MonounsaturatedFat", RoundToTwoDecimals(food.MonounsaturatedFat));
+                command.Parameters.AddWithValue("@Carbohydrate", RoundToTwoDecimals(food.Carbohydrate));
+                command.Parameters.AddWithValue("@Sugars", RoundToTwoDecimals(food.Sugars));
+                command.Parameters.AddWithValue("@DietaryFibre", RoundToTwoDecimals(food.DietaryFibre));
+                command.Parameters.AddWithValue("@SodiumNa", RoundToTwoDecimals(food.Sodium));
+                command.Parameters.AddWithValue("@CalciumCa", RoundToTwoDecimals(food.CalciumCa));
+                command.Parameters.AddWithValue("@PotassiumK", RoundToTwoDecimals(food.PotassiumK));
+                command.Parameters.AddWithValue("@ThiaminB1", RoundToTwoDecimals(food.ThiaminB1));
+                command.Parameters.AddWithValue("@RiboflavinB2", RoundToTwoDecimals(food.RiboflavinB2));
+                command.Parameters.AddWithValue("@NiacinB3", RoundToTwoDecimals(food.NiacinB3));
+                command.Parameters.AddWithValue("@Folate", RoundToTwoDecimals(food.Folate));
+                command.Parameters.AddWithValue("@IronFe", RoundToTwoDecimals(food.IronFe));
+                command.Parameters.AddWithValue("@MagnesiumMg", RoundToTwoDecimals(food.MagnesiumMg));
+                command.Parameters.AddWithValue("@VitaminC", RoundToTwoDecimals(food.VitaminC));
+                command.Parameters.AddWithValue("@Caffeine", RoundToTwoDecimals(food.Caffeine));
+                command.Parameters.AddWithValue("@Cholesterol", RoundToTwoDecimals(food.Cholesterol));
+                command.Parameters.AddWithValue("@Alcohol", RoundToTwoDecimals(food.Alcohol));
+                command.Parameters.AddWithValue("@Notes", food.Notes);
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
         public Task<bool> LogEatenFoodAsync(Food food, double amount, DateTime dateTime)
         {
             return Task.Run(() =>

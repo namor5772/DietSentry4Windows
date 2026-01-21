@@ -37,17 +37,18 @@
         RowSpacing="16">
         <Grid
             Grid.Row="0"
-            ColumnDefinitions="*,Auto"
+            ColumnDefinitions="Auto,Auto,*"
             ColumnSpacing="12">
             <Label
+                Grid.Column="0"
                 Text="Weight Table"
                 FontAttributes="Bold"
                 FontSize="24"
                 VerticalOptions="Start" />
             <Button
                 Grid.Column="1"
-                Text="Back to Foods Table"
-                HorizontalOptions="End"
+                Text="Foods Table"
+                HorizontalOptions="Start"
                 Clicked="OnBackClicked"
                 Style="{StaticResource TopRowButtonStyle}" />
         </Grid>

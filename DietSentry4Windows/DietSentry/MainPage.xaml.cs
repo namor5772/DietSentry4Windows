@@ -6,6 +6,7 @@ using Microsoft.Maui.Storage;
 
 namespace DietSentry
 {
+    [QueryProperty(nameof(InsertedFoodDescription), "foodInsertedDescription")]
     public partial class MainPage : ContentPage
     {
         private const string NutritionModeKey = "nutrition_display_mode";
@@ -14,6 +15,7 @@ namespace DietSentry
         private bool _suppressModeEvents;
         private Food? _selectedFood;
         private bool _showLogPanel;
+        private string? _insertedFoodDescription;
 
         public ObservableCollection<Food> Foods { get; } = new();
         public bool ShowNipOnly => _nutritionDisplayMode == NutritionDisplayMode.Nip;
@@ -40,6 +42,21 @@ namespace DietSentry
         public string SelectedFoodDescription => SelectedFood == null
             ? string.Empty
             : SelectedFood.FoodDescription;
+
+        public string? InsertedFoodDescription
+        {
+            get => _insertedFoodDescription;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    _insertedFoodDescription = null;
+                    return;
+                }
+
+                _insertedFoodDescription = Uri.UnescapeDataString(value);
+            }
+        }
         public bool ShowLogPanel
         {
             get => _showLogPanel;
@@ -65,6 +82,12 @@ namespace DietSentry
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+            if (!string.IsNullOrWhiteSpace(_insertedFoodDescription))
+            {
+                FoodFilterEntry.Text = _insertedFoodDescription;
+                _insertedFoodDescription = null;
+            }
+
             await LoadFoodsAsync(FoodFilterEntry?.Text);
         }
 
