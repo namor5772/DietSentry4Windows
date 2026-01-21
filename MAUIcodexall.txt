@@ -1,4 +1,5 @@
-Directory:         cd /mnt/c/Users/roman/ClonedProjects/DietSentry4Windows
+Directory Desktop:         cd /mnt/c/Users/roman/ClonedProjects/DietSentry4Windows
+Directory Laptop:          cd /mnt/c/Users/grobl/ClonedPojects/DietSentry4Windows
 
 ***** SESSION 1
 
