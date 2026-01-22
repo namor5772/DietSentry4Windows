@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DietSentry"
+             x:Class="DietSentry.PalettePage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style
+                x:Key="TopRowButtonStyle"
+                TargetType="Button">
+                <Setter
+                    Property="Margin"
+                    Value="0,0,4,4" />
+                <Setter
+                    Property="WidthRequest"
+                    Value="112" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid
+        Padding="20"
+        RowDefinitions="Auto,*"
+        RowSpacing="16">
+        <Grid
+            Grid.Row="0"
+            ColumnDefinitions="Auto,Auto,*"
+            ColumnSpacing="12">
+            <Label
+                Grid.Column="0"
+                Text="Palette"
+                FontAttributes="Bold"
+                FontSize="24"
+                VerticalOptions="Start" />
+            <Button
+                Grid.Column="1"
+                Text="Foods Table"
+                Clicked="OnBackClicked"
+                Style="{StaticResource TopRowButtonStyle}" />
+        </Grid>
+
+        <CollectionView
+            Grid.Row="1"
+            ItemsSource="{Binding SwatchGroups}"
+            IsGrouped="True"
+            ItemSizingStrategy="MeasureAllItems">
+            <CollectionView.GroupHeaderTemplate>
+                <DataTemplate x:DataType="local:PaletteSwatchGroup">
+                    <Label
+                        Text="{Binding Title}"
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Margin="4,8,0,4" />
+                </DataTemplate>
+            </CollectionView.GroupHeaderTemplate>
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout
+                    Orientation="Vertical"
+                    Span="{OnIdiom Phone=2, Tablet=3, Desktop=4}"
+                    HorizontalItemSpacing="12"
+                    VerticalItemSpacing="12" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="local:PaletteSwatch">
+                    <Frame
+                        BorderColor="{StaticResource Gray200}"
+                        Padding="10"
+                        CornerRadius="12"
+                        HasShadow="False">
+                        <VerticalStackLayout Spacing="6">
+                            <Frame
+                                Padding="0"
+                                CornerRadius="8"
+                                HasShadow="False"
+                                BorderColor="{StaticResource Gray200}"
+                                BackgroundColor="{Binding SwatchColor}">
+                                <Grid
+                                    HeightRequest="56"
+                                    HorizontalOptions="FillAndExpand" />
+                            </Frame>
+                            <Label
+                                Text="{Binding Name}"
+                                FontAttributes="Bold"
+                                LineBreakMode="TailTruncation" />
+                            <Label
+                                Text="{Binding Hex}"
+                                FontSize="12"
+                                TextColor="{StaticResource Gray600}" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>
