@@ -30,12 +30,33 @@ namespace DietSentry
         protected override Window CreateWindow(IActivationState? activationState)
         {
             var window = new Window(new AppShell());
+            window.Destroying += OnWindowDestroying;
 
 #if WINDOWS
             window.HandlerChanged += OnWindowHandlerChanged;
 #endif
 
             return window;
+        }
+
+        private async void OnWindowDestroying(object? sender, EventArgs e)
+        {
+            await CleanupRecipeDraftsAsync();
+        }
+
+        private static async Task CleanupRecipeDraftsAsync()
+        {
+            try
+            {
+                await DatabaseInitializer.EnsureDatabaseAsync();
+                var databaseService = new FoodDatabaseService();
+                await databaseService.DeleteAllCopiedRecipesAsync();
+                await databaseService.DeleteRecipesWithFoodIdZeroAsync();
+            }
+            catch
+            {
+                // Best effort cleanup during shutdown.
+            }
         }
 
 #if WINDOWS

@@ -13,7 +13,7 @@
                 TargetType="Button">
                 <Setter
                     Property="Margin"
-                    Value="0,0,8,8" />
+                    Value="0,0,4,4" />
                 <Setter
                     Property="WidthRequest"
                     Value="79" />
@@ -846,7 +846,7 @@
                     HorizontalTextAlignment="Center" />
                 <HorizontalStackLayout
                     HorizontalOptions="Center"
-                    Spacing="12">
+                    Spacing="0">
                     <Button
                         Text="Edit"
                         Clicked="OnEditSelectedClicked"
@@ -952,7 +952,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="420"
+                WidthRequest="364"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -976,8 +976,8 @@
                     <FlexLayout
                         Direction="Row"
                         Wrap="Wrap"
-                        AlignItems="Start"
-                        JustifyContent="Start">
+                        AlignItems="Center"
+                        JustifyContent="Center">
                         <Button
                             Text="Confirm"
                             Clicked="OnDeleteConfirmClicked"

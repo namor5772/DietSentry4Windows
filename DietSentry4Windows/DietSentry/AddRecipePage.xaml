@@ -23,17 +23,24 @@
                 TargetType="Button">
                 <Setter
                     Property="Margin"
-                    Value="0,0,8,0" />
+                    Value="0,0,4,4" />
                 <Setter
                     Property="WidthRequest"
                     Value="79" />
+            </Style>
+            <Style
+                x:Key="DialogActionButtonStyle"
+                TargetType="Button">
+                <Setter
+                    Property="Margin"
+                    Value="0,0,4,4" />
             </Style>
             <Style
                 x:Key="FooterButtonStyle"
                 TargetType="Button">
                 <Setter
                     Property="Margin"
-                    Value="0,0,8,8" />
+                    Value="0,0,4,4" />
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -193,9 +200,11 @@
                 <Label
                     Text="{Binding SelectedRecipeAmountDisplay}"
                     HorizontalTextAlignment="Center" />
-                <HorizontalStackLayout
-                    HorizontalOptions="Center"
-                    Spacing="12">
+                <FlexLayout
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Center"
+                    JustifyContent="Center">
                     <Button
                         Text="Edit"
                         Clicked="OnEditRecipeClicked"
@@ -204,7 +213,7 @@
                         Text="Delete"
                         Clicked="OnDeleteRecipeClicked"
                         Style="{StaticResource SelectionActionButtonStyle}" />
-                </HorizontalStackLayout>
+                </FlexLayout>
             </VerticalStackLayout>
         </Frame>
 
@@ -213,7 +222,7 @@
             Direction="Row"
             Wrap="Wrap"
             AlignItems="Center"
-            JustifyContent="Start">
+            JustifyContent="Center">
             <Button
                 Text="Set notes"
                 Clicked="OnSetNotesClicked"
@@ -243,7 +252,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="420"
+                WidthRequest="364"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -271,18 +280,20 @@
                             Keyboard="Numeric"
                             WidthRequest="120" />
                     </Grid>
-                    <HorizontalStackLayout
-                        HorizontalOptions="Center"
-                        Spacing="12">
+                    <FlexLayout
+                        Direction="Row"
+                        Wrap="Wrap"
+                        AlignItems="Center"
+                        JustifyContent="Center">
                         <Button
                             Text="Confirm"
                             Clicked="OnAddIngredientConfirmClicked"
-                            Style="{StaticResource SelectionActionButtonStyle}" />
+                            Style="{StaticResource DialogActionButtonStyle}" />
                         <Button
                             Text="Cancel"
                             Clicked="OnAddIngredientCancelClicked"
-                            Style="{StaticResource SelectionActionButtonStyle}" />
-                    </HorizontalStackLayout>
+                            Style="{StaticResource DialogActionButtonStyle}" />
+                    </FlexLayout>
                 </VerticalStackLayout>
             </Frame>
         </Grid>
@@ -302,7 +313,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="420"
+                WidthRequest="364"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -330,18 +341,20 @@
                             Keyboard="Numeric"
                             WidthRequest="120" />
                     </Grid>
-                    <HorizontalStackLayout
-                        HorizontalOptions="Center"
-                        Spacing="12">
+                    <FlexLayout
+                        Direction="Row"
+                        Wrap="Wrap"
+                        AlignItems="Center"
+                        JustifyContent="Center">
                         <Button
                             Text="Confirm"
                             Clicked="OnEditIngredientConfirmClicked"
-                            Style="{StaticResource SelectionActionButtonStyle}" />
+                            Style="{StaticResource DialogActionButtonStyle}" />
                         <Button
                             Text="Cancel"
                             Clicked="OnEditIngredientCancelClicked"
-                            Style="{StaticResource SelectionActionButtonStyle}" />
-                    </HorizontalStackLayout>
+                            Style="{StaticResource DialogActionButtonStyle}" />
+                    </FlexLayout>
                 </VerticalStackLayout>
             </Frame>
         </Grid>
@@ -383,9 +396,11 @@
                         MinimumHeightRequest="160"
                         MaximumHeightRequest="360"
                         VerticalOptions="FillAndExpand" />
-                    <HorizontalStackLayout
-                        HorizontalOptions="Center"
-                        Spacing="12">
+                    <FlexLayout
+                        Direction="Row"
+                        Wrap="Wrap"
+                        AlignItems="Center"
+                        JustifyContent="Center">
                         <Button
                             Text="Confirm"
                             Clicked="OnEditNotesConfirmClicked"
@@ -394,7 +409,7 @@
                             Text="Cancel"
                             Clicked="OnEditNotesCancelClicked"
                             Margin="0,0,4,4" />
-                    </HorizontalStackLayout>
+                    </FlexLayout>
                 </VerticalStackLayout>
             </Frame>
         </Grid>

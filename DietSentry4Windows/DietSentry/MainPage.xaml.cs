@@ -486,7 +486,6 @@ namespace DietSentry
             _convertFood = null;
             FoodFilterEntry.Text = newDescription;
             await LoadFoodsAsync(newDescription);
-            await DisplayAlertAsync("Converted", "Converted food added.", "OK");
         }
 
         private void OnConvertCancelClicked(object? sender, EventArgs e)

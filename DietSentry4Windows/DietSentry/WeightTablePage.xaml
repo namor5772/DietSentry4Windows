@@ -23,7 +23,7 @@
                 TargetType="Button">
                 <Setter
                     Property="Margin"
-                    Value="0,0,8,8" />
+                    Value="0,0,4,4" />
                 <Setter
                     Property="WidthRequest"
                     Value="79" />
@@ -139,7 +139,7 @@
                 </HorizontalStackLayout>
                 <HorizontalStackLayout
                     HorizontalOptions="Center"
-                    Spacing="12">
+                    Spacing="0">
                     <Button
                         Text="Add"
                         Clicked="OnAddClicked"

@@ -24,7 +24,7 @@
         RowSpacing="12">
         <Grid
             Grid.Row="0"
-            ColumnDefinitions="Auto,Auto,Auto,*"
+            ColumnDefinitions="Auto,*"
             ColumnSpacing="12">
             <Label
                 Grid.Column="0"
@@ -32,16 +32,21 @@
                 FontAttributes="Bold"
                 FontSize="24"
                 VerticalOptions="Start" />
-            <Button
+            <FlexLayout
                 Grid.Column="1"
-                Text="Foods Table"
-                Clicked="OnBackClicked"
-                Style="{StaticResource TopRowButtonStyle}" />
-            <Button
-                Grid.Column="2"
-                Text="Confirm"
-                Clicked="OnConfirmClicked"
-                Style="{StaticResource TopRowButtonStyle}" />
+                Direction="Row"
+                Wrap="Wrap"
+                AlignItems="Start"
+                JustifyContent="Start">
+                <Button
+                    Text="Foods Table"
+                    Clicked="OnBackClicked"
+                    Style="{StaticResource TopRowButtonStyle}" />
+                <Button
+                    Text="Confirm"
+                    Clicked="OnConfirmClicked"
+                    Style="{StaticResource TopRowButtonStyle}" />
+            </FlexLayout>
         </Grid>
 
         <Label
