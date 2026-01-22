@@ -361,7 +361,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="520"
+                WidthRequest="364"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -374,22 +374,26 @@
                     <Label
                         Text="Recipe Notes"
                         FontAttributes="Bold"
-                        FontSize="18" />
+                        FontSize="18"
+                        HorizontalTextAlignment="Center"
+                        LineBreakMode="WordWrap" />
                     <Editor
                         x:Name="RecipeNotesEditor"
                         AutoSize="TextChanges"
-                        HeightRequest="160" />
+                        MinimumHeightRequest="160"
+                        MaximumHeightRequest="360"
+                        VerticalOptions="FillAndExpand" />
                     <HorizontalStackLayout
                         HorizontalOptions="Center"
                         Spacing="12">
                         <Button
                             Text="Confirm"
                             Clicked="OnEditNotesConfirmClicked"
-                            Style="{StaticResource SelectionActionButtonStyle}" />
+                            Margin="0,0,4,4" />
                         <Button
                             Text="Cancel"
                             Clicked="OnEditNotesCancelClicked"
-                            Style="{StaticResource SelectionActionButtonStyle}" />
+                            Margin="0,0,4,4" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Frame>

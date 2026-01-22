@@ -14,7 +14,9 @@ namespace DietSentry
         private NutritionDisplayMode _nutritionDisplayMode = NutritionDisplayMode.All;
         private bool _suppressModeEvents;
         private Food? _selectedFood;
+        private Food? _convertFood;
         private bool _showLogPanel;
+        private bool _showConvertPanel;
         private string? _insertedFoodDescription;
 
         public ObservableCollection<Food> Foods { get; } = new();
@@ -216,7 +218,32 @@ namespace DietSentry
 
         private async void OnConvertClicked(object? sender, EventArgs e)
         {
-            await DisplayAlertAsync("Not implemented", "Convert is not wired yet.", "OK");
+            if (SelectedFood == null)
+            {
+                await DisplayAlertAsync("Select a food", "Choose a food to convert.", "OK");
+                return;
+            }
+
+            if (!FoodDescriptionFormatter.IsLiquidDescription(SelectedFood.FoodDescription))
+            {
+                await DisplayAlertAsync("Not available", "Convert is only available for liquid foods.", "OK");
+                return;
+            }
+
+            _convertFood = SelectedFood;
+            if (ConvertFoodNameLabel != null)
+            {
+                ConvertFoodNameLabel.Text =
+                    FoodDescriptionFormatter.GetDisplayName(SelectedFood.FoodDescription);
+            }
+
+            if (ConvertDensityEntry != null)
+            {
+                ConvertDensityEntry.Text = string.Empty;
+                ConvertDensityEntry.Focus();
+            }
+
+            ShowConvertPanel = true;
         }
 
         private async void OnDeleteClicked(object? sender, EventArgs e)
@@ -248,6 +275,73 @@ namespace DietSentry
             {
                 await DisplayAlertAsync("Error", "Unable to load foods from the database.", "OK");
             }
+        }
+
+        public bool ShowConvertPanel
+        {
+            get => _showConvertPanel;
+            private set
+            {
+                if (_showConvertPanel == value)
+                {
+                    return;
+                }
+
+                _showConvertPanel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private static string ExtractBaseDescription(string description)
+        {
+            if (description.EndsWith(" mL#", StringComparison.OrdinalIgnoreCase))
+            {
+                return description[..^4].TrimEnd();
+            }
+
+            if (description.EndsWith(" mL", StringComparison.OrdinalIgnoreCase))
+            {
+                return description[..^3].TrimEnd();
+            }
+
+            if (description.EndsWith(" #", StringComparison.OrdinalIgnoreCase))
+            {
+                return description[..^2].TrimEnd();
+            }
+
+            return description.TrimEnd();
+        }
+
+        private static string NormalizeDensityText(string densityInput, double density)
+        {
+            var cleaned = densityInput.Trim().Replace(',', '.');
+            cleaned = cleaned.TrimEnd('0').TrimEnd('.');
+            if (string.IsNullOrWhiteSpace(cleaned))
+            {
+                return density.ToString("G", CultureInfo.InvariantCulture);
+            }
+
+            return cleaned;
+        }
+
+        private static bool TryParsePositiveDouble(string? input, out double value)
+        {
+            var normalized = (input ?? string.Empty)
+                .Trim()
+                .Replace(" ", "")
+                .Replace(',', '.');
+            if (string.IsNullOrEmpty(normalized))
+            {
+                value = 0;
+                return false;
+            }
+
+            var parsed = double.TryParse(
+                normalized,
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out value);
+            return parsed && value > 0;
         }
 
         private void OnFoodSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -301,6 +395,81 @@ namespace DietSentry
         private void OnLogBackdropTapped(object? sender, TappedEventArgs e)
         {
             ShowLogPanel = false;
+        }
+
+        private async void OnConvertConfirmClicked(object? sender, EventArgs e)
+        {
+            if (_convertFood == null)
+            {
+                ShowConvertPanel = false;
+                return;
+            }
+
+            var densityInput = ConvertDensityEntry?.Text ?? string.Empty;
+            if (!TryParsePositiveDouble(densityInput, out var density))
+            {
+                await DisplayAlertAsync("Invalid density", "Enter a valid density value.", "OK");
+                return;
+            }
+
+            var baseDescription = ExtractBaseDescription(_convertFood.FoodDescription);
+            var densityText = NormalizeDensityText(densityInput, density);
+            var newDescription = $"{baseDescription} {{density={densityText}g/mL}} #";
+
+            var newFood = new Food
+            {
+                FoodId = 0,
+                FoodDescription = newDescription,
+                Energy = _convertFood.Energy / density,
+                Protein = _convertFood.Protein / density,
+                FatTotal = _convertFood.FatTotal / density,
+                SaturatedFat = _convertFood.SaturatedFat / density,
+                TransFat = _convertFood.TransFat / density,
+                PolyunsaturatedFat = _convertFood.PolyunsaturatedFat / density,
+                MonounsaturatedFat = _convertFood.MonounsaturatedFat / density,
+                Carbohydrate = _convertFood.Carbohydrate / density,
+                Sugars = _convertFood.Sugars / density,
+                DietaryFibre = _convertFood.DietaryFibre / density,
+                Sodium = _convertFood.Sodium / density,
+                CalciumCa = _convertFood.CalciumCa / density,
+                PotassiumK = _convertFood.PotassiumK / density,
+                ThiaminB1 = _convertFood.ThiaminB1 / density,
+                RiboflavinB2 = _convertFood.RiboflavinB2 / density,
+                NiacinB3 = _convertFood.NiacinB3 / density,
+                Folate = _convertFood.Folate / density,
+                IronFe = _convertFood.IronFe / density,
+                MagnesiumMg = _convertFood.MagnesiumMg / density,
+                VitaminC = _convertFood.VitaminC / density,
+                Caffeine = _convertFood.Caffeine / density,
+                Cholesterol = _convertFood.Cholesterol / density,
+                Alcohol = _convertFood.Alcohol / density,
+                Notes = _convertFood.Notes
+            };
+
+            var inserted = await _databaseService.InsertFoodAsync(newFood);
+            if (!inserted)
+            {
+                await DisplayAlertAsync("Convert failed", "Failed to convert food.", "OK");
+                return;
+            }
+
+            ShowConvertPanel = false;
+            _convertFood = null;
+            FoodFilterEntry.Text = newDescription;
+            await LoadFoodsAsync(newDescription);
+            await DisplayAlertAsync("Converted", "Converted food added.", "OK");
+        }
+
+        private void OnConvertCancelClicked(object? sender, EventArgs e)
+        {
+            ShowConvertPanel = false;
+            _convertFood = null;
+        }
+
+        private void OnConvertBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            ShowConvertPanel = false;
+            _convertFood = null;
         }
 
         private void OnNutritionModeChanged(object? sender, CheckedChangedEventArgs e)
