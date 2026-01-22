@@ -3,31 +3,58 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DietSentry.AddFoodByJsonPage">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="20"
-            Spacing="16">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <Label
-                    Text="Add Food Using Json"
-                    FontAttributes="Bold"
-                    FontSize="24" />
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style
+                x:Key="TopRowButtonStyle"
+                TargetType="Button">
+                <Setter
+                    Property="Margin"
+                    Value="0,0,4,4" />
+                <Setter
+                    Property="WidthRequest"
+                    Value="112" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid
+        Padding="20"
+        RowDefinitions="Auto,*"
+        RowSpacing="16">
+        <Grid
+            Grid.Row="0"
+            ColumnDefinitions="Auto,*"
+            ColumnSpacing="12">
+            <Label
+                Grid.Column="0"
+                Text="Add Food using JSON"
+                FontAttributes="Bold"
+                FontSize="24"
+                VerticalOptions="Start" />
+            <FlexLayout
+                Grid.Column="1"
+                Direction="Row"
+                Wrap="Wrap"
+                AlignItems="Start"
+                JustifyContent="Start">
                 <Button
-                    Grid.Column="1"
-                    Text="Back to Foods Table"
-                    Clicked="OnBackClicked" />
-            </Grid>
+                    Text="Foods Table"
+                    Clicked="OnBackClicked"
+                    Style="{StaticResource TopRowButtonStyle}" />
+                <Button
+                    Text="Confirm"
+                    Clicked="OnConfirmClicked"
+                    Style="{StaticResource TopRowButtonStyle}" />
+            </FlexLayout>
+        </Grid>
 
-            <Editor
-                Placeholder="Paste JSON here"
-                AutoSize="TextChanges"
-                HeightRequest="160" />
-
-            <Button
-                Text="Confirm"
-                Clicked="OnConfirmClicked" />
-
-        </VerticalStackLayout>
-    </ScrollView>
+        <Editor
+            Grid.Row="1"
+            x:Name="JsonEditor"
+            Placeholder="Paste JSON here"
+            VerticalOptions="FillAndExpand"
+            HorizontalOptions="FillAndExpand" />
+    </Grid>
 
 </ContentPage>

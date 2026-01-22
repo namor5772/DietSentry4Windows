@@ -14,9 +14,7 @@
             Routing.RegisterRoute("addRecipe", typeof(AddRecipePage));
             Routing.RegisterRoute("editRecipe", typeof(EditRecipePage));
             Routing.RegisterRoute("copyRecipe", typeof(CopyRecipePage));
-            Routing.RegisterRoute("utilities", typeof(UtilitiesPage));
             Routing.RegisterRoute("weightTable", typeof(WeightTablePage));
-            Routing.RegisterRoute("dbStatus", typeof(DatabaseStatusPage));
         }
     }
 }

@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Maui.Storage;
 
@@ -105,11 +109,6 @@ namespace DietSentry
             await Shell.Current.GoToAsync("weightTable");
         }
 
-        private async void OnUtilitiesClicked(object? sender, EventArgs e)
-        {
-            await Shell.Current.GoToAsync("utilities");
-        }
-
         private async void OnClearFilterClicked(object? sender, EventArgs e)
         {
             FoodFilterEntry.Text = string.Empty;
@@ -177,17 +176,87 @@ namespace DietSentry
 
         private async void OnExportDbClicked(object? sender, EventArgs e)
         {
-            await DisplayAlertAsync("Not implemented", "Export db is not wired yet.", "OK");
+            var directory = GetExchangeDirectory();
+            var targetPath = Path.Combine(directory, DatabaseFileName);
+            var confirmed = await DisplayAlertAsync(
+                "Export db",
+                $"This will overwrite:\n{targetPath}\n\nProceed?",
+                "Confirm",
+                "Cancel");
+            if (!confirmed)
+            {
+                return;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(directory);
+                await DatabaseInitializer.EnsureDatabaseAsync();
+                var sourcePath = DatabaseInitializer.GetDatabasePath();
+                File.Copy(sourcePath, targetPath, true);
+                await DisplayAlertAsync("Export db", $"Database exported to:\n{targetPath}", "OK");
+            }
+            catch (Exception)
+            {
+                await DisplayAlertAsync("Export db", $"Failed to export database to:\n{targetPath}", "OK");
+            }
         }
 
         private async void OnImportDbClicked(object? sender, EventArgs e)
         {
-            await DisplayAlertAsync("Not implemented", "Import db is not wired yet.", "OK");
+            var directory = GetExchangeDirectory();
+            var sourcePath = Path.Combine(directory, DatabaseFileName);
+            if (!File.Exists(sourcePath))
+            {
+                await DisplayAlertAsync(
+                    "Import db",
+                    $"Place {DatabaseFileName} in:\n{directory}\n\nThen try again.",
+                    "OK");
+                return;
+            }
+
+            var confirmed = await DisplayAlertAsync(
+                "Import db",
+                $"This will replace the current database with:\n{sourcePath}\n\nProceed?",
+                "Confirm",
+                "Cancel");
+            if (!confirmed)
+            {
+                return;
+            }
+
+            try
+            {
+                await DatabaseInitializer.EnsureDatabaseAsync();
+                var targetPath = DatabaseInitializer.GetDatabasePath();
+                File.Copy(sourcePath, targetPath, true);
+                await LoadFoodsAsync(FoodFilterEntry?.Text);
+                await DisplayAlertAsync("Import db", $"Database imported from:\n{sourcePath}", "OK");
+            }
+            catch (Exception)
+            {
+                await DisplayAlertAsync("Import db", $"Failed to import database from:\n{sourcePath}", "OK");
+            }
         }
 
         private async void OnExportCsvClicked(object? sender, EventArgs e)
         {
-            await DisplayAlertAsync("Not implemented", "Export csv is not wired yet.", "OK");
+            var directory = GetExchangeDirectory();
+            var targetPath = Path.Combine(directory, DailyCsvFileName);
+            try
+            {
+                Directory.CreateDirectory(directory);
+                await DatabaseInitializer.EnsureDatabaseAsync();
+                var eatenFoods = (await _databaseService.GetEatenFoodsAsync()).ToList();
+                var weightEntries = (await _databaseService.GetWeightEntriesAsync()).ToList();
+                var csv = BuildEatenDailyAllCsv(eatenFoods, weightEntries);
+                await File.WriteAllTextAsync(targetPath, csv, new UTF8Encoding(false));
+                await DisplayAlertAsync("Export csv", $"CSV exported to:\n{targetPath}", "OK");
+            }
+            catch (Exception)
+            {
+                await DisplayAlertAsync("Export csv", $"Failed to export CSV to:\n{targetPath}", "OK");
+            }
         }
 
         private async void OnCopyFoodClicked(object? sender, EventArgs e)
@@ -594,11 +663,201 @@ namespace DietSentry
             OnPropertyChanged(nameof(ShowAll));
         }
 
+        private static string GetExchangeDirectory()
+        {
+#if WINDOWS
+            var profile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var downloads = string.IsNullOrWhiteSpace(profile) ? string.Empty : Path.Combine(profile, "Downloads");
+            if (!string.IsNullOrWhiteSpace(downloads) && Directory.Exists(downloads))
+            {
+                return downloads;
+            }
+#endif
+            var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            if (!string.IsNullOrWhiteSpace(documents))
+            {
+                return documents;
+            }
+
+            return FileSystem.AppDataDirectory;
+        }
+
+        private static string BuildEatenDailyAllCsv(
+            IReadOnlyList<EatenFood> eatenFoods,
+            IReadOnlyList<WeightEntry> weightEntries)
+        {
+            var lines = new List<string>();
+            var header = new[]
+            {
+                "Date",
+                "My weight (kg)",
+                "Comments",
+                "Amount (g or mL)",
+                "Energy (kJ):",
+                "Protein (g):",
+                "Fat, total (g):",
+                "- Saturated (g):",
+                "- Trans (mg):",
+                "- Polyunsaturated (g):",
+                "- Monounsaturated (g):",
+                "Carbohydrate (g):",
+                "- Sugars (g):",
+                "Sodium (mg):",
+                "Dietary Fibre (g):",
+                "Calcium (mg):",
+                "Potassium (mg):",
+                "Thiamin B1 (mg):",
+                "Riboflavin B2 (mg):",
+                "Niacin B3 (mg):",
+                "Folate (ug):",
+                "Iron (mg):",
+                "Magnesium (mg):",
+                "Vitamin C (mg):",
+                "Caffeine (mg):",
+                "Cholesterol (mg):",
+                "Alcohol (g):"
+            };
+            lines.Add(string.Join(",", header.Select(CsvCell)));
+
+            var weightByDate = weightEntries
+                .Where(entry => !string.IsNullOrWhiteSpace(entry.DateWeight))
+                .GroupBy(entry => entry.DateWeight)
+                .ToDictionary(group => group.Key, group => group.First());
+            var totals = AggregateDailyTotals(eatenFoods, weightByDate);
+            foreach (var total in totals)
+            {
+                var weightText = weightByDate.TryGetValue(total.Date, out var weightEntry)
+                    ? FormatWeight(weightEntry.Weight)
+                    : "NA";
+                var commentsText = weightEntry?.Comments ?? string.Empty;
+                var row = new[]
+                {
+                    total.Date,
+                    weightText,
+                    commentsText,
+                    FormatNumber(total.AmountEaten),
+                    FormatNumber(total.Energy),
+                    FormatNumber(total.Protein),
+                    FormatNumber(total.FatTotal),
+                    FormatNumber(total.SaturatedFat),
+                    FormatNumber(total.TransFat),
+                    FormatNumber(total.PolyunsaturatedFat),
+                    FormatNumber(total.MonounsaturatedFat),
+                    FormatNumber(total.Carbohydrate),
+                    FormatNumber(total.Sugars),
+                    FormatNumber(total.SodiumNa),
+                    FormatNumber(total.DietaryFibre),
+                    FormatNumber(total.CalciumCa),
+                    FormatNumber(total.PotassiumK),
+                    FormatNumber(total.ThiaminB1),
+                    FormatNumber(total.RiboflavinB2),
+                    FormatNumber(total.NiacinB3),
+                    FormatNumber(total.Folate),
+                    FormatNumber(total.IronFe),
+                    FormatNumber(total.MagnesiumMg),
+                    FormatNumber(total.VitaminC),
+                    FormatNumber(total.Caffeine),
+                    FormatNumber(total.Cholesterol),
+                    FormatNumber(total.Alcohol)
+                };
+                lines.Add(string.Join(",", row.Select(CsvCell)));
+            }
+
+            return string.Join("\n", lines);
+        }
+
+        private static IReadOnlyList<DailyTotals> AggregateDailyTotals(
+            IReadOnlyList<EatenFood> eatenFoods,
+            IReadOnlyDictionary<string, WeightEntry> weightByDate)
+        {
+            var grouped = eatenFoods.GroupBy(food => food.DateEaten);
+            var totals = new List<DailyTotals>();
+            foreach (var group in grouped)
+            {
+                var items = group.ToList();
+                weightByDate.TryGetValue(group.Key, out var weightEntry);
+                var comments = weightEntry?.Comments ?? string.Empty;
+                var weightDisplay = weightEntry == null
+                    ? "NA"
+                    : weightEntry.Weight.ToString("N1", CultureInfo.InvariantCulture);
+
+                totals.Add(new DailyTotals
+                {
+                    Date = group.Key,
+                    UnitLabel = "mixed units",
+                    AmountEaten = items.Sum(item => item.AmountEaten),
+                    Energy = items.Sum(item => item.Energy),
+                    Protein = items.Sum(item => item.Protein),
+                    FatTotal = items.Sum(item => item.FatTotal),
+                    SaturatedFat = items.Sum(item => item.SaturatedFat),
+                    TransFat = items.Sum(item => item.TransFat),
+                    PolyunsaturatedFat = items.Sum(item => item.PolyunsaturatedFat),
+                    MonounsaturatedFat = items.Sum(item => item.MonounsaturatedFat),
+                    Carbohydrate = items.Sum(item => item.Carbohydrate),
+                    Sugars = items.Sum(item => item.Sugars),
+                    DietaryFibre = items.Sum(item => item.DietaryFibre),
+                    SodiumNa = items.Sum(item => item.SodiumNa),
+                    CalciumCa = items.Sum(item => item.CalciumCa),
+                    PotassiumK = items.Sum(item => item.PotassiumK),
+                    ThiaminB1 = items.Sum(item => item.ThiaminB1),
+                    RiboflavinB2 = items.Sum(item => item.RiboflavinB2),
+                    NiacinB3 = items.Sum(item => item.NiacinB3),
+                    Folate = items.Sum(item => item.Folate),
+                    IronFe = items.Sum(item => item.IronFe),
+                    MagnesiumMg = items.Sum(item => item.MagnesiumMg),
+                    VitaminC = items.Sum(item => item.VitaminC),
+                    Caffeine = items.Sum(item => item.Caffeine),
+                    Cholesterol = items.Sum(item => item.Cholesterol),
+                    Alcohol = items.Sum(item => item.Alcohol),
+                    WeightDisplay = weightDisplay,
+                    Comments = comments
+                });
+            }
+
+            return totals
+                .OrderByDescending(total => ParseDate(total.Date))
+                .ToList();
+        }
+
+        private static DateTime ParseDate(string value)
+        {
+            if (DateTime.TryParseExact(
+                value,
+                "d-MMM-yy",
+                CultureInfo.CurrentCulture,
+                DateTimeStyles.None,
+                out var result))
+            {
+                return result;
+            }
+
+            return DateTime.MinValue;
+        }
+
+        private static string CsvCell(string value)
+        {
+            var escaped = value.Replace("\"", "\"\"");
+            return $"\"{escaped}\"";
+        }
+
+        private static string FormatNumber(double value)
+        {
+            return value.ToString("N1", CultureInfo.InvariantCulture);
+        }
+
+        private static string FormatWeight(double value)
+        {
+            return value.ToString("0.0", CultureInfo.InvariantCulture);
+        }
+
         private enum NutritionDisplayMode
         {
             Min,
             Nip,
             All
         }
+
+        private const string DatabaseFileName = "foods.db";
+        private const string DailyCsvFileName = "EatenDailyAll.csv";
     }
 }
