@@ -15,8 +15,10 @@ namespace DietSentry
         private bool _suppressModeEvents;
         private Food? _selectedFood;
         private Food? _convertFood;
+        private Food? _deleteFood;
         private bool _showLogPanel;
         private bool _showConvertPanel;
+        private bool _showDeletePanel;
         private string? _insertedFoodDescription;
 
         public ObservableCollection<Food> Foods { get; } = new();
@@ -248,7 +250,19 @@ namespace DietSentry
 
         private async void OnDeleteClicked(object? sender, EventArgs e)
         {
-            await DisplayAlertAsync("Not implemented", "Delete is not wired yet.", "OK");
+            if (SelectedFood == null)
+            {
+                await DisplayAlertAsync("Select a food", "Choose a food to delete.", "OK");
+                return;
+            }
+
+            _deleteFood = SelectedFood;
+            if (DeleteFoodDescriptionLabel != null)
+            {
+                DeleteFoodDescriptionLabel.Text = SelectedFood.FoodDescription;
+            }
+
+            ShowDeletePanel = true;
         }
 
         private async Task LoadFoodsAsync(string? filterText)
@@ -288,6 +302,21 @@ namespace DietSentry
                 }
 
                 _showConvertPanel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowDeletePanel
+        {
+            get => _showDeletePanel;
+            private set
+            {
+                if (_showDeletePanel == value)
+                {
+                    return;
+                }
+
+                _showDeletePanel = value;
                 OnPropertyChanged();
             }
         }
@@ -470,6 +499,46 @@ namespace DietSentry
         {
             ShowConvertPanel = false;
             _convertFood = null;
+        }
+
+        private async void OnDeleteConfirmClicked(object? sender, EventArgs e)
+        {
+            if (_deleteFood == null)
+            {
+                ShowDeletePanel = false;
+                return;
+            }
+
+            await DatabaseInitializer.EnsureDatabaseAsync();
+            var isRecipeFood = FoodDescriptionFormatter.IsRecipeDescription(_deleteFood.FoodDescription);
+            var deletedFood = await _databaseService.DeleteFoodAsync(_deleteFood.FoodId);
+            if (isRecipeFood)
+            {
+                await _databaseService.DeleteRecipesByFoodIdAsync(_deleteFood.FoodId);
+            }
+
+            if (!deletedFood)
+            {
+                await DisplayAlertAsync("Error", "Unable to delete the selected food.", "OK");
+                return;
+            }
+
+            ShowDeletePanel = false;
+            _deleteFood = null;
+            SelectedFood = null;
+            await LoadFoodsAsync(FoodFilterEntry?.Text);
+        }
+
+        private void OnDeleteCancelClicked(object? sender, EventArgs e)
+        {
+            ShowDeletePanel = false;
+            _deleteFood = null;
+        }
+
+        private void OnDeleteBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            ShowDeletePanel = false;
+            _deleteFood = null;
         }
 
         private void OnNutritionModeChanged(object? sender, CheckedChangedEventArgs e)

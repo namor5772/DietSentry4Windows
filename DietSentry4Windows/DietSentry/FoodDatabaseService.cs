@@ -431,6 +431,32 @@ namespace DietSentry
             });
         }
 
+        public Task<bool> DeleteRecipesByFoodIdAsync(int foodId)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "DELETE FROM Recipe WHERE FoodId = @FoodId";
+                command.Parameters.AddWithValue("@FoodId", foodId);
+                return command.ExecuteNonQuery() >= 0;
+            });
+        }
+
+        public Task<bool> DeleteFoodAsync(int foodId)
+        {
+            return Task.Run(() =>
+            {
+                using var connection = new SqliteConnection($"Data Source={_databasePath}");
+                connection.Open();
+                using var command = connection.CreateCommand();
+                command.CommandText = "DELETE FROM Foods WHERE FoodId = @FoodId";
+                command.Parameters.AddWithValue("@FoodId", foodId);
+                return command.ExecuteNonQuery() > 0;
+            });
+        }
+
         public Task<bool> DeleteCopiedRecipesAsync(int foodId)
         {
             return Task.Run(() =>
