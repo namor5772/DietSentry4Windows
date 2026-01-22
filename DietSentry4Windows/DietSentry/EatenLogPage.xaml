@@ -50,7 +50,7 @@
                 Text="Foods Table"
                 HorizontalOptions="Start"
                 BackgroundColor="{StaticResource PrimaryDark}"
-                TextColor="{StaticResource PrimaryDarkText}"
+                TextColor="{StaticResource White}"
                 Clicked="OnBackClicked"
                 Style="{StaticResource TopRowButtonStyle}" />
         </Grid>

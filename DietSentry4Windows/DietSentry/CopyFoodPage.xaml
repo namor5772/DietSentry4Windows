@@ -16,7 +16,7 @@
                     Grid.Column="1"
                     Text="Back to Foods Table"
                     BackgroundColor="{StaticResource PrimaryDark}"
-                    TextColor="{StaticResource PrimaryDarkText}"
+                    TextColor="{StaticResource White}"
                     Clicked="OnBackClicked" />
             </Grid>
 

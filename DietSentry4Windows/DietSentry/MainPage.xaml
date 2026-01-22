@@ -53,10 +53,14 @@
                     JustifyContent="Start">
                     <Button
                         Text="Eaten Table"
+                        BackgroundColor="{StaticResource PrimaryDark}"
+                        TextColor="{StaticResource White}"
                         Clicked="OnEatenLogClicked"
                         Style="{StaticResource TopRowButtonStyle}" />
                     <Button
                         Text="Weight Table"
+                        BackgroundColor="{StaticResource PrimaryDark}"
+                        TextColor="{StaticResource White}"
                         Clicked="OnWeightTableClicked"
                         Style="{StaticResource TopRowButtonStyle}" />
                     <Button
