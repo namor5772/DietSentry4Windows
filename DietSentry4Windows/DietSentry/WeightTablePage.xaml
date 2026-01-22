@@ -49,6 +49,8 @@
                 Grid.Column="1"
                 Text="Foods Table"
                 HorizontalOptions="Start"
+                BackgroundColor="{StaticResource PrimaryDark}"
+                TextColor="{StaticResource PrimaryDarkText}"
                 Clicked="OnBackClicked"
                 Style="{StaticResource TopRowButtonStyle}" />
         </Grid>

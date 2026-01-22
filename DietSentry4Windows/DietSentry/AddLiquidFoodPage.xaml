@@ -40,6 +40,8 @@
                 JustifyContent="Start">
                 <Button
                     Text="Foods Table"
+                    BackgroundColor="{StaticResource PrimaryDark}"
+                    TextColor="{StaticResource PrimaryDarkText}"
                     Clicked="OnBackClicked"
                     Style="{StaticResource TopRowButtonStyle}" />
                 <Button
