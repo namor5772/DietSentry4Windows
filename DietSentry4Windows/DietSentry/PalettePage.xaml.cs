@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.Maui.Graphics;
@@ -204,7 +205,7 @@ namespace DietSentry
             await Shell.Current.GoToAsync("//foodSearch");
         }
 
-        private void OnHelpClicked(object? sender, EventArgs e)
+        private async void OnHelpClicked(object? sender, EventArgs e)
         {
             if (HelpOverlay == null || HelpSheet == null)
             {
@@ -212,8 +213,11 @@ namespace DietSentry
             }
 
             HelpOverlay.IsVisible = true;
+
+            await HelpSheetLayout.ApplyMaxHeightAsync(HelpOverlay, HelpSheet, 0.8);
+
             HelpSheet.TranslationY = 220;
-            _ = HelpSheet.TranslateTo(0, 0, 150, Easing.CubicOut);
+            _ = HelpSheet.TranslateToAsync(0, 0, 150, Easing.CubicOut);
         }
 
         private void OnHelpDismissed(object? sender, EventArgs e)
@@ -226,15 +230,6 @@ namespace DietSentry
             HelpOverlay.IsVisible = false;
         }
 
-        private async void OnHelpOpenFullClicked(object? sender, EventArgs e)
-        {
-            if (HelpOverlay != null)
-            {
-                HelpOverlay.IsVisible = false;
-            }
-
-            await Shell.Current.GoToAsync("help?section=palette");
-        }
     }
 
     public sealed class PaletteSwatchGroup : ObservableCollection<PaletteSwatch>

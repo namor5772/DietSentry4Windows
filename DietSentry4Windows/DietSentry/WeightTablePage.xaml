@@ -81,12 +81,12 @@
                         <VerticalStackLayout Spacing="8">
                             <Label
                                 Text="No weight entries yet." />
-                            <Button
-                                Text="Add"
-                                HorizontalOptions="Start"
-                                Clicked="OnAddClicked" />
-                        </VerticalStackLayout>
-                    </CollectionView.EmptyView>
+                        <Button
+                            Text="Add"
+                            HorizontalOptions="Start"
+                            Clicked="OnAddClicked" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Frame
@@ -157,13 +157,13 @@
                             Text="Edit"
                             Clicked="OnEditSelectedClicked"
                             Style="{StaticResource SelectionActionButtonStyle}" />
-                        <Button
-                            Text="Delete"
-                            Clicked="OnDeleteSelectedClicked"
-                            Style="{StaticResource SelectionActionButtonStyle}" />
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Frame>
+                    <Button
+                        Text="Delete"
+                        Clicked="OnDeleteSelectedClicked"
+                        Style="{StaticResource SelectionActionButtonStyle}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </Frame>
         </Grid>
 
         <Grid
@@ -187,7 +187,7 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16,16,0,0" />
                 </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label
                             Text="Weight table"
@@ -203,13 +203,12 @@
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
                     </Grid>
-                    <Label
+                    <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
+                        <Label
                         Text="Track weight entries over time, add new records, and edit or delete selections from the panel below."
                         LineBreakMode="WordWrap" />
-                    <Button
-                        Text="Open Full Help"
-                        Clicked="OnHelpOpenFullClicked" />
-                </VerticalStackLayout>
+                    </ScrollView>
+</Grid>
             </Border>
         </Grid>
 
@@ -237,7 +236,7 @@
                         Radius="12"
                         Opacity="0.6" />
                 </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Label
                         Text="Add Weight table record"
                         FontAttributes="Bold"
@@ -275,7 +274,7 @@
                             Clicked="OnAddCancelClicked"
                             Margin="0,0,4,4" />
                     </FlexLayout>
-                </VerticalStackLayout>
+                </Grid>
             </Frame>
         </Grid>
 
@@ -303,7 +302,7 @@
                         Radius="12"
                         Opacity="0.6" />
                 </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Label
                         Text="Edit Weight table record"
                         FontAttributes="Bold"
@@ -342,7 +341,7 @@
                             Clicked="OnEditCancelClicked"
                             Margin="0,0,4,4" />
                     </FlexLayout>
-                </VerticalStackLayout>
+                </Grid>
             </Frame>
         </Grid>
 
@@ -370,7 +369,7 @@
                         Radius="12"
                         Opacity="0.6" />
                 </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Label
                         Text="Delete Weight table record?"
                         FontAttributes="Bold"
@@ -393,7 +392,7 @@
                             Clicked="OnDeleteCancelClicked"
                             Margin="0,0,4,4" />
                     </FlexLayout>
-                </VerticalStackLayout>
+                </Grid>
             </Frame>
         </Grid>
     </Grid>

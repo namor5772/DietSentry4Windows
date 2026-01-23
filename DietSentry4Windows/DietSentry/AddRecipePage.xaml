@@ -270,7 +270,7 @@
                         Radius="12"
                         Opacity="0.6" />
                 </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Label
                         Text="{Binding SelectedFoodDescription}"
                         FontAttributes="Bold"
@@ -303,7 +303,7 @@
                             Clicked="OnAddIngredientCancelClicked"
                             Style="{StaticResource DialogActionButtonStyle}" />
                     </FlexLayout>
-                </VerticalStackLayout>
+                </Grid>
             </Frame>
         </Grid>
 
@@ -331,7 +331,7 @@
                         Radius="12"
                         Opacity="0.6" />
                 </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Label
                         Text="{Binding SelectedRecipeDescription}"
                         FontAttributes="Bold"
@@ -364,7 +364,7 @@
                             Clicked="OnEditIngredientCancelClicked"
                             Style="{StaticResource DialogActionButtonStyle}" />
                     </FlexLayout>
-                </VerticalStackLayout>
+                </Grid>
             </Frame>
         </Grid>
 
@@ -392,7 +392,7 @@
                         Radius="12"
                         Opacity="0.6" />
                 </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Label
                         Text="Recipe Notes"
                         FontAttributes="Bold"
@@ -419,7 +419,7 @@
                             Clicked="OnEditNotesCancelClicked"
                             Margin="0,0,4,4" />
                     </FlexLayout>
-                </VerticalStackLayout>
+                </Grid>
             </Frame>
         </Grid>
         </Grid>
@@ -445,7 +445,7 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16,16,0,0" />
                 </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label
                             x:Name="HelpTitleLabel"
@@ -461,13 +461,12 @@
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
                     </Grid>
-                    <Label
+                    <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
+                        <Label
                         x:Name="HelpBodyLabel"
                         LineBreakMode="WordWrap" />
-                    <Button
-                        Text="Open Full Help"
-                        Clicked="OnHelpOpenFullClicked" />
-                </VerticalStackLayout>
+                    </ScrollView>
+</Grid>
             </Border>
         </Grid>
     </Grid>

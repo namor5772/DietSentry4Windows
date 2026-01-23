@@ -43,14 +43,14 @@
                     Text="Confirm"
                     Clicked="OnConfirmClicked"
                     Margin="0,0,4,4" />
-                <Button
-                    Text="Cancel"
-                    Clicked="OnCancelClicked"
-                    Margin="0,0,4,4" />
-            </FlexLayout>
-        </VerticalStackLayout>
+            <Button
+                Text="Cancel"
+                Clicked="OnCancelClicked"
+                Margin="0,0,4,4" />
+        </FlexLayout>
+    </VerticalStackLayout>
 
-        <Grid
+    <Grid
             x:Name="HelpOverlay"
             IsVisible="False"
             BackgroundColor="#80000000"
@@ -71,7 +71,7 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16,16,0,0" />
                 </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label
                             Text="Log food"
@@ -87,13 +87,12 @@
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
                     </Grid>
-                    <Label
+                    <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
+                        <Label
                         Text="Enter the amount, choose date and time, then confirm to log the entry."
                         LineBreakMode="WordWrap" />
-                    <Button
-                        Text="Open Full Help"
-                        Clicked="OnHelpOpenFullClicked" />
-                </VerticalStackLayout>
+                    </ScrollView>
+</Grid>
             </Border>
         </Grid>
     </Grid>

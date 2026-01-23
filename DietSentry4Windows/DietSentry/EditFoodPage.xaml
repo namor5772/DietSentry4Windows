@@ -34,12 +34,12 @@
                 <Entry
                     Placeholder="Amount (g or mL)" />
 
-                <Button
-                    Text="Confirm"
-                    Clicked="OnConfirmClicked" />
+            <Button
+                Text="Confirm"
+                Clicked="OnConfirmClicked" />
 
-            </VerticalStackLayout>
-        </ScrollView>
+        </VerticalStackLayout>
+    </ScrollView>
 
         <Grid
             x:Name="HelpOverlay"
@@ -62,7 +62,7 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16,16,0,0" />
                 </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
+                <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label
                             Text="Edit food"
@@ -78,13 +78,12 @@
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
                     </Grid>
-                    <Label
+                    <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
+                        <Label
                         Text="Update the food details and confirm to save changes. Use Back to return without saving."
                         LineBreakMode="WordWrap" />
-                    <Button
-                        Text="Open Full Help"
-                        Clicked="OnHelpOpenFullClicked" />
-                </VerticalStackLayout>
+                    </ScrollView>
+</Grid>
             </Border>
         </Grid>
     </Grid>

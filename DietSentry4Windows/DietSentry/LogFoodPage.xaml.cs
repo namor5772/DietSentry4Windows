@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Globalization;
 
 namespace DietSentry
@@ -64,8 +65,11 @@ namespace DietSentry
             }
 
             HelpOverlay.IsVisible = true;
+
+            await HelpSheetLayout.ApplyMaxHeightAsync(HelpOverlay, HelpSheet, 0.8);
+
             HelpSheet.TranslationY = 220;
-            _ = HelpSheet.TranslateTo(0, 0, 150, Easing.CubicOut);
+            _ = HelpSheet.TranslateToAsync(0, 0, 150, Easing.CubicOut);
         }
 
         private void OnHelpDismissed(object? sender, EventArgs e)
@@ -78,14 +82,5 @@ namespace DietSentry
             HelpOverlay.IsVisible = false;
         }
 
-        private async void OnHelpOpenFullClicked(object? sender, EventArgs e)
-        {
-            if (HelpOverlay != null)
-            {
-                HelpOverlay.IsVisible = false;
-            }
-
-            await Shell.Current.GoToAsync("help?section=logging");
-        }
     }
 }
