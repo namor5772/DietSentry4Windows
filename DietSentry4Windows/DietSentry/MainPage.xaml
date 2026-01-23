@@ -31,7 +31,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid>
+    <Grid RowDefinitions="*">
         <Grid
             Padding="20"
             RowDefinitions="Auto,Auto,Auto,*,Auto"
@@ -576,54 +576,6 @@
         </Grid>
 
         <Grid
-            x:Name="HelpOverlay"
-            IsVisible="False"
-            BackgroundColor="#80000000"
-            RowDefinitions="*,Auto">
-            <BoxView
-                Grid.Row="0"
-                BackgroundColor="Transparent">
-                <BoxView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnHelpDismissed" />
-                </BoxView.GestureRecognizers>
-            </BoxView>
-            <Border
-                x:Name="HelpSheet"
-                Grid.Row="1"
-                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
-                Padding="20,16"
-                StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16,16,0,0" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label
-                            Text="Foods table"
-                            FontAttributes="Bold"
-                            FontSize="18"
-                            VerticalOptions="Center" />
-                        <Button
-                            Grid.Column="1"
-                            Text="Close"
-                            Clicked="OnHelpDismissed"
-                            Padding="6,2"
-                            FontSize="12"
-                            BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
-                    </Grid>
-                    <Label
-                        Text="Use the top buttons to add foods, import/export, and navigate tables. Filter and nutrition modes control how the list is shown."
-                        LineBreakMode="WordWrap" />
-                    <Button
-                        Text="Open Full Help"
-                        Clicked="OnHelpOpenFullClicked" />
-                </VerticalStackLayout>
-            </Border>
-        </Grid>
-    </Grid>
-
-        <Grid
             Grid.Row="0"
             Grid.RowSpan="5"
             IsVisible="{Binding ShowConvertPanel}">
@@ -742,6 +694,57 @@
                 </VerticalStackLayout>
             </Frame>
         </Grid>
+    </Grid>
+
+    <Grid
+        x:Name="HelpOverlay"
+        IsVisible="False"
+        BackgroundColor="#80000000"
+        VerticalOptions="FillAndExpand"
+        HorizontalOptions="FillAndExpand"
+        RowDefinitions="*,Auto">
+        <BoxView
+            Grid.Row="0"
+            BackgroundColor="Transparent">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnHelpDismissed" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+        <Border
+            x:Name="HelpSheet"
+            Grid.Row="1"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+            Padding="20,16"
+            StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="16,16,0,0" />
+            </Border.StrokeShape>
+            <VerticalStackLayout Spacing="12">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label
+                        Text="Foods table"
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        VerticalOptions="Center" />
+                    <Button
+                        Grid.Column="1"
+                        Text="Close"
+                        Clicked="OnHelpDismissed"
+                        Padding="6,2"
+                        FontSize="12"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                </Grid>
+                <Label
+                    Text="Use the top buttons to add foods, import/export, and navigate tables. Filter and nutrition modes control how the list is shown."
+                    LineBreakMode="WordWrap" />
+                <Button
+                    Text="Open Full Help"
+                    Clicked="OnHelpOpenFullClicked" />
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+
     </Grid>
 
 </ContentPage>

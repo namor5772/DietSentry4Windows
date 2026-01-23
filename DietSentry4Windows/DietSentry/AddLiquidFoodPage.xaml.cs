@@ -365,13 +365,62 @@ namespace DietSentry
             if (_editFoodId.HasValue)
             {
                 return ("Editing Liquid Food",
-                    "Update values per 100mL and confirm to save changes. Use the Foods Table button to return without saving.");
+                    "Update values per 100mL and press [Confirm] button to save changes. Use the [Foods Table] button (or back button) to return to {Foods Table} screen without saving.");
             }
 
             if (_copyFoodId.HasValue)
             {
                 return ("Copying Liquid Food",
-                    "Review values, adjust the description if needed, then confirm to save a new liquid food.");
+                    """
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+                    
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+                    
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+                    
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+                    
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+                    
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+                    
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+                    
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+                    
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+                    
+                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
+                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
+                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
+                    
+                    """);
             }
 
             return ("Add Liquid Food",
