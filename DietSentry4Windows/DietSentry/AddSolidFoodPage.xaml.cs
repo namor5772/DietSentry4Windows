@@ -357,18 +357,15 @@ namespace DietSentry
         {
             if (_editFoodId.HasValue)
             {
-                return ("Editing Solid Food",
-                    "Update values per 100g and confirm to save changes. Use the Foods Table button to return without saving.");
+                return ("Editing Solid Food", HelpContent.EditSolidFoodBody);
             }
 
             if (_copyFoodId.HasValue)
             {
-                return ("Copying Solid Food",
-                    "Review values, adjust the description if needed, then confirm to save a new solid food.");
+                return ("Copying Solid Food", HelpContent.CopySolidFoodBody);
             }
 
-            return ("Add Solid Food",
-                "Enter values per 100g and confirm to add the food. Use the Foods Table button to return without saving.");
+            return ("Add Solid Food", HelpContent.AddSolidFoodBody);
         }
 
         private void UpdateScreenTitle()

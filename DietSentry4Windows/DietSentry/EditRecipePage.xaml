@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DietSentry"
              x:Class="DietSentry.EditRecipePage">
 
     <Grid>
@@ -67,7 +68,7 @@
                 <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label
-                            Text="Edit recipe"
+                            Text="{x:Static local:HelpContent.EditRecipeTitle}"
                             FontAttributes="Bold"
                             FontSize="18"
                             VerticalOptions="Center" />
@@ -82,7 +83,7 @@
                     </Grid>
                     <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
                         <Label
-                        Text="Update the recipe details and confirm to save changes. Use Back to return without saving."
+                        Text="{x:Static local:HelpContent.EditRecipeBody}"
                         LineBreakMode="WordWrap" />
                     </ScrollView>
 </Grid>

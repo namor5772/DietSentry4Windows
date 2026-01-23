@@ -357,67 +357,15 @@ namespace DietSentry
         {
             if (_editFoodId.HasValue)
             {
-                return ("Editing Liquid Food",
-                    "Update values per 100mL and press [Confirm] button to save changes. Use the [Foods Table] button (or back button) to return to {Foods Table} screen without saving.");
+                return ("Editing Liquid Food", HelpContent.EditLiquidFoodBody);
             }
 
             if (_copyFoodId.HasValue)
             {
-                return ("Copying Liquid Food",
-                    """
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-                    
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-                    
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-                    
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-                    
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-                    
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-                    
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-                    
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-                    
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-                    
-                    Review values, adjust the description if needed, then press the [Confirm] button to create a new liquid food.
-                    Focus returns to the {Foods Table} screen with the new food record filtered for exclusive visibillity in the CollectionView control.
-                    Use the [Foods Table] button (or back button) to return to the {Foods Table} screen without creation or saving. 
-                    
-                    """);
+                return ("Copying Liquid Food", HelpContent.CopyLiquidFoodBody);
             }
 
-            return ("Add Liquid Food",
-                "Enter values per 100mL and confirm to add the food. Use the Foods Table button to return without saving.");
+            return ("Add Liquid Food", HelpContent.AddLiquidFoodBody);
         }
 
         private void UpdateScreenTitle()

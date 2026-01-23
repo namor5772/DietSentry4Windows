@@ -190,7 +190,7 @@
                 <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label
-                            Text="Weight table"
+                            Text="{x:Static local:HelpContent.WeightTableTitle}"
                             FontAttributes="Bold"
                             FontSize="18"
                             VerticalOptions="Center" />
@@ -205,7 +205,7 @@
                     </Grid>
                     <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
                         <Label
-                        Text="Track weight entries over time, add new records, and edit or delete selections from the panel below."
+                        Text="{x:Static local:HelpContent.WeightTableBody}"
                         LineBreakMode="WordWrap" />
                     </ScrollView>
 </Grid>

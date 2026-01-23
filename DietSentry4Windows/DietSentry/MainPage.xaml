@@ -722,7 +722,7 @@
             <Grid RowDefinitions="Auto,*" RowSpacing="12">
                 <Grid ColumnDefinitions="*,Auto">
                     <Label
-                        Text="Foods table"
+                        Text="{x:Static local:HelpContent.FoodsTableTitle}"
                         FontAttributes="Bold"
                         FontSize="18"
                         VerticalOptions="Center" />
@@ -735,11 +735,11 @@
                         BackgroundColor="Transparent"
                         TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
                 </Grid>
-                <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
-                    <Label
-                    Text="Use the top buttons to add foods, import/export, and navigate tables. Filter and nutrition modes control how the list is shown."
+                    <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
+                        <Label
+                    Text="{x:Static local:HelpContent.FoodsTableBody}"
                     LineBreakMode="WordWrap" />
-                </ScrollView>
+                    </ScrollView>
 </Grid>
         </Border>
     </Grid>

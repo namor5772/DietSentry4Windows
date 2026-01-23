@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DietSentry"
              x:Class="DietSentry.AddFoodByJsonPage">
 
     <ContentPage.Resources>
@@ -90,7 +91,7 @@
                 <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label
-                            Text="Add food using JSON"
+                            Text="{x:Static local:HelpContent.AddFoodByJsonTitle}"
                             FontAttributes="Bold"
                             FontSize="18"
                             VerticalOptions="Center" />
@@ -105,7 +106,7 @@
                     </Grid>
                     <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
                         <Label
-                        Text="Paste JSON that matches the food fields and confirm to add it to the database."
+                        Text="{x:Static local:HelpContent.JsonFoodBody}"
                         LineBreakMode="WordWrap" />
                     </ScrollView>
 </Grid>

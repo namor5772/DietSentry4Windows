@@ -733,18 +733,15 @@ namespace DietSentry
         {
             if (_editingFoodId.HasValue)
             {
-                return ("Editing Recipe",
-                    "Update ingredients or notes and confirm to save changes. Use Foods Table to return without saving.");
+                return ("Editing Recipe", HelpContent.BuildRecipeHelpText("Editing Recipe"));
             }
 
             if (_copySourceFoodId.HasValue)
             {
-                return ("Copying Recipe",
-                    "Review ingredients, update the description if needed, then confirm to save a new recipe.");
+                return ("Copying Recipe", HelpContent.BuildRecipeHelpText("Copying Recipe"));
             }
 
-            return ("Add Recipe",
-                "Set a description, search foods to add ingredients, and confirm to save the recipe.");
+            return ("Add Recipe", HelpContent.BuildRecipeHelpText("Add Recipe"));
         }
 
         private static bool TryParsePositiveDouble(string? input, out double value)

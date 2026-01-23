@@ -1027,7 +1027,7 @@
             <Grid RowDefinitions="Auto,*" RowSpacing="12">
                 <Grid ColumnDefinitions="*,Auto">
                     <Label
-                        Text="Eaten table"
+                        Text="{x:Static local:HelpContent.EatenTableTitle}"
                         FontAttributes="Bold"
                         FontSize="18"
                         VerticalOptions="Center" />
@@ -1040,11 +1040,11 @@
                         BackgroundColor="Transparent"
                         TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
                 </Grid>
-                <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
-                    <Label
-                    Text="Review logged foods here, switch nutrition detail levels, and filter by date or daily totals."
+                    <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
+                        <Label
+                    Text="{x:Static local:HelpContent.EatenTableBody}"
                     LineBreakMode="WordWrap" />
-                </ScrollView>
+                    </ScrollView>
 </Grid>
         </Border>
     </Grid>
