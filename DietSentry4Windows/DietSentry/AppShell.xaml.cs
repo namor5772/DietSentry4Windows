@@ -16,6 +16,7 @@
             Routing.RegisterRoute("copyRecipe", typeof(CopyRecipePage));
             Routing.RegisterRoute("weightTable", typeof(WeightTablePage));
             Routing.RegisterRoute("palette", typeof(PalettePage));
+            Routing.RegisterRoute("help", typeof(HelpPage));
         }
     }
 }

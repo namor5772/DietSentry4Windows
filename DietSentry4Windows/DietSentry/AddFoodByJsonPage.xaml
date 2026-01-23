@@ -18,45 +18,100 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid
-        Padding="20"
-        RowDefinitions="Auto,*"
-        RowSpacing="16">
+    <Grid>
         <Grid
-            Grid.Row="0"
-            ColumnDefinitions="Auto,*"
-            ColumnSpacing="12">
-            <Label
-                Grid.Column="0"
-                Text="Add Food using JSON"
-                FontAttributes="Bold"
-                FontSize="24"
-                VerticalOptions="Start" />
-            <FlexLayout
-                Grid.Column="1"
-                Direction="Row"
-                Wrap="Wrap"
-                AlignItems="Start"
-                JustifyContent="Start">
+            Padding="20"
+            RowDefinitions="Auto,*"
+            RowSpacing="16">
+            <Grid
+                Grid.Row="0"
+                ColumnDefinitions="Auto,Auto,*"
+                ColumnSpacing="12">
                 <Button
-                    Text="Foods Table"
-                    BackgroundColor="{StaticResource PrimaryDark}"
-                    TextColor="{StaticResource White}"
-                    Clicked="OnBackClicked"
-                    Style="{StaticResource TopRowButtonStyle}" />
-                <Button
-                    Text="Confirm"
-                    Clicked="OnConfirmClicked"
-                    Style="{StaticResource TopRowButtonStyle}" />
-            </FlexLayout>
+                    Grid.Column="0"
+                    Text="?"
+                    Style="{StaticResource HelpIconButtonStyle}"
+                    Clicked="OnHelpClicked"
+                    VerticalOptions="Start" />
+                <Label
+                    Grid.Column="1"
+                    Text="Add Food using JSON"
+                    FontAttributes="Bold"
+                    FontSize="24"
+                    VerticalOptions="Start" />
+                <FlexLayout
+                    Grid.Column="2"
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Start"
+                    JustifyContent="Start">
+                    <Button
+                        Text="Foods Table"
+                        BackgroundColor="{StaticResource PrimaryDark}"
+                        TextColor="{StaticResource White}"
+                        Clicked="OnBackClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                    <Button
+                        Text="Confirm"
+                        Clicked="OnConfirmClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                </FlexLayout>
+            </Grid>
+
+            <Editor
+                Grid.Row="1"
+                x:Name="JsonEditor"
+                Placeholder="Paste JSON here"
+                VerticalOptions="FillAndExpand"
+                HorizontalOptions="FillAndExpand" />
         </Grid>
 
-        <Editor
-            Grid.Row="1"
-            x:Name="JsonEditor"
-            Placeholder="Paste JSON here"
-            VerticalOptions="FillAndExpand"
-            HorizontalOptions="FillAndExpand" />
+        <Grid
+            x:Name="HelpOverlay"
+            IsVisible="False"
+            BackgroundColor="#80000000"
+            RowDefinitions="*,Auto">
+            <BoxView
+                Grid.Row="0"
+                BackgroundColor="Transparent">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnHelpDismissed" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Border
+                x:Name="HelpSheet"
+                Grid.Row="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                Padding="20,16"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16,16,0,0" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label
+                            Text="Add food using JSON"
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            VerticalOptions="Center" />
+                        <Button
+                            Grid.Column="1"
+                            Text="Close"
+                            Clicked="OnHelpDismissed"
+                            Padding="6,2"
+                            FontSize="12"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                    </Grid>
+                    <Label
+                        Text="Paste JSON that matches the food fields and confirm to add it to the database."
+                        LineBreakMode="WordWrap" />
+                    <Button
+                        Text="Open Full Help"
+                        Clicked="OnHelpOpenFullClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
     </Grid>
 
 </ContentPage>

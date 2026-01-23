@@ -700,6 +700,60 @@ namespace DietSentry
             await Shell.Current.GoToAsync("//foodSearch");
         }
 
+        private async void OnHelpClicked(object? sender, EventArgs e)
+        {
+            if (HelpOverlay == null || HelpSheet == null)
+            {
+                return;
+            }
+
+            var (title, body) = GetHelpContent();
+            HelpTitleLabel.Text = title;
+            HelpBodyLabel.Text = body;
+
+            HelpOverlay.IsVisible = true;
+            HelpSheet.TranslationY = 220;
+            _ = HelpSheet.TranslateTo(0, 0, 150, Easing.CubicOut);
+        }
+
+        private void OnHelpDismissed(object? sender, EventArgs e)
+        {
+            if (HelpOverlay == null)
+            {
+                return;
+            }
+
+            HelpOverlay.IsVisible = false;
+        }
+
+        private async void OnHelpOpenFullClicked(object? sender, EventArgs e)
+        {
+            if (HelpOverlay != null)
+            {
+                HelpOverlay.IsVisible = false;
+            }
+
+            await Shell.Current.GoToAsync("help?section=add-recipe");
+        }
+
+        private (string Title, string Body) GetHelpContent()
+        {
+            if (_editingFoodId.HasValue)
+            {
+                return ("Editing Recipe",
+                    "Update ingredients or notes and confirm to save changes. Use Foods Table to return without saving.");
+            }
+
+            if (_copySourceFoodId.HasValue)
+            {
+                return ("Copying Recipe",
+                    "Review ingredients, update the description if needed, then confirm to save a new recipe.");
+            }
+
+            return ("Add Recipe",
+                "Set a description, search foods to add ingredients, and confirm to save the recipe.");
+        }
+
         private static bool TryParsePositiveDouble(string? input, out double value)
         {
             var normalized = (input ?? string.Empty)

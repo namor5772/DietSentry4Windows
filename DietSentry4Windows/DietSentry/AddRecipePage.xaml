@@ -45,22 +45,29 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid
-        Padding="20"
-        RowDefinitions="Auto,Auto,Auto,*,Auto,*,Auto,Auto"
-        RowSpacing="12">
+    <Grid>
         <Grid
-            Grid.Row="0"
-            ColumnDefinitions="Auto,Auto,*"
-            ColumnSpacing="12">
-            <Label
+            Padding="20"
+            RowDefinitions="Auto,Auto,Auto,*,Auto,*,Auto,Auto"
+            RowSpacing="12">
+            <Grid
+                Grid.Row="0"
+                ColumnDefinitions="Auto,Auto,Auto,*"
+                ColumnSpacing="12">
+            <Button
                 Grid.Column="0"
+                Text="?"
+                Style="{StaticResource HelpIconButtonStyle}"
+                Clicked="OnHelpClicked"
+                VerticalOptions="Start" />
+            <Label
+                Grid.Column="1"
                 Text="{Binding ScreenTitle}"
                 FontAttributes="Bold"
                 FontSize="24"
                 VerticalOptions="Start" />
             <Button
-                Grid.Column="1"
+                Grid.Column="2"
                 Text="Foods Table"
                 BackgroundColor="{StaticResource PrimaryDark}"
                 TextColor="{StaticResource White}"
@@ -68,10 +75,10 @@
                 Style="{StaticResource TopRowButtonStyle}" />
         </Grid>
 
-        <Grid
-            Grid.Row="1"
-            ColumnDefinitions="Auto,*"
-            ColumnSpacing="12">
+            <Grid
+                Grid.Row="1"
+                ColumnDefinitions="Auto,*"
+                ColumnSpacing="12">
             <Label
                 Grid.Column="0"
                 Text="Description"
@@ -82,10 +89,10 @@
                 Placeholder="Recipe description" />
         </Grid>
 
-        <Grid
-            Grid.Row="2"
-            ColumnDefinitions="*,Auto"
-            ColumnSpacing="8">
+            <Grid
+                Grid.Row="2"
+                ColumnDefinitions="*,Auto"
+                ColumnSpacing="8">
             <Entry
                 x:Name="FoodFilterEntry"
                 Placeholder="Enter food filter text"
@@ -96,10 +103,10 @@
                 Clicked="OnClearFilterClicked" />
         </Grid>
 
-        <Frame
-            Grid.Row="3"
-            BorderColor="LightGray"
-            Padding="10">
+            <Frame
+                Grid.Row="3"
+                BorderColor="LightGray"
+                Padding="10">
             <CollectionView
                 x:Name="FoodsCollectionView"
                 ItemsSource="{Binding Foods}"
@@ -119,15 +126,15 @@
             </CollectionView>
         </Frame>
 
-        <Label
-            Grid.Row="4"
-            Text="{Binding IngredientsHeaderText}"
-            FontAttributes="Bold" />
+            <Label
+                Grid.Row="4"
+                Text="{Binding IngredientsHeaderText}"
+                FontAttributes="Bold" />
 
-        <Frame
-            Grid.Row="5"
-            BorderColor="LightGray"
-            Padding="10">
+            <Frame
+                Grid.Row="5"
+                BorderColor="LightGray"
+                Padding="10">
             <CollectionView
                 x:Name="RecipesCollectionView"
                 ItemsSource="{Binding RecipeItems}"
@@ -189,11 +196,11 @@
             </CollectionView>
         </Frame>
 
-        <Frame
-            Grid.Row="6"
-            BorderColor="LightGray"
-            Padding="10"
-            IsVisible="{Binding ShowRecipeSelectionPanel}">
+            <Frame
+                Grid.Row="6"
+                BorderColor="LightGray"
+                Padding="10"
+                IsVisible="{Binding ShowRecipeSelectionPanel}">
             <VerticalStackLayout Spacing="8">
                 <Label
                     Text="{Binding SelectedRecipeDescription}"
@@ -219,12 +226,12 @@
             </VerticalStackLayout>
         </Frame>
 
-        <FlexLayout
-            Grid.Row="7"
-            Direction="Row"
-            Wrap="Wrap"
-            AlignItems="Center"
-            JustifyContent="Center">
+            <FlexLayout
+                Grid.Row="7"
+                Direction="Row"
+                Wrap="Wrap"
+                AlignItems="Center"
+                JustifyContent="Center">
             <Button
                 Text="Set notes"
                 Clicked="OnSetNotesClicked"
@@ -239,10 +246,10 @@
                 Style="{StaticResource FooterButtonStyle}" />
         </FlexLayout>
 
-        <Grid
-            Grid.Row="0"
-            Grid.RowSpan="8"
-            IsVisible="{Binding ShowAddIngredientPanel}">
+            <Grid
+                Grid.Row="0"
+                Grid.RowSpan="8"
+                IsVisible="{Binding ShowAddIngredientPanel}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnAddIngredientBackdropTapped" />
@@ -300,10 +307,10 @@
             </Frame>
         </Grid>
 
-        <Grid
-            Grid.Row="0"
-            Grid.RowSpan="8"
-            IsVisible="{Binding ShowEditIngredientPanel}">
+            <Grid
+                Grid.Row="0"
+                Grid.RowSpan="8"
+                IsVisible="{Binding ShowEditIngredientPanel}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnEditIngredientBackdropTapped" />
@@ -414,6 +421,54 @@
                     </FlexLayout>
                 </VerticalStackLayout>
             </Frame>
+        </Grid>
+        </Grid>
+
+        <Grid
+            x:Name="HelpOverlay"
+            IsVisible="False"
+            BackgroundColor="#80000000"
+            RowDefinitions="*,Auto">
+            <BoxView
+                Grid.Row="0"
+                BackgroundColor="Transparent">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnHelpDismissed" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Border
+                x:Name="HelpSheet"
+                Grid.Row="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                Padding="20,16"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16,16,0,0" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label
+                            x:Name="HelpTitleLabel"
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            VerticalOptions="Center" />
+                        <Button
+                            Grid.Column="1"
+                            Text="Close"
+                            Clicked="OnHelpDismissed"
+                            Padding="6,2"
+                            FontSize="12"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                    </Grid>
+                    <Label
+                        x:Name="HelpBodyLabel"
+                        LineBreakMode="WordWrap" />
+                    <Button
+                        Text="Open Full Help"
+                        Clicked="OnHelpOpenFullClicked" />
+                </VerticalStackLayout>
+            </Border>
         </Grid>
     </Grid>
 

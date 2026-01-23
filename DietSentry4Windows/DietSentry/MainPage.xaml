@@ -31,113 +31,120 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid
-        Padding="20"
-        RowDefinitions="Auto,Auto,Auto,*,Auto"
-        RowSpacing="16">
+    <Grid>
         <Grid
-            Grid.Row="0"
-            ColumnDefinitions="Auto,*"
-            ColumnSpacing="12">
-            <Label
-                Grid.Column="0"
-                Text="Foods Table"
-                FontAttributes="Bold"
-                FontSize="24"
-                VerticalOptions="Start" />
-                <FlexLayout
+            Padding="20"
+            RowDefinitions="Auto,Auto,Auto,*,Auto"
+            RowSpacing="16">
+            <Grid
+                Grid.Row="0"
+                ColumnDefinitions="Auto,Auto,*"
+                ColumnSpacing="12">
+                <Button
+                    Grid.Column="0"
+                    Text="?"
+                    Style="{StaticResource HelpIconButtonStyle}"
+                    Clicked="OnHelpClicked"
+                    VerticalOptions="Start" />
+                <Label
                     Grid.Column="1"
-                    Direction="Row"
-                    Wrap="Wrap"
-                    AlignItems="Start"
-                    JustifyContent="Start">
-                    <Button
-                        Text="Eaten Table"
-                        BackgroundColor="{StaticResource PrimaryDark}"
-                        TextColor="{StaticResource White}"
-                        Clicked="OnEatenLogClicked"
-                        Style="{StaticResource TopRowButtonStyle}" />
-                    <Button
-                        Text="Weight Table"
-                        BackgroundColor="{StaticResource PrimaryDark}"
-                        TextColor="{StaticResource White}"
-                        Clicked="OnWeightTableClicked"
-                        Style="{StaticResource TopRowButtonStyle}" />
-                    <Button
-                        Text="Add Solid"
-                        Clicked="OnInsertFoodClicked"
-                        Style="{StaticResource TopRowButtonStyle}" />
-                    <Button
-                        Text="Add Liquid"
-                        Clicked="OnInsertLiquidFoodClicked"
-                        Style="{StaticResource TopRowButtonStyle}" />
-                    <Button
-                        Text="Add Recipe"
-                        Clicked="OnAddRecipeClicked"
-                        Style="{StaticResource TopRowButtonStyle}" />
-                    <Button
-                        Text="JSON"
-                        Clicked="OnAddFoodByJsonClicked"
-                        Style="{StaticResource TopRowButtonStyle}" />
-                    <Button
-                        Text="Export db"
-                        Clicked="OnExportDbClicked"
-                        Style="{StaticResource TopRowButtonStyle}" />
-                    <Button
-                        Text="Import db"
-                        Clicked="OnImportDbClicked"
-                        Style="{StaticResource TopRowButtonStyle}" />
-                    <Button
-                        Text="Export csv"
-                        Clicked="OnExportCsvClicked"
-                        Style="{StaticResource TopRowButtonStyle}" />
-                    <Button
-                        Text="Palette"
-                        Clicked="OnPaletteClicked"
-                        Style="{StaticResource TopRowButtonStyle}" />
-                </FlexLayout>
-        </Grid>
+                    Text="Foods Table"
+                    FontAttributes="Bold"
+                    FontSize="24"
+                    VerticalOptions="Start" />
+                    <FlexLayout
+                        Grid.Column="2"
+                        Direction="Row"
+                        Wrap="Wrap"
+                        AlignItems="Start"
+                        JustifyContent="Start">
+                        <Button
+                            Text="Eaten Table"
+                            BackgroundColor="{StaticResource PrimaryDark}"
+                            TextColor="{StaticResource White}"
+                            Clicked="OnEatenLogClicked"
+                            Style="{StaticResource TopRowButtonStyle}" />
+                        <Button
+                            Text="Weight Table"
+                            BackgroundColor="{StaticResource PrimaryDark}"
+                            TextColor="{StaticResource White}"
+                            Clicked="OnWeightTableClicked"
+                            Style="{StaticResource TopRowButtonStyle}" />
+                        <Button
+                            Text="Add Solid"
+                            Clicked="OnInsertFoodClicked"
+                            Style="{StaticResource TopRowButtonStyle}" />
+                        <Button
+                            Text="Add Liquid"
+                            Clicked="OnInsertLiquidFoodClicked"
+                            Style="{StaticResource TopRowButtonStyle}" />
+                        <Button
+                            Text="Add Recipe"
+                            Clicked="OnAddRecipeClicked"
+                            Style="{StaticResource TopRowButtonStyle}" />
+                        <Button
+                            Text="JSON"
+                            Clicked="OnAddFoodByJsonClicked"
+                            Style="{StaticResource TopRowButtonStyle}" />
+                        <Button
+                            Text="Export db"
+                            Clicked="OnExportDbClicked"
+                            Style="{StaticResource TopRowButtonStyle}" />
+                        <Button
+                            Text="Import db"
+                            Clicked="OnImportDbClicked"
+                            Style="{StaticResource TopRowButtonStyle}" />
+                        <Button
+                            Text="Export csv"
+                            Clicked="OnExportCsvClicked"
+                            Style="{StaticResource TopRowButtonStyle}" />
+                        <Button
+                            Text="Palette"
+                            Clicked="OnPaletteClicked"
+                            Style="{StaticResource TopRowButtonStyle}" />
+                    </FlexLayout>
+            </Grid>
 
-        <HorizontalStackLayout
-            Grid.Row="1"
-            Spacing="8">
-            <RadioButton
-                x:Name="MinModeRadio"
-                Content="Min"
-                GroupName="NutritionMode"
-                CheckedChanged="OnNutritionModeChanged" />
-            <RadioButton
-                x:Name="NipModeRadio"
-                Content="NIP"
-                GroupName="NutritionMode"
-                CheckedChanged="OnNutritionModeChanged" />
-            <RadioButton
-                x:Name="AllModeRadio"
-                Content="All"
-                GroupName="NutritionMode"
-                IsChecked="True"
-                CheckedChanged="OnNutritionModeChanged" />
-        </HorizontalStackLayout>
+            <HorizontalStackLayout
+                Grid.Row="1"
+                Spacing="8">
+                <RadioButton
+                    x:Name="MinModeRadio"
+                    Content="Min"
+                    GroupName="NutritionMode"
+                    CheckedChanged="OnNutritionModeChanged" />
+                <RadioButton
+                    x:Name="NipModeRadio"
+                    Content="NIP"
+                    GroupName="NutritionMode"
+                    CheckedChanged="OnNutritionModeChanged" />
+                <RadioButton
+                    x:Name="AllModeRadio"
+                    Content="All"
+                    GroupName="NutritionMode"
+                    IsChecked="True"
+                    CheckedChanged="OnNutritionModeChanged" />
+            </HorizontalStackLayout>
 
-        <HorizontalStackLayout
-            Grid.Row="2"
-            Spacing="8">
-            <Entry
-                x:Name="FoodFilterEntry"
-                Placeholder="Enter food filter text"
-                WidthRequest="260"
-                HorizontalOptions="Start"
-                Completed="OnFoodFilterCompleted" />
-            <Button
-                Text="Clear"
-                Clicked="OnClearFilterClicked" />
-        </HorizontalStackLayout>
+            <HorizontalStackLayout
+                Grid.Row="2"
+                Spacing="8">
+                <Entry
+                    x:Name="FoodFilterEntry"
+                    Placeholder="Enter food filter text"
+                    WidthRequest="260"
+                    HorizontalOptions="Start"
+                    Completed="OnFoodFilterCompleted" />
+                <Button
+                    Text="Clear"
+                    Clicked="OnClearFilterClicked" />
+            </HorizontalStackLayout>
 
-        <Frame
-            Grid.Row="3"
-            BorderColor="LightGray"
-            Padding="10">
-            <Grid RowDefinitions="*">
+            <Frame
+                Grid.Row="3"
+                BorderColor="LightGray"
+                Padding="10">
+                <Grid RowDefinitions="*">
                 <CollectionView
                     x:Name="FoodsCollectionView"
                     Grid.Row="0"
@@ -567,6 +574,54 @@
                 </VerticalStackLayout>
             </Frame>
         </Grid>
+
+        <Grid
+            x:Name="HelpOverlay"
+            IsVisible="False"
+            BackgroundColor="#80000000"
+            RowDefinitions="*,Auto">
+            <BoxView
+                Grid.Row="0"
+                BackgroundColor="Transparent">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnHelpDismissed" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Border
+                x:Name="HelpSheet"
+                Grid.Row="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                Padding="20,16"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16,16,0,0" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label
+                            Text="Foods table"
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            VerticalOptions="Center" />
+                        <Button
+                            Grid.Column="1"
+                            Text="Close"
+                            Clicked="OnHelpDismissed"
+                            Padding="6,2"
+                            FontSize="12"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                    </Grid>
+                    <Label
+                        Text="Use the top buttons to add foods, import/export, and navigate tables. Filter and nutrition modes control how the list is shown."
+                        LineBreakMode="WordWrap" />
+                    <Button
+                        Text="Open Full Help"
+                        Clicked="OnHelpOpenFullClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
 
         <Grid
             Grid.Row="0"

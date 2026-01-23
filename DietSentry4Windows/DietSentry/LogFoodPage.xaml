@@ -3,41 +3,99 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DietSentry.LogFoodPage">
 
-    <VerticalStackLayout
-        Padding="20"
-        Spacing="12">
-        <Label
-            x:Name="FoodNameLabel"
-            FontAttributes="Bold"
-            FontSize="18" />
-        <HorizontalStackLayout Spacing="8">
-            <Entry
-                x:Name="AmountEntry"
-                Placeholder="Amount"
-                Keyboard="Numeric"
-                HorizontalOptions="FillAndExpand" />
-            <Label
-                x:Name="UnitLabel"
-                VerticalOptions="Center" />
-        </HorizontalStackLayout>
-        <HorizontalStackLayout Spacing="12">
-            <DatePicker x:Name="LogDatePicker" />
-            <TimePicker x:Name="LogTimePicker" />
-        </HorizontalStackLayout>
-        <FlexLayout
-            Direction="Row"
-            Wrap="Wrap"
-            AlignItems="Start"
-            JustifyContent="Start">
-            <Button
-                Text="Confirm"
-                Clicked="OnConfirmClicked"
-                Margin="0,0,4,4" />
-            <Button
-                Text="Cancel"
-                Clicked="OnCancelClicked"
-                Margin="0,0,4,4" />
-        </FlexLayout>
-    </VerticalStackLayout>
+    <Grid>
+        <VerticalStackLayout
+            Padding="20"
+            Spacing="12">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <Button
+                    Grid.Column="0"
+                    Text="?"
+                    Style="{StaticResource HelpIconButtonStyle}"
+                    Clicked="OnHelpClicked" />
+                <Label
+                    Grid.Column="1"
+                    x:Name="FoodNameLabel"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    VerticalOptions="Center" />
+            </Grid>
+            <HorizontalStackLayout Spacing="8">
+                <Entry
+                    x:Name="AmountEntry"
+                    Placeholder="Amount"
+                    Keyboard="Numeric"
+                    HorizontalOptions="FillAndExpand" />
+                <Label
+                    x:Name="UnitLabel"
+                    VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            <HorizontalStackLayout Spacing="12">
+                <DatePicker x:Name="LogDatePicker" />
+                <TimePicker x:Name="LogTimePicker" />
+            </HorizontalStackLayout>
+            <FlexLayout
+                Direction="Row"
+                Wrap="Wrap"
+                AlignItems="Start"
+                JustifyContent="Start">
+                <Button
+                    Text="Confirm"
+                    Clicked="OnConfirmClicked"
+                    Margin="0,0,4,4" />
+                <Button
+                    Text="Cancel"
+                    Clicked="OnCancelClicked"
+                    Margin="0,0,4,4" />
+            </FlexLayout>
+        </VerticalStackLayout>
+
+        <Grid
+            x:Name="HelpOverlay"
+            IsVisible="False"
+            BackgroundColor="#80000000"
+            RowDefinitions="*,Auto">
+            <BoxView
+                Grid.Row="0"
+                BackgroundColor="Transparent">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnHelpDismissed" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Border
+                x:Name="HelpSheet"
+                Grid.Row="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                Padding="20,16"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16,16,0,0" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label
+                            Text="Log food"
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            VerticalOptions="Center" />
+                        <Button
+                            Grid.Column="1"
+                            Text="Close"
+                            Clicked="OnHelpDismissed"
+                            Padding="6,2"
+                            FontSize="12"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                    </Grid>
+                    <Label
+                        Text="Enter the amount, choose date and time, then confirm to log the entry."
+                        LineBreakMode="WordWrap" />
+                    <Button
+                        Text="Open Full Help"
+                        Clicked="OnHelpOpenFullClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
 
 </ContentPage>

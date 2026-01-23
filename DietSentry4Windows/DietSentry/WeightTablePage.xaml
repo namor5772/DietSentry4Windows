@@ -31,132 +31,187 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid
-        Padding="20"
-        RowDefinitions="Auto,*,Auto"
-        RowSpacing="16">
+    <Grid>
         <Grid
-            Grid.Row="0"
-            ColumnDefinitions="Auto,Auto,*"
-            ColumnSpacing="12">
-            <Label
-                Grid.Column="0"
-                Text="Weight Table"
-                FontAttributes="Bold"
-                FontSize="24"
-                VerticalOptions="Start" />
-            <Button
-                Grid.Column="1"
-                Text="Foods Table"
-                HorizontalOptions="Start"
-                BackgroundColor="{StaticResource PrimaryDark}"
-                TextColor="{StaticResource White}"
-                Clicked="OnBackClicked"
-                Style="{StaticResource TopRowButtonStyle}" />
-        </Grid>
+            Padding="20"
+            RowDefinitions="Auto,*,Auto"
+            RowSpacing="16">
+            <Grid
+                Grid.Row="0"
+                ColumnDefinitions="Auto,Auto,Auto,*"
+                ColumnSpacing="12">
+                <Button
+                    Grid.Column="0"
+                    Text="?"
+                    Style="{StaticResource HelpIconButtonStyle}"
+                    Clicked="OnHelpClicked"
+                    VerticalOptions="Start" />
+                <Label
+                    Grid.Column="1"
+                    Text="Weight Table"
+                    FontAttributes="Bold"
+                    FontSize="24"
+                    VerticalOptions="Start" />
+                <Button
+                    Grid.Column="2"
+                    Text="Foods Table"
+                    HorizontalOptions="Start"
+                    BackgroundColor="{StaticResource PrimaryDark}"
+                    TextColor="{StaticResource White}"
+                    Clicked="OnBackClicked"
+                    Style="{StaticResource TopRowButtonStyle}" />
+            </Grid>
 
-        <Frame
-            Grid.Row="1"
-            BorderColor="LightGray"
-            Padding="10">
-            <CollectionView
-                x:Name="WeightCollectionView"
-                ItemsSource="{Binding WeightEntries}"
-                ItemSizingStrategy="MeasureAllItems"
-                SelectionMode="Single"
-                SelectionChanged="OnWeightSelectionChanged">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout
-                        Orientation="Vertical"
-                        ItemSpacing="4" />
-                </CollectionView.ItemsLayout>
-                <CollectionView.EmptyView>
-                    <VerticalStackLayout Spacing="8">
+            <Frame
+                Grid.Row="1"
+                BorderColor="LightGray"
+                Padding="10">
+                <CollectionView
+                    x:Name="WeightCollectionView"
+                    ItemsSource="{Binding WeightEntries}"
+                    ItemSizingStrategy="MeasureAllItems"
+                    SelectionMode="Single"
+                    SelectionChanged="OnWeightSelectionChanged">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout
+                            Orientation="Vertical"
+                            ItemSpacing="4" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout Spacing="8">
+                            <Label
+                                Text="No weight entries yet." />
+                            <Button
+                                Text="Add"
+                                HorizontalOptions="Start"
+                                Clicked="OnAddClicked" />
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame
+                                BorderColor="LightGray"
+                                Padding="6"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
+                                <Grid
+                                    ColumnDefinitions="Auto,Auto,*"
+                                    ColumnSpacing="6"
+                                    MinimumHeightRequest="24">
+                                    <Label
+                                        Grid.Row="0"
+                                        x:Name="DateLabel"
+                                        Text="{Binding DateWeight}"
+                                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                        VerticalOptions="Start" />
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                        HorizontalTextAlignment="End"
+                                        VerticalOptions="Start"
+                                        LineBreakMode="TailTruncation">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding Weight, Converter={StaticResource NumericFormatConverter}}" />
+                                                <Span Text=" kg" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="2"
+                                        Text="{Binding Comments}"
+                                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                        VerticalOptions="Start"
+                                        LineBreakMode="WordWrap" />
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Frame>
+
+            <Frame
+                Grid.Row="2"
+                BorderColor="LightGray"
+                Padding="10"
+                IsVisible="{Binding ShowSelectionPanel}">
+                <VerticalStackLayout Spacing="8">
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
+                        Spacing="8">
                         <Label
-                            Text="No weight entries yet." />
+                            Text="{Binding SelectedWeightDateDisplay}"
+                            FontAttributes="Bold" />
+                        <Label
+                            Text="{Binding SelectedWeightValueDisplay}" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
+                        Spacing="0">
                         <Button
                             Text="Add"
-                            HorizontalOptions="Start"
-                            Clicked="OnAddClicked" />
-                    </VerticalStackLayout>
-                </CollectionView.EmptyView>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame
-                            BorderColor="LightGray"
-                            Padding="6"
-                            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}">
-                            <Grid
-                                ColumnDefinitions="Auto,Auto,*"
-                                ColumnSpacing="6"
-                                MinimumHeightRequest="24">
-                                <Label
-                                    Grid.Row="0"
-                                    x:Name="DateLabel"
-                                    Text="{Binding DateWeight}"
-                                    TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
-                                    VerticalOptions="Start" />
-                                <Label
-                                    Grid.Row="0"
-                                    Grid.Column="1"
-                                    TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
-                                    HorizontalTextAlignment="End"
-                                    VerticalOptions="Start"
-                                    LineBreakMode="TailTruncation">
-                                    <Label.FormattedText>
-                                        <FormattedString>
-                                            <Span Text="{Binding Weight, Converter={StaticResource NumericFormatConverter}}" />
-                                            <Span Text=" kg" />
-                                        </FormattedString>
-                                    </Label.FormattedText>
-                                </Label>
-                                <Label
-                                    Grid.Row="0"
-                                    Grid.Column="2"
-                                    Text="{Binding Comments}"
-                                    TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
-                                    VerticalOptions="Start"
-                                    LineBreakMode="WordWrap" />
-                            </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </Frame>
+                            Clicked="OnAddClicked"
+                            Style="{StaticResource SelectionActionButtonStyle}" />
+                        <Button
+                            Text="Edit"
+                            Clicked="OnEditSelectedClicked"
+                            Style="{StaticResource SelectionActionButtonStyle}" />
+                        <Button
+                            Text="Delete"
+                            Clicked="OnDeleteSelectedClicked"
+                            Style="{StaticResource SelectionActionButtonStyle}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
 
-        <Frame
-            Grid.Row="2"
-            BorderColor="LightGray"
-            Padding="10"
-            IsVisible="{Binding ShowSelectionPanel}">
-            <VerticalStackLayout Spacing="8">
-                <HorizontalStackLayout
-                    HorizontalOptions="Center"
-                    Spacing="8">
+        <Grid
+            x:Name="HelpOverlay"
+            IsVisible="False"
+            BackgroundColor="#80000000"
+            RowDefinitions="*,Auto">
+            <BoxView
+                Grid.Row="0"
+                BackgroundColor="Transparent">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnHelpDismissed" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Border
+                x:Name="HelpSheet"
+                Grid.Row="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                Padding="20,16"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16,16,0,0" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label
+                            Text="Weight table"
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            VerticalOptions="Center" />
+                        <Button
+                            Grid.Column="1"
+                            Text="Close"
+                            Clicked="OnHelpDismissed"
+                            Padding="6,2"
+                            FontSize="12"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                    </Grid>
                     <Label
-                        Text="{Binding SelectedWeightDateDisplay}"
-                        FontAttributes="Bold" />
-                    <Label
-                        Text="{Binding SelectedWeightValueDisplay}" />
-                </HorizontalStackLayout>
-                <HorizontalStackLayout
-                    HorizontalOptions="Center"
-                    Spacing="0">
+                        Text="Track weight entries over time, add new records, and edit or delete selections from the panel below."
+                        LineBreakMode="WordWrap" />
                     <Button
-                        Text="Add"
-                        Clicked="OnAddClicked"
-                        Style="{StaticResource SelectionActionButtonStyle}" />
-                    <Button
-                        Text="Edit"
-                        Clicked="OnEditSelectedClicked"
-                        Style="{StaticResource SelectionActionButtonStyle}" />
-                    <Button
-                        Text="Delete"
-                        Clicked="OnDeleteSelectedClicked"
-                        Style="{StaticResource SelectionActionButtonStyle}" />
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
-        </Frame>
+                        Text="Open Full Help"
+                        Clicked="OnHelpOpenFullClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
 
         <Grid
             Grid.Row="0"

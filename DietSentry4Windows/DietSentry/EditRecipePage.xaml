@@ -3,36 +3,92 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="DietSentry.EditRecipePage">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="20"
-            Spacing="16">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                <Label
-                    Text="Edit Recipe"
-                    FontAttributes="Bold"
-                    FontSize="24" />
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout
+                Padding="20"
+                Spacing="16">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Button
+                        Grid.Column="0"
+                        Text="?"
+                        Style="{StaticResource HelpIconButtonStyle}"
+                        Clicked="OnHelpClicked" />
+                    <Label
+                        Grid.Column="1"
+                        Text="Edit Recipe"
+                        FontAttributes="Bold"
+                        FontSize="24"
+                        VerticalOptions="Center" />
+                    <Button
+                        Grid.Column="2"
+                        Text="Back to Foods Table"
+                        BackgroundColor="{StaticResource PrimaryDark}"
+                        TextColor="{StaticResource White}"
+                        Clicked="OnBackClicked" />
+                </Grid>
+
+                <Entry
+                    Placeholder="Recipe description" />
+
+                <Editor
+                    Placeholder="Ingredient list (placeholder)"
+                    AutoSize="TextChanges"
+                    HeightRequest="160" />
+
                 <Button
-                    Grid.Column="1"
-                    Text="Back to Foods Table"
-                    BackgroundColor="{StaticResource PrimaryDark}"
-                    TextColor="{StaticResource White}"
-                    Clicked="OnBackClicked" />
-            </Grid>
+                    Text="Confirm"
+                    Clicked="OnConfirmClicked" />
 
-            <Entry
-                Placeholder="Recipe description" />
+            </VerticalStackLayout>
+        </ScrollView>
 
-            <Editor
-                Placeholder="Ingredient list (placeholder)"
-                AutoSize="TextChanges"
-                HeightRequest="160" />
-
-            <Button
-                Text="Confirm"
-                Clicked="OnConfirmClicked" />
-
-        </VerticalStackLayout>
-    </ScrollView>
+        <Grid
+            x:Name="HelpOverlay"
+            IsVisible="False"
+            BackgroundColor="#80000000"
+            RowDefinitions="*,Auto">
+            <BoxView
+                Grid.Row="0"
+                BackgroundColor="Transparent">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnHelpDismissed" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Border
+                x:Name="HelpSheet"
+                Grid.Row="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                Padding="20,16"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16,16,0,0" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label
+                            Text="Edit recipe"
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            VerticalOptions="Center" />
+                        <Button
+                            Grid.Column="1"
+                            Text="Close"
+                            Clicked="OnHelpDismissed"
+                            Padding="6,2"
+                            FontSize="12"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                    </Grid>
+                    <Label
+                        Text="Update the recipe details and confirm to save changes. Use Back to return without saving."
+                        LineBreakMode="WordWrap" />
+                    <Button
+                        Text="Open Full Help"
+                        Clicked="OnHelpOpenFullClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
 
 </ContentPage>

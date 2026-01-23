@@ -31,81 +31,88 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid
-        Padding="20"
-        RowDefinitions="Auto,Auto,Auto,*,Auto"
-        RowSpacing="16">
+    <Grid>
         <Grid
-            Grid.Row="0"
-            ColumnDefinitions="Auto,Auto,*"
-            ColumnSpacing="12">
-            <Label
-                Grid.Column="0"
-                Text="Eaten Table"
-                FontAttributes="Bold"
-                FontSize="24"
-                VerticalOptions="Start" />
-            <Button
-                Grid.Column="1"
-                Text="Foods Table"
-                HorizontalOptions="Start"
-                BackgroundColor="{StaticResource PrimaryDark}"
-                TextColor="{StaticResource White}"
-                Clicked="OnBackClicked"
-                Style="{StaticResource TopRowButtonStyle}" />
-        </Grid>
+            Padding="20"
+            RowDefinitions="Auto,Auto,Auto,*,Auto"
+            RowSpacing="16">
+            <Grid
+                Grid.Row="0"
+                ColumnDefinitions="Auto,Auto,Auto,*"
+                ColumnSpacing="12">
+                <Button
+                    Grid.Column="0"
+                    Text="?"
+                    Style="{StaticResource HelpIconButtonStyle}"
+                    Clicked="OnHelpClicked"
+                    VerticalOptions="Start" />
+                <Label
+                    Grid.Column="1"
+                    Text="Eaten Table"
+                    FontAttributes="Bold"
+                    FontSize="24"
+                    VerticalOptions="Start" />
+                <Button
+                    Grid.Column="2"
+                    Text="Foods Table"
+                    HorizontalOptions="Start"
+                    BackgroundColor="{StaticResource PrimaryDark}"
+                    TextColor="{StaticResource White}"
+                    Clicked="OnBackClicked"
+                    Style="{StaticResource TopRowButtonStyle}" />
+            </Grid>
 
-        <HorizontalStackLayout
-            Grid.Row="1"
-            Spacing="8">
-            <RadioButton
-                x:Name="MinModeRadio"
-                Content="Min"
-                GroupName="EatenNutritionMode"
-                CheckedChanged="OnNutritionModeChanged" />
-            <RadioButton
-                x:Name="NipModeRadio"
-                Content="NIP"
-                GroupName="EatenNutritionMode"
-                CheckedChanged="OnNutritionModeChanged" />
-            <RadioButton
-                x:Name="AllModeRadio"
-                Content="All"
-                GroupName="EatenNutritionMode"
-                CheckedChanged="OnNutritionModeChanged" />
-        </HorizontalStackLayout>
+            <HorizontalStackLayout
+                Grid.Row="1"
+                Spacing="8">
+                <RadioButton
+                    x:Name="MinModeRadio"
+                    Content="Min"
+                    GroupName="EatenNutritionMode"
+                    CheckedChanged="OnNutritionModeChanged" />
+                <RadioButton
+                    x:Name="NipModeRadio"
+                    Content="NIP"
+                    GroupName="EatenNutritionMode"
+                    CheckedChanged="OnNutritionModeChanged" />
+                <RadioButton
+                    x:Name="AllModeRadio"
+                    Content="All"
+                    GroupName="EatenNutritionMode"
+                    CheckedChanged="OnNutritionModeChanged" />
+            </HorizontalStackLayout>
 
-        <Grid
-            Grid.Row="2"
-            ColumnDefinitions="Auto,Auto,Auto,Auto,*"
-            ColumnSpacing="8">
-            <CheckBox
-                x:Name="DailyTotalsCheckBox"
-                CheckedChanged="OnDailyTotalsChanged" />
-            <Label
-                Grid.Column="1"
-                Text="Daily totals"
-                VerticalOptions="Center" />
-            <CheckBox
-                Grid.Column="2"
-                x:Name="FilterByDateCheckBox"
-                CheckedChanged="OnFilterByDateChanged" />
-            <Label
-                Grid.Column="3"
-                Text="Filter by date"
-                VerticalOptions="Center" />
-            <DatePicker
-                Grid.Column="4"
-                x:Name="FilterDatePicker"
-                DateSelected="OnFilterDateSelected"
-                IsEnabled="{Binding FilterByDate}" />
-        </Grid>
+            <Grid
+                Grid.Row="2"
+                ColumnDefinitions="Auto,Auto,Auto,Auto,*"
+                ColumnSpacing="8">
+                <CheckBox
+                    x:Name="DailyTotalsCheckBox"
+                    CheckedChanged="OnDailyTotalsChanged" />
+                <Label
+                    Grid.Column="1"
+                    Text="Daily totals"
+                    VerticalOptions="Center" />
+                <CheckBox
+                    Grid.Column="2"
+                    x:Name="FilterByDateCheckBox"
+                    CheckedChanged="OnFilterByDateChanged" />
+                <Label
+                    Grid.Column="3"
+                    Text="Filter by date"
+                    VerticalOptions="Center" />
+                <DatePicker
+                    Grid.Column="4"
+                    x:Name="FilterDatePicker"
+                    DateSelected="OnFilterDateSelected"
+                    IsEnabled="{Binding FilterByDate}" />
+            </Grid>
 
-        <Frame
-            Grid.Row="3"
-            BorderColor="LightGray"
-            Padding="10">
-            <Grid RowDefinitions="*">
+            <Frame
+                Grid.Row="3"
+                BorderColor="LightGray"
+                Padding="10">
+                <Grid RowDefinitions="*">
                 <CollectionView
                     x:Name="EatenCollectionView"
                     Grid.Row="0"
@@ -938,6 +945,54 @@
                 </VerticalStackLayout>
             </Frame>
         </Grid>
+
+        <Grid
+            x:Name="HelpOverlay"
+            IsVisible="False"
+            BackgroundColor="#80000000"
+            RowDefinitions="*,Auto">
+            <BoxView
+                Grid.Row="0"
+                BackgroundColor="Transparent">
+                <BoxView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnHelpDismissed" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Border
+                x:Name="HelpSheet"
+                Grid.Row="1"
+                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+                Padding="20,16"
+                StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16,16,0,0" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label
+                            Text="Eaten table"
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            VerticalOptions="Center" />
+                        <Button
+                            Grid.Column="1"
+                            Text="Close"
+                            Clicked="OnHelpDismissed"
+                            Padding="6,2"
+                            FontSize="12"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                    </Grid>
+                    <Label
+                        Text="Review logged foods here, switch nutrition detail levels, and filter by date or daily totals."
+                        LineBreakMode="WordWrap" />
+                    <Button
+                        Text="Open Full Help"
+                        Clicked="OnHelpOpenFullClicked" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
 
         <Grid
             Grid.Row="0"

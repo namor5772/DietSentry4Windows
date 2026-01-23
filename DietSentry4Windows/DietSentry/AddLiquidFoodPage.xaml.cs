@@ -324,6 +324,60 @@ namespace DietSentry
             await Shell.Current.GoToAsync("//foodSearch");
         }
 
+        private async void OnHelpClicked(object? sender, EventArgs e)
+        {
+            if (HelpOverlay == null || HelpSheet == null)
+            {
+                return;
+            }
+
+            var (title, body) = GetHelpContent();
+            HelpTitleLabel.Text = title;
+            HelpBodyLabel.Text = body;
+
+            HelpOverlay.IsVisible = true;
+            HelpSheet.TranslationY = 220;
+            _ = HelpSheet.TranslateTo(0, 0, 150, Easing.CubicOut);
+        }
+
+        private void OnHelpDismissed(object? sender, EventArgs e)
+        {
+            if (HelpOverlay == null)
+            {
+                return;
+            }
+
+            HelpOverlay.IsVisible = false;
+        }
+
+        private async void OnHelpOpenFullClicked(object? sender, EventArgs e)
+        {
+            if (HelpOverlay != null)
+            {
+                HelpOverlay.IsVisible = false;
+            }
+
+            await Shell.Current.GoToAsync("help?section=add-liquid");
+        }
+
+        private (string Title, string Body) GetHelpContent()
+        {
+            if (_editFoodId.HasValue)
+            {
+                return ("Editing Liquid Food",
+                    "Update values per 100mL and confirm to save changes. Use the Foods Table button to return without saving.");
+            }
+
+            if (_copyFoodId.HasValue)
+            {
+                return ("Copying Liquid Food",
+                    "Review values, adjust the description if needed, then confirm to save a new liquid food.");
+            }
+
+            return ("Add Liquid Food",
+                "Enter values per 100mL and confirm to add the food. Use the Foods Table button to return without saving.");
+        }
+
         private void UpdateScreenTitle()
         {
             if (_editFoodId.HasValue)
