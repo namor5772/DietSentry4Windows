@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DietSentry"
              x:Class="DietSentry.AddLiquidFoodPage">
 
     <ContentPage.Resources>
@@ -385,12 +386,11 @@
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
                     </Grid>
-                    <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
-                        <Label
-                        x:Name="HelpBodyLabel"
-                        LineBreakMode="WordWrap" />
-                    </ScrollView>
-</Grid>
+                    <local:MarkdownView
+                        x:Name="HelpBodyView"
+                        Grid.Row="1"
+                        VerticalOptions="FillAndExpand" />
+                </Grid>
             </Border>
         </Grid>
     </Grid>

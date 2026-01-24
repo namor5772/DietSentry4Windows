@@ -140,12 +140,11 @@
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
                     </Grid>
-                    <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
-                        <Label
-                        Text="View the app color palette and sample swatches. This screen is for visual reference only."
-                        LineBreakMode="WordWrap" />
-                    </ScrollView>
-</Grid>
+                    <local:MarkdownView
+                        Grid.Row="1"
+                        MarkdownText="View the app color palette and sample swatches. This screen is for visual reference only."
+                        VerticalOptions="FillAndExpand" />
+                </Grid>
             </Border>
         </Grid>
     </Grid>

@@ -270,12 +270,14 @@
                         Radius="12"
                         Opacity="0.6" />
                 </Frame.Shadow>
-                <Grid RowDefinitions="Auto,*" RowSpacing="12">
+                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="12">
                     <Label
+                        Grid.Row="0"
                         Text="{Binding SelectedFoodDescription}"
                         FontAttributes="Bold"
                         FontSize="18" />
                     <Grid
+                        Grid.Row="1"
                         ColumnDefinitions="Auto,*"
                         ColumnSpacing="8">
                         <Label
@@ -290,6 +292,7 @@
                             WidthRequest="120" />
                     </Grid>
                     <FlexLayout
+                        Grid.Row="2"
                         Direction="Row"
                         Wrap="Wrap"
                         AlignItems="Center"
@@ -331,12 +334,14 @@
                         Radius="12"
                         Opacity="0.6" />
                 </Frame.Shadow>
-                <Grid RowDefinitions="Auto,*" RowSpacing="12">
+                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="12">
                     <Label
+                        Grid.Row="0"
                         Text="{Binding SelectedRecipeDescription}"
                         FontAttributes="Bold"
                         FontSize="18" />
                     <Grid
+                        Grid.Row="1"
                         ColumnDefinitions="Auto,*"
                         ColumnSpacing="8">
                         <Label
@@ -351,6 +356,7 @@
                             WidthRequest="120" />
                     </Grid>
                     <FlexLayout
+                        Grid.Row="2"
                         Direction="Row"
                         Wrap="Wrap"
                         AlignItems="Center"
@@ -392,20 +398,23 @@
                         Radius="12"
                         Opacity="0.6" />
                 </Frame.Shadow>
-                <Grid RowDefinitions="Auto,*" RowSpacing="12">
+                <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12">
                     <Label
+                        Grid.Row="0"
                         Text="Recipe Notes"
                         FontAttributes="Bold"
                         FontSize="18"
                         HorizontalTextAlignment="Center"
                         LineBreakMode="WordWrap" />
                     <Editor
+                        Grid.Row="1"
                         x:Name="RecipeNotesEditor"
                         AutoSize="TextChanges"
                         MinimumHeightRequest="160"
                         MaximumHeightRequest="360"
                         VerticalOptions="FillAndExpand" />
                     <FlexLayout
+                        Grid.Row="2"
                         Direction="Row"
                         Wrap="Wrap"
                         AlignItems="Center"
@@ -461,12 +470,11 @@
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
                     </Grid>
-                    <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
-                        <Label
-                        x:Name="HelpBodyLabel"
-                        LineBreakMode="WordWrap" />
-                    </ScrollView>
-</Grid>
+                    <local:MarkdownView
+                        x:Name="HelpBodyView"
+                        Grid.Row="1"
+                        VerticalOptions="FillAndExpand" />
+                </Grid>
             </Border>
         </Grid>
     </Grid>

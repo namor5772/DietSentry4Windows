@@ -333,7 +333,7 @@ namespace DietSentry
 
             var (title, body) = GetHelpContent();
             HelpTitleLabel.Text = title;
-            HelpBodyLabel.Text = body;
+            HelpBodyView.MarkdownText = body;
 
             HelpOverlay.IsVisible = true;
 

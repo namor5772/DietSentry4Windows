@@ -81,12 +81,11 @@
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
                     </Grid>
-                    <ScrollView Grid.Row="1" VerticalOptions="FillAndExpand">
-                        <Label
-                        Text="{x:Static local:HelpContent.EditRecipeBody}"
-                        LineBreakMode="WordWrap" />
-                    </ScrollView>
-</Grid>
+                    <local:MarkdownView
+                        Grid.Row="1"
+                        MarkdownText="{x:Static local:HelpContent.EditRecipeBody}"
+                        VerticalOptions="FillAndExpand" />
+                </Grid>
             </Border>
         </Grid>
     </Grid>
