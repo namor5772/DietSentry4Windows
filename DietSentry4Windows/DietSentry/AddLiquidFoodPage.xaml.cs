@@ -357,15 +357,15 @@ namespace DietSentry
         {
             if (_editFoodId.HasValue)
             {
-                return ("Editing Liquid Food", HelpContent.EditLiquidFoodBody);
+                return (HelpContent.FormatHelpTitle("Editing Liquid Food"), HelpContent.EditLiquidFoodBody);
             }
 
             if (_copyFoodId.HasValue)
             {
-                return ("Copying Liquid Food", HelpContent.CopyLiquidFoodBody);
+                return (HelpContent.FormatHelpTitle("Copying Liquid Food"), HelpContent.CopyLiquidFoodBody);
             }
 
-            return ("Add Liquid Food", HelpContent.AddLiquidFoodBody);
+            return (HelpContent.FormatHelpTitle("Add Liquid Food"), HelpContent.AddLiquidFoodBody);
         }
 
         private void UpdateScreenTitle()

@@ -733,15 +733,15 @@ namespace DietSentry
         {
             if (_editingFoodId.HasValue)
             {
-                return ("Editing Recipe", HelpContent.BuildRecipeHelpText("Editing Recipe"));
+                return (HelpContent.FormatHelpTitle("Editing Recipe"), HelpContent.BuildRecipeHelpText("Editing Recipe"));
             }
 
             if (_copySourceFoodId.HasValue)
             {
-                return ("Copying Recipe", HelpContent.BuildRecipeHelpText("Copying Recipe"));
+                return (HelpContent.FormatHelpTitle("Copying Recipe"), HelpContent.BuildRecipeHelpText("Copying Recipe"));
             }
 
-            return ("Add Recipe", HelpContent.BuildRecipeHelpText("Add Recipe"));
+            return (HelpContent.FormatHelpTitle("Add Recipe"), HelpContent.BuildRecipeHelpText("Add Recipe"));
         }
 
         private static bool TryParsePositiveDouble(string? input, out double value)

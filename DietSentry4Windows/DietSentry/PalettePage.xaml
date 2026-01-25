@@ -127,7 +127,7 @@
                 <Grid RowDefinitions="Auto,*" RowSpacing="12">
                     <Grid ColumnDefinitions="*,Auto">
                         <Label
-                            Text="Palette"
+                            Text="HELP for the [Palette] screen"
                             FontAttributes="Bold"
                             FontSize="18"
                             VerticalOptions="Center" />

@@ -2,59 +2,61 @@ namespace DietSentry
 {
     public static class HelpContent
     {
-        public const string FoodsTableTitle = "Foods Table";
+        public static string FoodsTableTitle => FormatHelpTitle("Foods Table");
 
         public const string FoodsTableBody = """
-# **Foods Table**
 This is the main screen of the app.
 
-Its purpose is to display a list of foods from the Foods table and allow interaction with a selected food. The primary purpose being to **LOG the selected food**.
+Its purpose is to display a list of foods from the Foods table and allow interaction with a selected food. The primary purpose being to **LOG the selected food**. In the top row it also contains buttons for actions you can take.
 ***
-# **Explanation of GUI elements**
+### **Explanation of GUI elements**
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
-- The **heading** of the screen: "Foods Table". 
-- A **segmented button** with three options (Min, NIP, All). The selection is persistent between app restarts. 
+- **help button** `?` which displays this help screen.
+- **heading** of this screen: [Foods Table]. 
+- **Row of buttons** used to accomplish various tasks. If a button press opens a new screen its help will detail its functionality:
+    - **Eaten Table** button which transfers you to the [Eaten Table] screen. 
+    - **Weight Table** button which transfers you to the [Weight Table] screen.
+    - **Add Solid** button which transfers you to the [Add Solid Food] screen.
+    - **Add Liquid** button which transfers you to the [Add Liquid Food] screen.
+    - **Add Recipe** button which transfers you to the [Add Recipe] screen.
+    - **JSON** button which transfers you to the [Add Food using JSON] screen.
+    - **Export db** which exports/copies the apps internal foods.db database file to the location shown in the dialog window that appears.
+    - **Import db** which imports/copies a foods.db database file from the location shown in the dialog window that appears and into the **internal location** used by this app.
+    - **Export csv** which exports a csv version of an aggregated form of the Eaten table to a location shown in the dialog window that appears.        
+- **Radio buttons** with three options (Min, NIP, All). The selection is persistent within and between app restarts. 
     - **Min**: only displays the text description of food items.
-    - **NIP**: additionally displays the minimum mandated nutrient information (per 100g or 100mL of the food) as required in by FSANZ on Nutritional Information Panels (NIP)
-    - **All**: Displays all nutrient fields stored in the Foods table (there are 23, including Energy) PLUS the notes text field
-- The **help button** `?` which displays this help screen.
-- The **navigation button** `->` which transfers you to the Eaten Table screen.
-- A **text field** which when empty displays the text "Enter food filter text"
+    - **NIP**: additionally displays the minimum mandated nutrient information (per 100g or 100mL of the food) as required by FSANZ on Nutritional Information Panels (NIPs).
+    - **All**: displays all nutrient fields stored in the Foods table (there are 23, including Energy) PLUS the notes text field
+- **Text field** which when empty faintly displays the text "Enter food filter text"
     - Type any text in the field and press the Enter key or equivalent. This filters the list of foods to those that contain this text anywhere in their description.
-    - You can also type {text1}|{text2} to match descriptions that contain BOTH of these terms.
-    - It is NOT case sensitive
-- The **clear text field button** `x` which clears the above text field    
-- A **scrollable table viewer** which displays records from the Foods table. When a particular food is selected (by tapping it) a selection panel appears at the bottom of the screen. It displays the description of the selected food followed by seven buttons below it:
+    - You can also type \{text1\}|\{text2\} to match descriptions that contain BOTH of these terms.
+    - It is only persistent within app restarts unless explicitly modified or cleared by some secondary actions.
+    - It is NOT case sensitive.
+- **Clear** button which clears the above text field.    
+- **Scrollable table viewer** which displays records from the Foods table. When a particular food is selected (by tapping it) a selection panel appears at the bottom of the screen. It displays the description of the selected food followed by five buttons below it. These relate to possible actions that reference the selected food record:
     - **LOG**: logs the selected food into the Eaten Table.
-        - It opens a dialog box where you can specify the amount eaten as well as the date and time this has occurred (with the default being now).
-        - Press the **Confirm** button when you are ready to log your food. This transfers focus to the Eaten Table screen where the just logged food will be visible. Read the help on that Screen for more help.
-        - You can abort this process by tapping anywhere outside the dialog box. This closes it.
+        - It opens a dialog box where you can specify the amount eaten as well as the date and time (in 24hr format) that this has occurred (with the default being now).
+        - Press the **Confirm** button when you are ready to log your food. This transfers focus to the [Eaten Table] screen where the just logged food will be visible. Read the help on that screen for more info.
+        - You can abort this process by tapping anywhere outside the dialog box or pressing the **Cancel** button. This closes the dialog.
     - **Edit**: allows editing of the selected food.
-        - It opens "Editing Solid Food" or "Editing Liquid Food" screens unless the description contains `{recipe=...g}`, in which case it opens "Editing Recipe".
-    - **Add**: adds a new food to the database.
-        - It opens a screen titled "Add Food". Press the help button on that screen for more help.
-        - The original selected food has no relevance to this activity. It is just a way of making the Add button available.
-    - **Json**: adds a new food to the database based on Json text (not applicable to recipe foods).
-        - It opens a screen titled "Add Food using Json".  Press the help button on that screen for more help.
-        - The original selected food has no relevance to this activity. It is just a way of making the Json button available.
+        - It opens the [Editing Solid Food] or [Editing Liquid Food] screens unless the description contains "\{recipe=...g\}", in which case it opens [Editing Recipe].
+        - Read the help on those screens for more info.
     - **Copy**: makes a copy of the selected food.
-        - If the selected food is a Solid it opens a screen titled "Copying Solid Food"
-        - If the selected food is a Liquid it opens a screen titled "Copying Liquid Food"
-        - If the selected food is a Recipe it opens a screen titled "Copying Recipe"
+        - If the selected food is a Solid it opens a screen titled [Copying Solid Food].
+        - If the selected food is a Liquid it opens a screen titled [Copying Liquid Food].
+        - If the selected food is a Recipe it opens a screen titled [Copying Recipe].
         The type of a food (Solid, Liquid or Recipe) is coded in its description field, as explained in the next section.
     - **Convert**: converts a liquid food to a solid. 
-        - If the food is a liquid it displays a dialog that enables the foods density to be input in g/mL
+        - If the food is a liquid it displays a dialog that enables the foods density to be input in g/mL.
         - A new solid food is then created on a per 100g basis using that density.
-        - The description of this new food removes the trailing " mL" marker and appends `{density=...g/mL}` plus the user-added ` #` suffix so you can see how it was derived.
+        - The description of this new food removes the trailing " mL" marker and appends "\{density=...g/mL\}" plus the user-added "#" suffix so you can see how it was derived.
+        - If the selected food is a solid (or recipe) a [Not available] dialog is shown instead.
     - **Delete**: deletes the selected food from the database.
         - It opens a dialog which warns you that you will be deleting the selected food.
         - This is irrevocable if you press the **Confirm** button.
-        - You can change your mind about doing this by just tapping anywhere outside the dialog box. This closes it.
-    - **Utilities**: various database maintenance tools and other activities.
-        - It opens a screen titled "Utilities".  Press the help button on that screen for more help.
-        - The original selected food has no relevance to this activity. It is just a way of making the Utilities button available.
-***
-# **Foods table structure**
+        - You can abort this process by tapping anywhere outside the dialog box or pressing the **Cancel** button. This closes the dialog.
+---
+### **Foods table structure**
 ```
 Field name          Type    Units
 
@@ -89,11 +91,11 @@ The FoodId field is never explicitly displayed or considered. It is a Primary Ke
 The values of nutrients are per 100g or 100mL as appropriate and the units are as mandated in the FSANZ code.
 The notes field is optional free text and is shown only when the All option is selected.
 
-- **If a FoodDescription ends in the characters " mL" or " mL#"** the food is considered a Liquid, and nutrient values are per 100mL, The "#" character indicates that it is not part of the original database of foods.
+- **If a FoodDescription ends in the characters ` mL` or ` mL#`** the food is considered a Liquid, and nutrient values are per 100mL, The `#` character indicates that it is not part of the original database of foods.
 
-- **If a FoodDescription ends in the characters " {recipe=[weight]g}"** the food is considered a Recipe and can only be made up of solids and thus its nutrient values are per 100g. It is also never a part of the original database.
+- **If a FoodDescription ends in the characters ` {recipe=[weight]g}`** the food is considered a Recipe and can only be made up of solids and thus its nutrient values are per 100g. It is also never a part of the original database.
 
-- **If a FoodDescription ends in any other pattern of characters than those specified above** the food is considered a Solid, and nutrient values are per 100g. If additionally it ends in " #" then it is also never a part of the original database.
+- **If a FoodDescription ends in any other pattern of characters than those specified above** the food is considered a Solid, and nutrient values are per 100g. If additionally it ends in ` #` then it is also never a part of the original database.
 - **Foods converted from liquids** include a `{density=...g/mL}` marker in the description to record the density used for conversion.
 
 ### **Mandatory Nutrients on a NIP**
@@ -134,7 +136,7 @@ Some foods don’t require a NIP unless a nutrition claim is made:
 ***
 """;
 
-        public const string EatenTableTitle = "Eaten Table";
+        public static string EatenTableTitle => FormatHelpTitle("Eaten Table");
 
         public const string EatenTableBody = """
 # **Eaten Table**
@@ -452,15 +454,15 @@ The **Comments** field is optional and may be blank.
 The remaining fields are self expanatory.
 """;
 
-        public const string AddFoodByJsonTitle = "Add Food using Json";
-        public const string AddLiquidFoodTitle = "Add Liquid Food";
-        public const string AddSolidFoodTitle = "Add Solid Food";
-        public const string CopyFoodTitle = "Copy Food";
-        public const string CopyRecipeTitle = "Copying Recipe";
-        public const string EditFoodTitle = "Edit Food";
-        public const string EditRecipeTitle = "Editing Recipe";
-        public const string LogFoodTitle = "Log Food";
-        public const string WeightTableTitle = "Weight Table";
+        public static string AddFoodByJsonTitle => FormatHelpTitle("Add Food using Json");
+        public static string AddLiquidFoodTitle => FormatHelpTitle("Add Liquid Food");
+        public static string AddSolidFoodTitle => FormatHelpTitle("Add Solid Food");
+        public static string CopyFoodTitle => FormatHelpTitle("Copy Food");
+        public static string CopyRecipeTitle => FormatHelpTitle("Copying Recipe");
+        public static string EditFoodTitle => FormatHelpTitle("Edit Food");
+        public static string EditRecipeTitle => FormatHelpTitle("Editing Recipe");
+        public static string LogFoodTitle => FormatHelpTitle("Log Food");
+        public static string WeightTableTitle => FormatHelpTitle("Weight Table");
 
         public static string AddRecipeBody => BuildRecipeHelpText("Add Recipe");
         public static string CopyRecipeBody => BuildRecipeHelpText("Copying Recipe");
@@ -605,6 +607,11 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
                 .Replace("__DESCRIPTION_HINT__", descriptionHint)
                 .Replace("__CONFIRM_HINT__", confirmHint)
                 .Replace("__NOTES_HINT__", notesHint);
+        }
+
+        public static string FormatHelpTitle(string title)
+        {
+            return $"HELP for the [{title}] screen";
         }
     }
 }
