@@ -140,67 +140,73 @@ Some foods don’t require a NIP unless a nutrition claim is made:
         public static string EatenTableTitle => FormatHelpTitle("Eaten Table");
 
         public const string EatenTableBody = """
-# **Eaten Table**
 The main purpose of this screen is to **display a log of foods** you have consumed. You can also change their time stamps, amount eaten or delete them.
 ***
 ## Explanation of GUI elements
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
-- The **heading** of the screen: "Eaten Table". 
-- A **segmented button** with three options (Min, NIP, All). The selection is persistent between app restarts. 
+- **help button** `?` which displays this help screen.
+- **heading** of this screen [Eaten Table]. 
+- **Foods Table** button which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button. This can also be accomplished by the `<-` navigation button at the very top left of this screen.
+- **Radio buttons** with three options (Min, NIP, All). The selection is persistent within and between app restarts. 
+    - **Min**: only displays the text description of food items.
+    - **NIP**: additionally displays the minimum mandated nutrient information (per 100g or 100mL of the food) as required by FSANZ on Nutritional Information Panels (NIPs).
+    - **All**: displays all nutrient fields stored in the Foods table (there are 23, including Energy) PLUS the notes text field
+
+- **Radio buttons** with three options (Min, NIP, All). The selection is persistent between app restarts. 
     - **Min**: There are two cases:
         - when the Daily totals checkbox is **unchecked**, logs for individual foods are displayed comprising three rows:
-            - The time stamp of the log (date+time)
-            - The food description
-            - The amount consumed (in g or mL as appropriate)
+            - The time stamp of the log (date+time), eg "12-Apr-24 14:30".
+            - The food description in bold.
+            - The amount consumed (in g or mL as appropriate) followed by the Energy (in kJ), all in 0dp, eg. "150g, 630kJ". 
         - when the Daily totals checkbox is **checked**, logs consolidated by date are displayed comprising six rows:
             - The date of the foods time stamp
-            - The text "Daily totals"
-            - The total amount consumed on the day, labeled as g, mL, or "mixed units" if both are present. Amounts are still summed numerically, so mixed units are only an approximation if densities differ.
+            - The text "Daily totals" in bold
+            - The total amount consumed on the day, labeled as g, mL, or "g or mL" if both are present. Amounts are still summed numerically, so mixed units are only an approximation if densities differ significantly from 1.
             - The total Energy (kJ), Fat, total (g), and Dietary Fibre (g) for the day.
     - **NIP**: There are two cases:
         - when the Daily totals checkbox is **unchecked**, logs for individual foods are displayed comprising ten rows:
-            - The time stamp of the log (date+time)
-            - The food description
-            - The amount consumed (in g or mL as appropriate)
-            - The seven quantities mandated by FSANZ as the minimum required in a NIP 
+            - The time stamp of the log (date+time).
+            - The food description in bold.
+            - The amount consumed (in g or mL as appropriate).
+            - The seven quantities mandated by FSANZ as the minimum required in a NIP. 
         - when the Daily totals checkbox is **checked**, logs consolidated by date are displayed comprising ten rows:
-            - The date of the foods time stamp
-            - The text "Daily totals"
-            - The total amount consumed on the day, labeled as g, mL, or "mixed units" as above.
+            - The date of the foods time stamp.
+            - The text "Daily totals" in bold.
+            - The total amount consumed on the day, labeled as g, mL, or "g or mL".
             - The seven quantities mandated by FSANZ as the minimum required in a NIP, summed across all of the days food item logs.
     - **All**: There are two cases:
         - when the Daily totals checkbox is **unchecked**, logs for individual foods are displayed comprising 26 rows:
-            - The time stamp of the log (date+time)
-            - The food description
-            - The amount consumed (in g or mL as appropriate)
-            - The 23 nutrient quantities we can record in the Foods table (including Energy) 
+            - The time stamp of the log (date+time).
+            - The food description in bold.
+            - The amount consumed (in g or mL as appropriate).
+            - The 23 nutrient quantities we can record in the Foods table (including Energy). 
         - when the Daily totals checkbox is **checked**, logs consolidated by date are displayed comprising 27 rows (or 28 if comments exist):
-            - The date of the foods time stamp
-            - The text "Daily totals"
-            - The text "Comments" followed by any Weight table comments for that date (only shown if present)
+            - The date of the foods time stamp.
+            - The text "Daily totals" in bold.
+            - The text "Comments:" followed by any Weight table comments for that date (or NA if not recorded or blank)
             - The text "My weight (kg)" followed by the corresponding weight entry for that date (or NA if not recorded)
-            - The total amount consumed on the day, labeled as g, mL, or "mixed units" as above.
+            - The total amount consumed on the day, labeled as g, mL, or "g or mL".
             - The 23 nutrient quantities we can record in the Foods table (including Energy), summed across all of the days food item logs.
 - The **help button** `?` which displays this help screen.
 - The **navigation button** `<-` which transfers you back to the Foods Table screen.
 - A **check box** labeled "Daily totals"
     - When **unchecked** logs of individual foods eaten are displayed
-    - When **checked** these logs are summed by day, giving you a daily total of each nutrient consumed (as well as Energy), even though which ones are displayed is determined by which segmented button (Min, NIP, All) is pressed. 
+    - When **checked** these logs are summed by day, giving you a daily total of each nutrient consumed (as well as Energy), even though which ones are displayed is determined by which radio button (Min, NIP, All) is pressed. 
 - A **check box** labeled "Filter by Date"
     - When **unchecked** all food logs are displayed. For all dates and times.
     - When **checked** only food logs of foods logged during the displayed date are displayed, whether summed or not.
 - A **date dialog** which displays a selected date.
     - When this app is started the default is today's date. It remains persistent while the app stays open.
-- A **scrollable table viewer** which displays records (possibly consolidated by date) from the Eaten table. If a particular logged food is selected (by tapping it) a selection panel appears at the bottom of the screen. It displays the description of the selected food log and its time stamp followed by two buttons below it:
+- A **scrollable table viewer** which displays records (possibly consolidated by date) from the Eaten table. If a particular logged food is selected (by tapping it and then maybe scrolling) a selection panel appears at the bottom of the screen. It displays the description of the selected food log and its time stamp followed by two buttons below it:
     - **Edit**: It enables the amount and time stamp of the logged eaten food to be modified.
         - It opens a dialog box where you can specify the amount eaten as well as the date and time this has occurred (with the default being now).
         - Press the **Confirm** button when you are ready to confirm your changes. This then transfers focus back to the Eaten Table screen where the just modified food log will be visible and selected. The selection panel for this log (with the Edit and Deleted buttons) will close.
-        - You can abort this process by tapping anywhere outside the dialog box. This closes it and transfers focus in the same way as described above.
+        - You can abort this process by pressing the [Cancel] button or tapping anywhere outside the dialog box. This closes it and transfers focus in the same way as described above. The selection panel (with the Edit and Delete buttons) is also closed.
     - **Delete**: deletes the selected food log from the Eaten table.
         - It opens a dialog which warns you that you will be deleting the selected food log from the Eaten table.
-        - This is irrevocable if you press the **Delete** button.
-        - You can change you mind about doing this by just tapping anywhere outside the dialog box. This closes it and returns focus to the Eaten Table screen. The selection panel (with the Edit and Deleted buttons) is also closed.
-    - If food logs consolidated by date are displayed (ie. the "Daily totals" check box is ticked), selection for editing or deletion is not possible, so nothing happens.       
+        - This is irrevocable if you press the **Confirm** button.
+        - You can change you mind about doing this by pressing the [Cancel] button or tapping anywhere outside the dialog box. This closes it and returns focus to the Eaten Table screen. The selection panel (with the Edit and Delete buttons) is also closed.
+    - If food logs consolidated by date are displayed (ie. the "Daily totals" check box is ticked), selection for editing or deletion is not possible, so nothing happens.
 ***
 # **Eaten table structure**
 ```

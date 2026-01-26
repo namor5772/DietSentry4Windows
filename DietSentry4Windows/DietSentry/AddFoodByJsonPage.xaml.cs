@@ -18,7 +18,7 @@ namespace DietSentry
             var rawText = JsonEditor?.Text ?? string.Empty;
             if (!TryExtractJsonPayload(rawText, out var jsonPayload))
             {
-                await DisplayAlertAsync("Invalid JSON", "Please paste valid JSON.", "OK");
+                ShowInvalidJsonOverlay("Please paste valid JSON.");
                 return;
             }
 
@@ -79,7 +79,7 @@ namespace DietSentry
             }
             catch (Exception)
             {
-                await DisplayAlertAsync("Invalid JSON", "Invalid JSON or missing fields.", "OK");
+                ShowInvalidJsonOverlay("Invalid JSON or missing fields.");
             }
         }
 
@@ -147,6 +147,37 @@ namespace DietSentry
             }
 
             MissingDescriptionOverlay.IsVisible = false;
+        }
+
+        private void ShowInvalidJsonOverlay(string message)
+        {
+            if (InvalidJsonOverlay == null || InvalidJsonMessageLabel == null)
+            {
+                return;
+            }
+
+            InvalidJsonMessageLabel.Text = message;
+            InvalidJsonOverlay.IsVisible = true;
+        }
+
+        private void OnInvalidJsonOkClicked(object? sender, EventArgs e)
+        {
+            if (InvalidJsonOverlay == null)
+            {
+                return;
+            }
+
+            InvalidJsonOverlay.IsVisible = false;
+        }
+
+        private void OnInvalidJsonBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (InvalidJsonOverlay == null)
+            {
+                return;
+            }
+
+            InvalidJsonOverlay.IsVisible = false;
         }
 
         private static bool TryExtractJsonPayload(string input, out string payload)

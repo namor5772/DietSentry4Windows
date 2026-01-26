@@ -187,7 +187,7 @@ namespace DietSentry
         {
             if (!TryParseWeight(AddWeightEntry.Text, out var weightValue) || weightValue <= 0)
             {
-                await DisplayAlertAsync("Invalid weight", "Enter a valid weight in kg.", "OK");
+                ShowInvalidWeightOverlay("Enter a valid weight in kg.");
                 return;
             }
 
@@ -254,7 +254,7 @@ namespace DietSentry
 
             if (!TryParseWeight(EditWeightEntry.Text, out var weightValue) || weightValue <= 0)
             {
-                await DisplayAlertAsync("Invalid weight", "Enter a valid weight in kg.", "OK");
+                ShowInvalidWeightOverlay("Enter a valid weight in kg.");
                 return;
             }
 
@@ -330,6 +330,37 @@ namespace DietSentry
         {
             ShowDeletePanel = false;
             ClearSelection();
+        }
+
+        private void ShowInvalidWeightOverlay(string message)
+        {
+            if (InvalidWeightOverlay == null || InvalidWeightMessageLabel == null)
+            {
+                return;
+            }
+
+            InvalidWeightMessageLabel.Text = message;
+            InvalidWeightOverlay.IsVisible = true;
+        }
+
+        private void OnInvalidWeightOkClicked(object? sender, EventArgs e)
+        {
+            if (InvalidWeightOverlay == null)
+            {
+                return;
+            }
+
+            InvalidWeightOverlay.IsVisible = false;
+        }
+
+        private void OnInvalidWeightBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (InvalidWeightOverlay == null)
+            {
+                return;
+            }
+
+            InvalidWeightOverlay.IsVisible = false;
         }
 
         private async void OnBackClicked(object? sender, EventArgs e)

@@ -278,15 +278,21 @@ namespace DietSentry
             await Shell.Current.GoToAsync(route);
         }
 
-        private async Task<double?> ParseEntryAsync(Entry entry, string fieldName)
+        private Task<double?> ParseEntryAsync(Entry entry, string fieldName)
         {
             if (TryParseOptionalDouble(entry.Text, out var value))
             {
-                return value;
+                if (value < 0)
+                {
+                    ShowInvalidValueOverlay($"Enter a non-negative number for {fieldName}.");
+                    return Task.FromResult<double?>(null);
+                }
+
+                return Task.FromResult<double?>(value);
             }
 
-            await DisplayAlertAsync("Invalid value", $"Enter a valid number for {fieldName}.", "OK");
-            return null;
+            ShowInvalidValueOverlay($"Enter a valid number for {fieldName}.");
+            return Task.FromResult<double?>(null);
         }
 
         private static bool TryParseOptionalDouble(string? input, out double value)
@@ -382,6 +388,37 @@ namespace DietSentry
             }
 
             MissingDescriptionOverlay.IsVisible = false;
+        }
+
+        private void ShowInvalidValueOverlay(string message)
+        {
+            if (InvalidValueOverlay == null || InvalidValueMessageLabel == null)
+            {
+                return;
+            }
+
+            InvalidValueMessageLabel.Text = message;
+            InvalidValueOverlay.IsVisible = true;
+        }
+
+        private void OnInvalidValueOkClicked(object? sender, EventArgs e)
+        {
+            if (InvalidValueOverlay == null)
+            {
+                return;
+            }
+
+            InvalidValueOverlay.IsVisible = false;
+        }
+
+        private void OnInvalidValueBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (InvalidValueOverlay == null)
+            {
+                return;
+            }
+
+            InvalidValueOverlay.IsVisible = false;
         }
 
         private (string Title, string Body) GetHelpContent()

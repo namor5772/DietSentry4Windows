@@ -418,7 +418,7 @@ namespace DietSentry
 
             if (!FoodDescriptionFormatter.IsLiquidDescription(SelectedFood.FoodDescription))
             {
-                await DisplayAlertAsync("Not available", "Convert is only available for liquid foods.", "OK");
+                ShowNotAvailableOverlay("Convert is only available for liquid foods.");
                 return;
             }
 
@@ -579,10 +579,18 @@ namespace DietSentry
         private static string NormalizeDensityText(string densityInput, double density)
         {
             var cleaned = densityInput.Trim().Replace(',', '.');
-            cleaned = cleaned.TrimEnd('0').TrimEnd('.');
             if (string.IsNullOrWhiteSpace(cleaned))
             {
                 return density.ToString("G", CultureInfo.InvariantCulture);
+            }
+
+            if (cleaned.Contains('.', StringComparison.Ordinal))
+            {
+                var parts = cleaned.Split('.', 2);
+                var fractional = parts[1].TrimEnd('0');
+                return string.IsNullOrEmpty(fractional)
+                    ? parts[0]
+                    : $"{parts[0]}.{fractional}";
             }
 
             return cleaned;
@@ -691,6 +699,68 @@ namespace DietSentry
             InvalidAmountOverlay.IsVisible = false;
         }
 
+        private void ShowNotAvailableOverlay(string message)
+        {
+            if (NotAvailableOverlay == null || NotAvailableMessageLabel == null)
+            {
+                return;
+            }
+
+            NotAvailableMessageLabel.Text = message;
+            NotAvailableOverlay.IsVisible = true;
+        }
+
+        private void OnNotAvailableOkClicked(object? sender, EventArgs e)
+        {
+            if (NotAvailableOverlay == null)
+            {
+                return;
+            }
+
+            NotAvailableOverlay.IsVisible = false;
+        }
+
+        private void OnNotAvailableBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (NotAvailableOverlay == null)
+            {
+                return;
+            }
+
+            NotAvailableOverlay.IsVisible = false;
+        }
+
+        private void ShowInvalidDensityOverlay(string message)
+        {
+            if (InvalidDensityOverlay == null || InvalidDensityMessageLabel == null)
+            {
+                return;
+            }
+
+            InvalidDensityMessageLabel.Text = message;
+            InvalidDensityOverlay.IsVisible = true;
+        }
+
+        private void OnInvalidDensityOkClicked(object? sender, EventArgs e)
+        {
+            if (InvalidDensityOverlay == null)
+            {
+                return;
+            }
+
+            InvalidDensityOverlay.IsVisible = false;
+        }
+
+        private void OnInvalidDensityBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (InvalidDensityOverlay == null)
+            {
+                return;
+            }
+
+            InvalidDensityOverlay.IsVisible = false;
+        }
+
         private async void OnConvertConfirmClicked(object? sender, EventArgs e)
         {
             if (_convertFood == null)
@@ -702,7 +772,7 @@ namespace DietSentry
             var densityInput = ConvertDensityEntry?.Text ?? string.Empty;
             if (!TryParsePositiveDouble(densityInput, out var density))
             {
-                await DisplayAlertAsync("Invalid density", "Enter a valid density value.", "OK");
+                ShowInvalidDensityOverlay("Enter a valid density value.");
                 return;
             }
 
