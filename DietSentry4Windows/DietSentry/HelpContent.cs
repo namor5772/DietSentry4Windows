@@ -146,12 +146,7 @@ The main purpose of this screen is to **display a log of foods** you have consum
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
 - **help button** `?` which displays this help screen.
 - **heading** of this screen [Eaten Table]. 
-- **Foods Table** button which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button. This can also be accomplished by the `<-` navigation button at the very top left of this screen.
-- **Radio buttons** with three options (Min, NIP, All). The selection is persistent within and between app restarts. 
-    - **Min**: only displays the text description of food items.
-    - **NIP**: additionally displays the minimum mandated nutrient information (per 100g or 100mL of the food) as required by FSANZ on Nutritional Information Panels (NIPs).
-    - **All**: displays all nutrient fields stored in the Foods table (there are 23, including Energy) PLUS the notes text field
-
+- **Foods Table button** which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button. This can also be accomplished by the `<-` navigation button at the very top left of this screen.
 - **Radio buttons** with three options (Min, NIP, All). The selection is persistent between app restarts. 
     - **Min**: There are two cases:
         - when the Daily totals checkbox is **unchecked**, logs for individual foods are displayed comprising three rows:
@@ -187,8 +182,6 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
             - The text "My weight (kg)" followed by the corresponding weight entry for that date (or NA if not recorded)
             - The total amount consumed on the day, labeled as g, mL, or "g or mL".
             - The 23 nutrient quantities we can record in the Foods table (including Energy), summed across all of the days food item logs.
-- The **help button** `?` which displays this help screen.
-- The **navigation button** `<-` which transfers you back to the Foods Table screen.
 - A **check box** labeled "Daily totals"
     - When **unchecked** logs of individual foods eaten are displayed
     - When **checked** these logs are summed by day, giving you a daily total of each nutrient consumed (as well as Energy), even though which ones are displayed is determined by which radio button (Min, NIP, All) is pressed. 
@@ -200,12 +193,12 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
 - A **scrollable table viewer** which displays records (possibly consolidated by date) from the Eaten table. If a particular logged food is selected (by tapping it and then maybe scrolling) a selection panel appears at the bottom of the screen. It displays the description of the selected food log and its time stamp followed by two buttons below it:
     - **Edit**: It enables the amount and time stamp of the logged eaten food to be modified.
         - It opens a dialog box where you can specify the amount eaten as well as the date and time this has occurred (with the default being now).
-        - Press the **Confirm** button when you are ready to confirm your changes. This then transfers focus back to the Eaten Table screen where the just modified food log will be visible and selected. The selection panel for this log (with the Edit and Deleted buttons) will close.
-        - You can abort this process by pressing the [Cancel] button or tapping anywhere outside the dialog box. This closes it and transfers focus in the same way as described above. The selection panel (with the Edit and Delete buttons) is also closed.
+        - Press the **Confirm** button when you are ready to confirm your changes. This then transfers focus back to the Eaten Table screen where the just modified food log will be visible and selected. The selection panel for this log (with the Edit and Delete buttons) will close.
+        - You can abort this process by pressing the **Cancel** button or tapping anywhere outside the dialog box. This closes it and transfers focus in the same way as described above. The selection panel (with the Edit and Delete buttons) is also closed.
     - **Delete**: deletes the selected food log from the Eaten table.
         - It opens a dialog which warns you that you will be deleting the selected food log from the Eaten table.
         - This is irrevocable if you press the **Confirm** button.
-        - You can change you mind about doing this by pressing the [Cancel] button or tapping anywhere outside the dialog box. This closes it and returns focus to the Eaten Table screen. The selection panel (with the Edit and Delete buttons) is also closed.
+        - You can change you mind about doing this by pressing the **Cancel** button or tapping anywhere outside the dialog box. This closes it and returns focus to the [Eaten Table] screen. The selection panel (with the Edit and Delete buttons) is also closed.
     - If food logs consolidated by date are displayed (ie. the "Daily totals" check box is ticked), selection for editing or deletion is not possible, so nothing happens.
 ***
 # **Eaten table structure**
@@ -255,17 +248,15 @@ The remaining (**Energy** and **Nutrient fields**) are the same as for the corre
 """;
 
         public const string EditLiquidFoodBody = """
-# **Editing Liquid Food**
 - These are foods for which the Energy and nutrient values are given on a **per 100mL basis**
 - On first displaying this screen all the input fields will be populated with values from the selected Food, however the Description field will have the " mL" or " mL#" markers omitted. These will be reinstated after edit confirmation. This means you cannot change a Liquid food into a Solid one directly through editing. Use the Convert button on the Foods Table to create a new solid (annotated with a density marker) and edit that instead.
-- Modify fields as required using decimals where needed and tap Confirm to save your changes. If a field entry is not valid (eg. text, blank or not a number in a field requiring numbers) the Confirm button will be disabled.
+- Modify fields as required using decimals where needed and press the Confirm button to save your changes. The description field cannot be blank and the remaining fields must must be non-negative numbers or blank (which is interpreted as 0). In these error cases pressing the Confirm button displays an appropriate dialog prompting for correction. Focus will then return back to the [Editing Liquid Food] screen after pressing the error dialog's OK button, or tapping anywhere outside this dialog.
 - Notes is an optional free text (multi-line) field. It is saved with the food and shown in the Foods table when All is selected.
-- You can press either of two "back" buttons to cancel the editing process and return focus to the Foods Table screen.
+- You can press either the "dimmed" **Foods Table button** or the `<-` to cancel the editing process and return focus to the [Foods Table] screen.
 - If confirmation succeeds the selected food is amended and focus passes to the Foods Table screen with the filter text being set to the just edited foods description (with markers reinstated). This allows you to review the results of the edit and is especially important if the description has changed significantly and you would not have been able find the food again.
 """;
 
         public const string EditSolidFoodBody = """
-# **Editing Solid Food**
 - These are foods for which the Energy and nutrient values are given on a **per 100g basis**
 - On first displaying this screen all the input fields will be populated with values from the selected Food, however the Description field will have the " #" marker (if any) omitted. This will be reinstated after edit confirmation. This screen preserves the solid suffix, so create a liquid food using Add or Copy if needed.
 - Modify fields as required using decimals where needed and tap Confirm to save your changes. If a field entry is not valid (eg. text, blank or not a number in a field requiring numbers) the Confirm button will be disabled.
