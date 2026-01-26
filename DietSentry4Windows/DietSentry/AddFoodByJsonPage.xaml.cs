@@ -30,7 +30,7 @@ namespace DietSentry
                 var description = GetRequiredString(root, "FoodDescription").Trim();
                 if (string.IsNullOrWhiteSpace(description))
                 {
-                    await DisplayAlertAsync("Missing description", "FoodDescription is required.", "OK");
+                    ShowMissingDescriptionOverlay("FoodDescription is required.");
                     return;
                 }
 
@@ -116,6 +116,37 @@ namespace DietSentry
             }
 
             HelpOverlay.IsVisible = false;
+        }
+
+        private void ShowMissingDescriptionOverlay(string message)
+        {
+            if (MissingDescriptionOverlay == null || MissingDescriptionMessageLabel == null)
+            {
+                return;
+            }
+
+            MissingDescriptionMessageLabel.Text = message;
+            MissingDescriptionOverlay.IsVisible = true;
+        }
+
+        private void OnMissingDescriptionOkClicked(object? sender, EventArgs e)
+        {
+            if (MissingDescriptionOverlay == null)
+            {
+                return;
+            }
+
+            MissingDescriptionOverlay.IsVisible = false;
+        }
+
+        private void OnMissingDescriptionBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (MissingDescriptionOverlay == null)
+            {
+                return;
+            }
+
+            MissingDescriptionOverlay.IsVisible = false;
         }
 
         private static bool TryExtractJsonPayload(string input, out string payload)

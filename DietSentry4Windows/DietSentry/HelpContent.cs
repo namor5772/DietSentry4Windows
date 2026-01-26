@@ -12,8 +12,8 @@ Its purpose is to display a list of foods from the Foods table and allow interac
 ### **Explanation of GUI elements**
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
 - **help button** `?` which displays this help screen.
-- **heading** of this screen: [Foods Table]. 
-- **Row of buttons** used to accomplish various tasks. If a button press opens a new screen its help will detail its functionality:
+- **heading** of this screen [Foods Table]. 
+- **Row of buttons** used to accomplish various tasks. If a button press opens a new screen press its help button to detail its functionality:
     - **Eaten Table** button which transfers you to the [Eaten Table] screen. 
     - **Weight Table** button which transfers you to the [Weight Table] screen.
     - **Add Solid** button which transfers you to the [Add Solid Food] screen.
@@ -22,7 +22,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
     - **JSON** button which transfers you to the [Add Food using JSON] screen.
     - **Export db** which exports/copies the apps internal foods.db database file to the location shown in the dialog window that appears.
     - **Import db** which imports/copies a foods.db database file from the location shown in the dialog window that appears and into the **internal location** used by this app.
-    - **Export csv** which exports a csv version of an aggregated form of the Eaten table to a location shown in the dialog window that appears.        
+    - **Export csv** which exports a csv version of an aggregated form of the Eaten table to a location shown in the dialog window that appears. In particular it is the text form of what is displayed in the [Eaten Table] with the All option selected the Daily totals option checked and no Filter by date. In addition the Weight table comments are included between the My Weight and Amount columns.        
 - **Radio buttons** with three options (Min, NIP, All). The selection is persistent within and between app restarts. 
     - **Min**: only displays the text description of food items.
     - **NIP**: additionally displays the minimum mandated nutrient information (per 100g or 100mL of the food) as required by FSANZ on Nutritional Information Panels (NIPs).
@@ -30,13 +30,14 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
 - **Text field** which when empty faintly displays the text "Enter food filter text"
     - Type any text in the field and press the Enter key or equivalent. This filters the list of foods to those that contain this text anywhere in their description.
     - You can also type \{text1\}|\{text2\} to match descriptions that contain BOTH of these terms.
-    - It is only persistent within app restarts unless explicitly modified or cleared by some secondary actions.
-    - It is NOT case sensitive.
+    - It is persistent within app restarts unless explicitly modified or cleared by some secondary actions.
+    - It is NOT case sensitive and is empty on app restart.
 - **Clear** button which clears the above text field.    
-- **Scrollable table viewer** which displays records from the Foods table. When a particular food is selected (by tapping it) a selection panel appears at the bottom of the screen. It displays the description of the selected food followed by five buttons below it. These relate to possible actions that reference the selected food record:
+- **Scrollable table viewer** which displays records from the Foods table. When a particular food is selected (by tapping it and then maybe scrolling) a selection panel appears at the bottom of the screen. It displays the description of the selected food followed by five buttons below it. These relate to possible actions that reference the selected food record:
     - **LOG**: logs the selected food into the Eaten Table.
         - It opens a dialog box where you can specify the amount eaten as well as the date and time (in 24hr format) that this has occurred (with the default being now).
         - Press the **Confirm** button when you are ready to log your food. This transfers focus to the [Eaten Table] screen where the just logged food will be visible. Read the help on that screen for more info.
+        - If the Amount is blank or not a valid positive number pressing the Confirm button will display an Invalid amount dialog.
         - You can abort this process by tapping anywhere outside the dialog box or pressing the **Cancel** button. This closes the dialog.
     - **Edit**: allows editing of the selected food.
         - It opens the [Editing Solid Food] or [Editing Liquid Food] screens unless the description contains "\{recipe=...g\}", in which case it opens [Editing Recipe].

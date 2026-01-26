@@ -23,7 +23,13 @@ namespace DietSentry
         private bool _showLogPanel;
         private bool _showConvertPanel;
         private bool _showDeletePanel;
+        private bool _showExportPanel;
+        private bool _showImportPanel;
+        private bool _showExportCsvPanel;
         private string? _insertedFoodDescription;
+        private string? _exportTargetPath;
+        private string? _importSourcePath;
+        private string? _exportCsvTargetPath;
 
         public ObservableCollection<Food> Foods { get; } = new();
         public bool ShowNipOnly => _nutritionDisplayMode == NutritionDisplayMode.Nip;
@@ -199,16 +205,32 @@ namespace DietSentry
             await Shell.Current.GoToAsync("addFoodByJson");
         }
 
-        private async void OnExportDbClicked(object? sender, EventArgs e)
+        private void OnExportDbClicked(object? sender, EventArgs e)
         {
             var directory = GetExchangeDirectory();
             var targetPath = Path.Combine(directory, DatabaseFileName);
-            var confirmed = await DisplayAlertAsync(
-                "Export db",
-                $"This will overwrite:\n{targetPath}\n\nProceed?",
-                "Confirm",
-                "Cancel");
-            if (!confirmed)
+            _exportTargetPath = targetPath;
+            if (ExportTargetPathLabel != null)
+            {
+                ExportTargetPathLabel.Text = targetPath;
+            }
+
+            ShowExportPanel = true;
+        }
+
+        private async void OnExportDbConfirmClicked(object? sender, EventArgs e)
+        {
+            var targetPath = _exportTargetPath;
+            _exportTargetPath = null;
+            ShowExportPanel = false;
+
+            if (string.IsNullOrWhiteSpace(targetPath))
+            {
+                return;
+            }
+
+            var directory = Path.GetDirectoryName(targetPath);
+            if (string.IsNullOrWhiteSpace(directory))
             {
                 return;
             }
@@ -219,12 +241,23 @@ namespace DietSentry
                 await DatabaseInitializer.EnsureDatabaseAsync();
                 var sourcePath = DatabaseInitializer.GetDatabasePath();
                 File.Copy(sourcePath, targetPath, true);
-                await DisplayAlertAsync("Export db", $"Database exported to:\n{targetPath}", "OK");
             }
             catch (Exception)
             {
-                await DisplayAlertAsync("Export db", $"Failed to export database to:\n{targetPath}", "OK");
+                // Suppress export errors to avoid additional dialogs after confirmation.
             }
+        }
+
+        private void OnExportDbCancelClicked(object? sender, EventArgs e)
+        {
+            _exportTargetPath = null;
+            ShowExportPanel = false;
+        }
+
+        private void OnExportDbBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            _exportTargetPath = null;
+            ShowExportPanel = false;
         }
 
         private async void OnImportDbClicked(object? sender, EventArgs e)
@@ -240,12 +273,22 @@ namespace DietSentry
                 return;
             }
 
-            var confirmed = await DisplayAlertAsync(
-                "Import db",
-                $"This will replace the current database with:\n{sourcePath}\n\nProceed?",
-                "Confirm",
-                "Cancel");
-            if (!confirmed)
+            _importSourcePath = sourcePath;
+            if (ImportSourcePathLabel != null)
+            {
+                ImportSourcePathLabel.Text = sourcePath;
+            }
+
+            ShowImportPanel = true;
+        }
+
+        private async void OnImportDbConfirmClicked(object? sender, EventArgs e)
+        {
+            var sourcePath = _importSourcePath;
+            _importSourcePath = null;
+            ShowImportPanel = false;
+
+            if (string.IsNullOrWhiteSpace(sourcePath))
             {
                 return;
             }
@@ -256,18 +299,55 @@ namespace DietSentry
                 var targetPath = DatabaseInitializer.GetDatabasePath();
                 File.Copy(sourcePath, targetPath, true);
                 await LoadFoodsAsync(FoodFilterEntry?.Text);
-                await DisplayAlertAsync("Import db", $"Database imported from:\n{sourcePath}", "OK");
             }
             catch (Exception)
             {
-                await DisplayAlertAsync("Import db", $"Failed to import database from:\n{sourcePath}", "OK");
+                // Suppress import errors to avoid additional dialogs after confirmation.
             }
         }
 
-        private async void OnExportCsvClicked(object? sender, EventArgs e)
+        private void OnImportDbCancelClicked(object? sender, EventArgs e)
+        {
+            _importSourcePath = null;
+            ShowImportPanel = false;
+        }
+
+        private void OnImportDbBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            _importSourcePath = null;
+            ShowImportPanel = false;
+        }
+
+        private void OnExportCsvClicked(object? sender, EventArgs e)
         {
             var directory = GetExchangeDirectory();
             var targetPath = Path.Combine(directory, DailyCsvFileName);
+            _exportCsvTargetPath = targetPath;
+            if (ExportCsvTargetPathLabel != null)
+            {
+                ExportCsvTargetPathLabel.Text = targetPath;
+            }
+
+            ShowExportCsvPanel = true;
+        }
+
+        private async void OnExportCsvConfirmClicked(object? sender, EventArgs e)
+        {
+            var targetPath = _exportCsvTargetPath;
+            _exportCsvTargetPath = null;
+            ShowExportCsvPanel = false;
+
+            if (string.IsNullOrWhiteSpace(targetPath))
+            {
+                return;
+            }
+
+            var directory = Path.GetDirectoryName(targetPath);
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                return;
+            }
+
             try
             {
                 Directory.CreateDirectory(directory);
@@ -276,12 +356,23 @@ namespace DietSentry
                 var weightEntries = (await _databaseService.GetWeightEntriesAsync()).ToList();
                 var csv = BuildEatenDailyAllCsv(eatenFoods, weightEntries);
                 await File.WriteAllTextAsync(targetPath, csv, new UTF8Encoding(false));
-                await DisplayAlertAsync("Export csv", $"CSV exported to:\n{targetPath}", "OK");
             }
             catch (Exception)
             {
-                await DisplayAlertAsync("Export csv", $"Failed to export CSV to:\n{targetPath}", "OK");
+                // Suppress export errors to avoid additional dialogs after confirmation.
             }
+        }
+
+        private void OnExportCsvCancelClicked(object? sender, EventArgs e)
+        {
+            _exportCsvTargetPath = null;
+            ShowExportCsvPanel = false;
+        }
+
+        private void OnExportCsvBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            _exportCsvTargetPath = null;
+            ShowExportCsvPanel = false;
         }
 
         private async void OnPaletteClicked(object? sender, EventArgs e)
@@ -420,6 +511,51 @@ namespace DietSentry
             }
         }
 
+        public bool ShowExportPanel
+        {
+            get => _showExportPanel;
+            private set
+            {
+                if (_showExportPanel == value)
+                {
+                    return;
+                }
+
+                _showExportPanel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowImportPanel
+        {
+            get => _showImportPanel;
+            private set
+            {
+                if (_showImportPanel == value)
+                {
+                    return;
+                }
+
+                _showImportPanel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowExportCsvPanel
+        {
+            get => _showExportCsvPanel;
+            private set
+            {
+                if (_showExportCsvPanel == value)
+                {
+                    return;
+                }
+
+                _showExportCsvPanel = value;
+                OnPropertyChanged();
+            }
+        }
+
         private static string ExtractBaseDescription(string description)
         {
             if (description.EndsWith(" mL#", StringComparison.OrdinalIgnoreCase))
@@ -488,7 +624,7 @@ namespace DietSentry
             if (!double.TryParse(LogAmountEntry.Text, NumberStyles.Float, CultureInfo.CurrentCulture, out var amount) ||
                 amount <= 0)
             {
-                await DisplayAlertAsync("Invalid amount", "Enter a valid amount.", "OK");
+                ShowInvalidAmountOverlay();
                 return;
             }
 
@@ -523,6 +659,36 @@ namespace DietSentry
         private void OnLogBackdropTapped(object? sender, TappedEventArgs e)
         {
             ShowLogPanel = false;
+        }
+
+        private void ShowInvalidAmountOverlay()
+        {
+            if (InvalidAmountOverlay == null)
+            {
+                return;
+            }
+
+            InvalidAmountOverlay.IsVisible = true;
+        }
+
+        private void OnInvalidAmountOkClicked(object? sender, EventArgs e)
+        {
+            if (InvalidAmountOverlay == null)
+            {
+                return;
+            }
+
+            InvalidAmountOverlay.IsVisible = false;
+        }
+
+        private void OnInvalidAmountBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (InvalidAmountOverlay == null)
+            {
+                return;
+            }
+
+            InvalidAmountOverlay.IsVisible = false;
         }
 
         private async void OnConvertConfirmClicked(object? sender, EventArgs e)

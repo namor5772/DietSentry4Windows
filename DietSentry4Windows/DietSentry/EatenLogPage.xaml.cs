@@ -515,7 +515,7 @@ namespace DietSentry
             if (!double.TryParse(EditAmountEntry.Text, NumberStyles.Float, CultureInfo.CurrentCulture, out var amount) ||
                 amount <= 0)
             {
-                await DisplayAlertAsync("Invalid amount", "Enter a valid amount.", "OK");
+                ShowInvalidAmountOverlay();
                 return;
             }
 
@@ -553,6 +553,36 @@ namespace DietSentry
         {
             ShowEditPanel = false;
             SelectedEatenFood = null;
+        }
+
+        private void ShowInvalidAmountOverlay()
+        {
+            if (InvalidAmountOverlay == null)
+            {
+                return;
+            }
+
+            InvalidAmountOverlay.IsVisible = true;
+        }
+
+        private void OnInvalidAmountOkClicked(object? sender, EventArgs e)
+        {
+            if (InvalidAmountOverlay == null)
+            {
+                return;
+            }
+
+            InvalidAmountOverlay.IsVisible = false;
+        }
+
+        private void OnInvalidAmountBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (InvalidAmountOverlay == null)
+            {
+                return;
+            }
+
+            InvalidAmountOverlay.IsVisible = false;
         }
 
         private void OnDeleteSelectedClicked(object? sender, EventArgs e)

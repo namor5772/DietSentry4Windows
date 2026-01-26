@@ -181,7 +181,7 @@ namespace DietSentry
             var description = DescriptionEntry.Text?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(description))
             {
-                await DisplayAlertAsync("Missing description", "Enter a description.", "OK");
+                ShowMissingDescriptionOverlay("Enter a description.");
                 return;
             }
 
@@ -351,6 +351,37 @@ namespace DietSentry
             }
 
             HelpOverlay.IsVisible = false;
+        }
+
+        private void ShowMissingDescriptionOverlay(string message)
+        {
+            if (MissingDescriptionOverlay == null || MissingDescriptionMessageLabel == null)
+            {
+                return;
+            }
+
+            MissingDescriptionMessageLabel.Text = message;
+            MissingDescriptionOverlay.IsVisible = true;
+        }
+
+        private void OnMissingDescriptionOkClicked(object? sender, EventArgs e)
+        {
+            if (MissingDescriptionOverlay == null)
+            {
+                return;
+            }
+
+            MissingDescriptionOverlay.IsVisible = false;
+        }
+
+        private void OnMissingDescriptionBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (MissingDescriptionOverlay == null)
+            {
+                return;
+            }
+
+            MissingDescriptionOverlay.IsVisible = false;
         }
 
         private (string Title, string Body) GetHelpContent()

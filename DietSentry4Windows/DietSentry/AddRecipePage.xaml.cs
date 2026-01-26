@@ -358,7 +358,7 @@ namespace DietSentry
 
             if (!TryParsePositiveDouble(AddIngredientAmountEntry.Text, out var amount))
             {
-                await DisplayAlertAsync("Invalid amount", "Enter a valid amount.", "OK");
+                ShowInvalidAmountOverlay();
                 return;
             }
 
@@ -432,7 +432,7 @@ namespace DietSentry
 
             if (!TryParsePositiveDouble(EditIngredientAmountEntry.Text, out var newAmount))
             {
-                await DisplayAlertAsync("Invalid amount", "Enter a valid amount.", "OK");
+                ShowInvalidAmountOverlay();
                 return;
             }
 
@@ -519,6 +519,97 @@ namespace DietSentry
             ShowEditNotesPanel = false;
         }
 
+        private void ShowInvalidAmountOverlay()
+        {
+            if (InvalidAmountOverlay == null)
+            {
+                return;
+            }
+
+            InvalidAmountOverlay.IsVisible = true;
+        }
+
+        private void OnInvalidAmountOkClicked(object? sender, EventArgs e)
+        {
+            if (InvalidAmountOverlay == null)
+            {
+                return;
+            }
+
+            InvalidAmountOverlay.IsVisible = false;
+        }
+
+        private void OnInvalidAmountBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (InvalidAmountOverlay == null)
+            {
+                return;
+            }
+
+            InvalidAmountOverlay.IsVisible = false;
+        }
+
+        private void ShowMissingDescriptionOverlay(string message)
+        {
+            if (MissingDescriptionOverlay == null || MissingDescriptionMessageLabel == null)
+            {
+                return;
+            }
+
+            MissingDescriptionMessageLabel.Text = message;
+            MissingDescriptionOverlay.IsVisible = true;
+        }
+
+        private void OnMissingDescriptionOkClicked(object? sender, EventArgs e)
+        {
+            if (MissingDescriptionOverlay == null)
+            {
+                return;
+            }
+
+            MissingDescriptionOverlay.IsVisible = false;
+        }
+
+        private void OnMissingDescriptionBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (MissingDescriptionOverlay == null)
+            {
+                return;
+            }
+
+            MissingDescriptionOverlay.IsVisible = false;
+        }
+
+        private void ShowMissingIngredientsOverlay()
+        {
+            if (MissingIngredientsOverlay == null)
+            {
+                return;
+            }
+
+            MissingIngredientsOverlay.IsVisible = true;
+        }
+
+        private void OnMissingIngredientsOkClicked(object? sender, EventArgs e)
+        {
+            if (MissingIngredientsOverlay == null)
+            {
+                return;
+            }
+
+            MissingIngredientsOverlay.IsVisible = false;
+        }
+
+        private void OnMissingIngredientsBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (MissingIngredientsOverlay == null)
+            {
+                return;
+            }
+
+            MissingIngredientsOverlay.IsVisible = false;
+        }
+
         private async Task PrepareRecipeAsync()
         {
             if (_recipesPrepared)
@@ -578,14 +669,14 @@ namespace DietSentry
             var sanitizedDescription = SanitizeRecipeDescription(description);
             if (string.IsNullOrWhiteSpace(sanitizedDescription))
             {
-                await DisplayAlertAsync("Missing description", "Please enter a description.", "OK");
+                ShowMissingDescriptionOverlay("Please enter a description.");
                 return;
             }
 
             var totalAmount = RecipeItems.Sum(item => item.Amount);
             if (totalAmount <= 0)
             {
-                await DisplayAlertAsync("Missing ingredients", "Add at least one ingredient.", "OK");
+                ShowMissingIngredientsOverlay();
                 return;
             }
 
