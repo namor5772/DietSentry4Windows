@@ -354,6 +354,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
 The easiest and supported way of obtaining JSON text is to use AI. The following workflow is recommended:
 - You are assumed to have access to the ChatGPT Pro paid plan (or better). This give you access to GPTs.
 - Log into ChatGpt (https://chatgpt.com) and Explore GPTs. Find the **Nutrition Information Panel (NIP) generator** GPT with the following description:
+
     ```
     Given a food description and/or images, 
     returns its Nutrition Information Panel (NIP) in a specific JSON format. 
@@ -364,14 +365,7 @@ The easiest and supported way of obtaining JSON text is to use AI. The following
 - Start chatting
 - You can attach photos of labels and product NIPs to the chat prompt as well as just a text description of the food you are interested in.
 - A Diet Sentry compatible JSON text will (almost always) be generated as a chat response. Copy and paste this into the text field on this screen.
-- You can edit this text as desired, eg. to tweak the FoodDescription field, but make sure it remains a valid JSON file.
-""";
-
-        public const string LogFoodBody = """
-- **LOG**: logs the selected food into the Eaten Table.
-        - It opens a dialog box where you can specify the amount eaten as well as the date and time this has occurred (with the default being now).
-        - Press the **Confirm** button when you are ready to log your food. This transfers focus to the Eaten Table screen where the just logged food will be visible. Read the help on that Screen for more help.
-        - You can abort this process by tapping anywhere outside the dialog box. This closes it.
+- You can edit this text as desired, eg. to tweak the FoodDescription field, but make sure it remains valid JSON text.
 """;
 
         public const string WeightTableBody = """
@@ -418,7 +412,6 @@ The remaining fields are self expanatory.
         public static string CopyRecipeTitle => FormatHelpTitle("Copying Recipe");
         public static string EditFoodTitle => FormatHelpTitle("Edit Food");
         public static string EditRecipeTitle => FormatHelpTitle("Editing Recipe");
-        public static string LogFoodTitle => FormatHelpTitle("Log Food");
         public static string WeightTableTitle => FormatHelpTitle("Weight Table");
 
         public static string AddRecipeBody => BuildRecipeHelpText("Add Recipe");

@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using Markdig;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 
@@ -34,6 +35,7 @@ namespace DietSentry
                 HorizontalOptions = LayoutOptions.Fill,
                 VerticalOptions = LayoutOptions.Fill
             };
+            _webView.Navigating += OnWebViewNavigating;
             _webView.Navigated += OnWebViewNavigated;
             SizeChanged += OnViewSizeChanged;
 
@@ -139,6 +141,22 @@ namespace DietSentry
             await SyncHeightAsync();
         }
 
+        private void OnWebViewNavigating(object? sender, WebNavigatingEventArgs e)
+        {
+            if (IsInternalUrl(e.Url))
+            {
+                return;
+            }
+
+            if (!Uri.TryCreate(e.Url, UriKind.Absolute, out var uri))
+            {
+                return;
+            }
+
+            e.Cancel = true;
+            _ = OpenExternalAsync(uri);
+        }
+
         private void OnViewSizeChanged(object? sender, EventArgs e)
         {
             if (!_isContentLoaded)
@@ -182,6 +200,46 @@ namespace DietSentry
             catch
             {
                 // Ignore height sync failures; WebView will still render.
+            }
+        }
+
+        private static bool IsInternalUrl(string? url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                return true;
+            }
+
+            if (url.StartsWith("about:blank", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (url.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            if (url.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static async Task OpenExternalAsync(Uri uri)
+        {
+            try
+            {
+                if (Launcher.Default != null && await Launcher.Default.CanOpenAsync(uri))
+                {
+                    await Launcher.Default.OpenAsync(uri);
+                }
+            }
+            catch
+            {
+                // Ignore external navigation failures.
             }
         }
 
