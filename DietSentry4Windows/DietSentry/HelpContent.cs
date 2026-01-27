@@ -7,7 +7,7 @@ namespace DietSentry
         public const string FoodsTableBody = """
 This is the main screen of the app.
 
-Its purpose is to display a list of foods from the Foods table and allow interaction with a selected food. The primary purpose being to **LOG the selected food**. In the top row it also contains buttons for actions you can take.
+Its purpose is to display a list of foods from the Foods table and allow interaction with a selected food. The primary purpose being to **LOG the selected food**. The top row also contains buttons for various actions you can take.
 ***
 ### **Explanation of GUI elements**
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
@@ -22,11 +22,11 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
     - **JSON** button which transfers you to the [Add Food using JSON] screen.
     - **Export db** which exports/copies the apps internal foods.db database file to the location shown in the dialog window that appears.
     - **Import db** which imports/copies a foods.db database file from the location shown in the dialog window that appears and into the **internal location** used by this app.
-    - **Export csv** which exports a csv version of an aggregated form of the Eaten table to a location shown in the dialog window that appears. In particular it is the text form of what is displayed in the [Eaten Table] with the All option selected the Daily totals option checked and no Filter by date. In addition the Weight table comments are included between the My Weight and Amount columns.        
+    - **Export csv** which exports a csv version of an aggregated form of the Eaten table to a location shown in the dialog window that appears. In particular it is the text form of what is displayed in the [Eaten Table] screen with the All option selected. the [Daily totals] option checked and no [Filter by date]. In addition the Weight table comments are included between the My Weight and Amount columns.        
 - **Radio buttons** with three options (Min, NIP, All). The selection is persistent within and between app restarts. 
     - **Min**: only displays the text description of food items.
     - **NIP**: additionally displays the minimum mandated nutrient information (per 100g or 100mL of the food) as required by FSANZ on Nutritional Information Panels (NIPs).
-    - **All**: displays all nutrient fields stored in the Foods table (there are 23, including Energy) PLUS the notes text field
+    - **All**: displays all nutrient fields stored in the Foods table (there are 23, including Energy) PLUS the notes text field.
 - **Text field** which when empty faintly displays the text "Enter food filter text"
     - Type any text in the field and press the Enter key or equivalent. This filters the list of foods to those that contain this text anywhere in their description.
     - You can also type \{text1\}|\{text2\} to match descriptions that contain BOTH of these terms.
@@ -37,10 +37,10 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
     - **LOG**: logs the selected food into the Eaten Table.
         - It opens a dialog box where you can specify the amount eaten as well as the date and time (in 24hr format) that this has occurred (with the default being now).
         - Press the **Confirm** button when you are ready to log your food. This transfers focus to the [Eaten Table] screen where the just logged food will be visible. Read the help on that screen for more info.
-        - If the Amount is blank or not a valid positive number pressing the Confirm button will display an Invalid amount dialog.
+        - If the Amount is blank or not a valid positive number pressing the **Confirm** button will display an **Invalid amount dialog**.
         - You can abort this process by tapping anywhere outside the dialog box or pressing the **Cancel** button. This closes the dialog.
     - **Edit**: allows editing of the selected food.
-        - It opens the [Editing Solid Food] or [Editing Liquid Food] screens unless the description contains "\{recipe=...g\}", in which case it opens [Editing Recipe].
+        - It opens the [Editing Solid Food] or [Editing Liquid Food] screens unless the description contains "\{recipe=...g\}", in which case it opens the [Editing Recipe] screen.
         - Read the help on those screens for more info.
     - **Copy**: makes a copy of the selected food.
         - If the selected food is a Solid it opens a screen titled [Copying Solid Food].
@@ -50,7 +50,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
     - **Convert**: converts a liquid food to a solid. 
         - If the food is a liquid it displays a dialog that enables the foods density to be input in g/mL.
         - A new solid food is then created on a per 100g basis using that density.
-        - The description of this new food removes the trailing " mL" marker and appends "\{density=...g/mL\}" plus the user-added "#" suffix so you can see how it was derived.
+        - The description of this new food removes the trailing " mL" marker and appends "\{density=...g/mL\}" plus the user-added "#" suffix, so you can see how it was derived.
         - If the selected food is a solid (or recipe) a [Not available] dialog is shown instead.
     - **Delete**: deletes the selected food from the database.
         - It opens a dialog which warns you that you will be deleting the selected food.
@@ -149,57 +149,57 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
 - **Foods Table button** which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button. This can also be accomplished by the `<-` navigation button at the very top left of this screen.
 - **Radio buttons** with three options (Min, NIP, All). The selection is persistent between app restarts. 
     - **Min**: There are two cases:
-        - when the Daily totals checkbox is **unchecked**, logs for individual foods are displayed comprising three rows:
+        - when the [Daily totals] checkbox is **unchecked**, logs for individual foods are displayed comprising three rows:
             - The time stamp of the log (date+time), eg "12-Apr-24 14:30".
             - The food description in bold.
             - The amount consumed (in g or mL as appropriate) followed by the Energy (in kJ), all in 0dp, eg. "150g, 630kJ". 
-        - when the Daily totals checkbox is **checked**, logs consolidated by date are displayed comprising six rows:
+        - when the [Daily totals] checkbox is **checked**, logs consolidated by date are displayed comprising six rows:
             - The date of the foods time stamp
             - The text "Daily totals" in bold
             - The total amount consumed on the day, labeled as g, mL, or "g or mL" if both are present. Amounts are still summed numerically, so mixed units are only an approximation if densities differ significantly from 1.
             - The total Energy (kJ), Fat, total (g), and Dietary Fibre (g) for the day.
     - **NIP**: There are two cases:
-        - when the Daily totals checkbox is **unchecked**, logs for individual foods are displayed comprising ten rows:
+        - when the [Daily totals] checkbox is **unchecked**, logs for individual foods are displayed comprising ten rows:
             - The time stamp of the log (date+time).
             - The food description in bold.
             - The amount consumed (in g or mL as appropriate).
             - The seven quantities mandated by FSANZ as the minimum required in a NIP. 
-        - when the Daily totals checkbox is **checked**, logs consolidated by date are displayed comprising ten rows:
+        - when the [Daily totals] checkbox is **checked**, logs consolidated by date are displayed comprising ten rows:
             - The date of the foods time stamp.
             - The text "Daily totals" in bold.
             - The total amount consumed on the day, labeled as g, mL, or "g or mL".
             - The seven quantities mandated by FSANZ as the minimum required in a NIP, summed across all of the days food item logs.
     - **All**: There are two cases:
-        - when the Daily totals checkbox is **unchecked**, logs for individual foods are displayed comprising 26 rows:
+        - when the [Daily totals] checkbox is **unchecked**, logs for individual foods are displayed comprising 26 rows:
             - The time stamp of the log (date+time).
             - The food description in bold.
             - The amount consumed (in g or mL as appropriate).
             - The 23 nutrient quantities we can record in the Foods table (including Energy). 
-        - when the Daily totals checkbox is **checked**, logs consolidated by date are displayed comprising 27 rows (or 28 if comments exist):
+        - when the [Daily totals] checkbox is **checked**, logs consolidated by date are displayed comprising 27 rows (or 28 if comments exist):
             - The date of the foods time stamp.
             - The text "Daily totals" in bold.
-            - The text "Comments:" followed by any Weight table comments for that date (or NA if not recorded or blank)
-            - The text "My weight (kg)" followed by the corresponding weight entry for that date (or NA if not recorded)
+            - The text "Comments:" followed by any Weight table comments for that date (or NA if not recorded or blank).
+            - The text "My weight (kg)" followed by the corresponding weight entry for that date (or NA if not recorded).
             - The total amount consumed on the day, labeled as g, mL, or "g or mL".
             - The 23 nutrient quantities we can record in the Foods table (including Energy), summed across all of the days food item logs.
-- A **check box** labeled "Daily totals"
+- **check box** labeled "Daily totals"
     - When **unchecked** logs of individual foods eaten are displayed
     - When **checked** these logs are summed by day, giving you a daily total of each nutrient consumed (as well as Energy), even though which ones are displayed is determined by which radio button (Min, NIP, All) is pressed. 
-- A **check box** labeled "Filter by Date"
+- **check box** labeled "Filter by Date"
     - When **unchecked** all food logs are displayed. For all dates and times.
     - When **checked** only food logs of foods logged during the displayed date are displayed, whether summed or not.
-- A **date dialog** which displays a selected date.
+- **date dialog** which displays a selected date.
     - When this app is started the default is today's date. It remains persistent while the app stays open.
-- A **scrollable table viewer** which displays records (possibly consolidated by date) from the Eaten table. If a particular logged food is selected (by tapping it and then maybe scrolling) a selection panel appears at the bottom of the screen. It displays the description of the selected food log and its time stamp followed by two buttons below it:
+- **scrollable table viewer** which displays records (possibly consolidated by date) from the Eaten table. If a particular logged food is selected (by tapping it and then maybe scrolling) a selection panel appears at the bottom of the screen. It displays the description of the selected food log and its time stamp followed by two buttons below it:
     - **Edit**: It enables the amount and time stamp of the logged eaten food to be modified.
         - It opens a dialog box where you can specify the amount eaten as well as the date and time this has occurred (with the default being now).
-        - Press the **Confirm** button when you are ready to confirm your changes. This then transfers focus back to the Eaten Table screen where the just modified food log will be visible and selected. The selection panel for this log (with the Edit and Delete buttons) will close.
-        - You can abort this process by pressing the **Cancel** button or tapping anywhere outside the dialog box. This closes it and transfers focus in the same way as described above. The selection panel (with the Edit and Delete buttons) is also closed.
+        - Press the **Confirm** button when you are ready to confirm your changes. This then transfers focus back to the [Eaten Table] screen where the just modified food log will be visible and selected. The selection panel for this log (with the Edit and Delete buttons) will close.
+        - You can abort this process by pressing the **Cancel** button or tapping anywhere outside the dialog box. This closes it and transfers focus in the same way as described above.
     - **Delete**: deletes the selected food log from the Eaten table.
         - It opens a dialog which warns you that you will be deleting the selected food log from the Eaten table.
         - This is irrevocable if you press the **Confirm** button.
-        - You can change you mind about doing this by pressing the **Cancel** button or tapping anywhere outside the dialog box. This closes it and returns focus to the [Eaten Table] screen. The selection panel (with the Edit and Delete buttons) is also closed.
-    - If food logs consolidated by date are displayed (ie. the "Daily totals" check box is ticked), selection for editing or deletion is not possible, so nothing happens.
+        - You can change you mind about doing this by pressing the **Cancel** button or tapping anywhere outside the dialog box. This closes it and transfers focus in the same way as described above.
+    - If food logs consolidated by date are displayed (ie. the "Daily totals" check box is ticked), selection for editing or deletion is NOT POSSIBLE, so nothing happens.
 ***
 # **Eaten table structure**
 ```
@@ -249,163 +249,122 @@ The remaining (**Energy** and **Nutrient fields**) are the same as for the corre
 
         public const string EditLiquidFoodBody = """
 - These are foods for which the Energy and nutrient values are given on a **per 100mL basis**
-- On first displaying this screen all the input fields will be populated with values from the selected Food, however the Description field will have the " mL" or " mL#" markers omitted. These will be reinstated after edit confirmation. This means you cannot change a Liquid food into a Solid one directly through editing. Use the Convert button on the Foods Table to create a new solid (annotated with a density marker) and edit that instead.
-- Modify fields as required using decimals where needed and press the Confirm button to save your changes. The description field cannot be blank and the remaining fields must must be non-negative numbers or blank (which is interpreted as 0). In these error cases pressing the Confirm button displays an appropriate dialog prompting for correction. Focus will then return back to the [Editing Liquid Food] screen after pressing the error dialog's OK button, or tapping anywhere outside this dialog.
-- Notes is an optional free text (multi-line) field. It is saved with the food and shown in the Foods table when All is selected.
-- You can press either the "dimmed" **Foods Table button** or the `<-` to cancel the editing process and return focus to the [Foods Table] screen.
-- If confirmation succeeds the selected food is amended and focus passes to the Foods Table screen with the filter text being set to the just edited foods description (with markers reinstated). This allows you to review the results of the edit and is especially important if the description has changed significantly and you would not have been able find the food again.
+- On first displaying this screen all the input fields will be populated with values from the selected Food, however the Description field will have the " mL" or " mL#" markers omitted. These will be reinstated after edit confirmation. This means you cannot change a Liquid food into a Solid one directly through editing. Use the **Convert** button on the [Foods Table] screen to create a new solid (annotated with a density marker) and edit that instead.
+- Modify fields as desired, using decimals where needed and press the **Confirm** button to save your changes. The description field cannot be blank and the remaining fields must be non-negative numbers or blank (which is interpreted as 0). In error cases pressing the Confirm button displays an appropriate dialog ([Missing description] or [Invalid value] prompting for correction. Focus will then return back to the [Editing Liquid Food] screen after pressing the error dialog's OK button, or tapping anywhere outside this dialog.
+- Notes is an optional free text (multi-line) field. It is saved with the food and shown in the [Foods Table] screen when All is selected.
+- You can press either the "dimmed" **Foods Table button** or the `<-` button (in the top left hand corner of the screen) to cancel the editing process and return focus to the [Foods Table] screen.
+- If confirmation succeeds the selected food is amended and focus passes to the [Foods Table] screen with the filter text being set to the just edited foods description (with markers reinstated). This allows you to review the results of the edit and is especially important if the description has changed significantly and you would not have been able to find the food.
 """;
 
         public const string EditSolidFoodBody = """
 - These are foods for which the Energy and nutrient values are given on a **per 100g basis**
-- On first displaying this screen all the input fields will be populated with values from the selected Food, however the Description field will have the " #" marker (if any) omitted. This will be reinstated after edit confirmation. This screen preserves the solid suffix, so create a liquid food using Add or Copy if needed.
-- Modify fields as required using decimals where needed and tap Confirm to save your changes. If a field entry is not valid (eg. text, blank or not a number in a field requiring numbers) the Confirm button will be disabled.
-- Notes is an optional free text (multi-line) field. It is saved with the food and shown in the Foods table when All is selected.
-- You can press either of two "back" buttons to cancel the editing process and return focus to the Foods Table screen.
-- If confirmation succeeds the selected food is amended and focus passes to the Foods Table screen with the filter text being set to the just edited foods description (with any markers reinstated). This allows you to review the results of the edit and is especially important if the description has changed significantly and you would not have been able find the food again.
+- On first displaying this screen all the input fields will be populated with values from the selected Food, however the Description field will have the " #" marker omitted. These will be reinstated after edit confirmation.
+- Modify fields as desired, using decimals where needed and press the **Confirm** button to save your changes. The description field cannot be blank and the remaining fields must be non-negative numbers or blank (which is interpreted as 0). In error cases pressing the Confirm button displays an appropriate dialog ([Missing description] or [Invalid value] prompting for correction. Focus will then return back to the [Editing Solid Food] screen after pressing the error dialog's OK button, or tapping anywhere outside this dialog.
+- Notes is an optional free text (multi-line) field. It is saved with the food and shown in the [Foods Table] screen when All is selected.
+- You can press either the "dimmed" **Foods Table button** or the `<-` button (in the top left hand corner of the screen) to cancel the editing process and return focus to the [Foods Table] screen.
+- If confirmation succeeds the selected food is amended and focus passes to the [Foods Table] screen with the filter text being set to the just edited foods description (with any markers reinstated). This allows you to review the results of the edit and is especially important if the description has changed significantly and you would not have been able to find the food. 
 """;
 
         public const string CopyLiquidFoodBody = """
-# **Copying Liquid Food**
-- When the Copy button is tapped from the Foods Table screen with a **liquid food selected**, this screen headed Copying Liquid Food is displayed
-- Its layout and presentation is identical to the Editing Liquid Food screen, the difference being that instead of modifying the selected food record, a new one is created with the displayed field values.
-- Clearly before pressing the Confirm button you can modify any of the field entries, so you are not really creating an exact copy just a food based on the selection.
-- Notes is pre-filled from the selected food, can be edited (multi-line), and is saved with the new record.
-- Focus will then pass to the Foods Table screen with the filter text being set to the just created foods description (with the liquid marker appended). This allows you to review the results of the foods creation and is especially important if the Description is unintuitive and finding the food in the table might be difficult.
-- As before you can press either of the two "back" buttons to cancel the copying process and return focus to the Foods Table screen.
+- When the **Copy** button is pressed from the [Foods Table] screen with a **liquid food selected** this screen headed [Copying Liquid Food] is displayed.
+- Its layout and presentation is identical to the [Editing Liquid Food] screen, the difference being that instead of modifying the selected food record, a new one is created with the displayed field values.
+- Read the help from the [Editing Liquid Food] screen for analagous details of field entry and validation.
 """;
 
         public const string CopySolidFoodBody = """
-# **Copying Solid Food**
-- When the Copy button is tapped from the Foods Table screen with a **solid food selected**, this screen headed Copying Solid Food is displayed
-- Its layout and presentation is identical to the Editing Solid Food screen, the difference being that instead of modifying the selected food record, a new one is created with the displayed field values.
-- Clearly before pressing the Confirm button you can modify any of the field entries, so you are not really creating an exact copy just a food based on the selection.
-- Notes is pre-filled from the selected food, can be edited (multi-line), and is saved with the new record.
-- Focus will then pass to the Foods Table screen with the filter text being set to the just created foods description. This allows you to review the results of the foods creation and is especially important if the Description is unintuitive and finding the food in the table might be difficult.
-- As before you can press either of the two "back" buttons to cancel the copying process and return focus to the Foods Table screen.
+- When the **Copy** button is pressed from the [Foods Table] screen with a **Solid food selected** this screen headed [Copying Solid Food] is displayed.
+- Its layout and presentation is identical to the [Editing Solid Food] screen, the difference being that instead of modifying the selected food record, a new one is created with the displayed field values.
+- Read the help from the [Editing Solid Food] screen for analagous details of field entry and validation.
 """;
 
         public const string AddSolidFoodBody = """
-# **Add Solid Food**
-- When the Add button is tapped from the Foods Table screen this screen is displayed.
-- Like other screens it has a help and a navigation button in the top row.
-- The following rows display the record fields that need to be filled in to create a new solid food.
-    - The final FoodDescription will terminate with the marker " #". You do not need to do this explicitly in the Description field.
-    - The Energy and nutrition fields are assumed to be on a per 100g basis. 
-    - Enter the description, nutritient values and Notes. Blanks outside of the Description field are treated as 0. As long as the Description field is not blank the Confirm button will be enabled.
-    - Notes is an optional free text (multi-line) field. It is saved with the food and shown in the Foods table when All is selected.
-    - You can press either of the two "back" buttons to cancel the creation process and return focus to the Foods Table screen.
-    - If however the Confirm button is pressed the Solid food will be added to the Foods table. Focus will then pass to the Foods Table screen with the filter text being set to the just created foods description. This allows you to review the results of the foods creation and is especially important if the Description is unintuitive and finding the food in the table might be difficult.    
+- When the **Add Solid** button is pressed from the [Foods Table] screen this screen is displayed.
+- Its layout and presentation is identical to the [Copying Solid Food] screen, the difference being that ALL the input fields are initially empty.
+- the final FoodDescription field (of the created food record) will terminate with the marker " #". You do not need to do this explicitly in the Description field.
+- Read the help from the [Editing Solid Food] screen for analagous details of field entry and validation.
 """;
 
         public const string AddLiquidFoodBody = """
-# **Add Liquid Food**
-- When the Add button is tapped from the Foods Table screen this screen is displayed.
-- Like other screens it has a help and a navigation button in the top row.
-- The following rows display the record fields that need to be filled in to create a new liquid food.
-    - The final FoodDescription will terminate with the marker " mL#". You do not need to do this explicitly in the Description field.
-    - The Energy and nutrition fields are assumed to be on a per 100mL basis.
-    - Enter the description, nutritient values and Notes. Blanks outside of the Description field are treated as 0. As long as the Description field is not blank the Confirm button will be enabled.
-    - Notes is an optional free text (multi-line) field. It is saved with the food and shown in the Foods table when All is selected.
-    - You can press either of the two "back" buttons to cancel the creation process and return focus to the Foods Table screen.
-    - If however the Confirm button is pressed the Liquid food will be added to the Foods table. Focus will then pass to the Foods Table screen with the filter text being set to the just created foods description (with the liquid marker appended). This allows you to review the results of the foods creation and is especially important if the Description is unintuitive and finding the food in the table might be difficult.    
-""";
-
-        public const string EditFoodBody = """
-# **Editing Food**
-- On first displaying this screen all the input fields will be populated with values from the selected Food.
-- Modify fields as required using decimals where needed and tap Confirm to save your changes. If a field entry is not valid (eg. text, blank or not a number in a field requiring numbers) the Confirm button will be disabled.
-- Notes is an optional free text (multi-line) field. It is saved with the food and shown in the Foods table when All is selected.
-- You can press either of two "back" buttons to cancel the editing process and return focus to the Foods Table screen.
-- If confirmation succeeds the selected food is amended and focus passes to the Foods Table screen with the filter text being set to the just edited foods description. This allows you to review the results of the edit and is especially important if the description has changed significantly and you would not have been able find the food again.    
-""";
-
-        public const string CopyFoodBody = """
-# **Copying Food**
-- When the Copy button is tapped from the Foods Table screen with a food selected, this screen is displayed.
-- Its layout and presentation is identical to the Editing Food screen, the difference being that instead of modifying the selected food record, a new one is created with the displayed field values.
-- Clearly before pressing the Confirm button you can modify any of the field entries, so you are not really creating an exact copy just a food based on the selection.
-- Notes is pre-filled from the selected food, can be edited (multi-line), and is saved with the new record.
-- Focus will then pass to the Foods Table screen with the filter text being set to the just created foods description. This allows you to review the results of the foods creation and is especially important if the Description is unintuitive and finding the food in the table might be difficult.
-- As before you can press either of the two "back" buttons to cancel the copying process and return focus to the Foods Table screen.
-""";
-
-        public const string InsertFoodBody = """
-# **Add Food**
-- When the Add button is tapped from the Foods Table screen this screen is displayed.
-- Like other screens it has a help and a navigation button in the top row.
-- The second row has three radio buttons titled:
-    - **Solid**. This is the default selection when this screen is opened.
-        - It indicates that the new food will be of solid type and thus the final FoodDescription will terminate with the marker " #". You do not need to do this explicitly in the Description field.
-        - The Energy and nutrition fields are assumed to be on a per 100g basis. 
-    - **Liquid**. If this is selected the new food will be of liquid type.
-        - The final FoodDescription will terminate with the marker " mL#". You do not need to do this explicitly in the Description field.
-        - The Energy and nutrition fields are assumed to be on a per 100mL basis.
-    - **Recipe**. If this radio button is selected focus will immediately pass to the Add Recipe screen.
-        - Any input fields you might have filled in will be ignored.
-- The following rows display the record fields that need to be filled in to create a new (non-recipe) food.
-    - Enter the description, nutritient values and Notes. Blanks outside of the Description field are treated as 0. As long as the Description field is not blank the Confirm button will be enabled.
-    - Notes is an optional free text (multi-line) field. It is saved with the food and shown in the Foods table when All is selected.
-    - You can press either of the two "back" buttons to cancel the creation process and return focus to the Foods Table screen.
-    - If however the Confirm button is pressed the Solid or Liquid food (as designated by the selected radio button) will be added to the Foods table. Focus will then pass to the Foods Table screen with the filter text being set to the just created foods description (with the liquid marker appended if necessary). This allows you to review the results of the foods creation and is especially important if the Description is unintuitive and finding the food in the table might be difficult.
+- When the **Add Liquid** button is pressed from the [Foods Table] screen this screen is displayed.
+- Its layout and presentation is identical to the [Copying Liquid Food] screen, the difference being that ALL the input fields are initially empty.
+- the final FoodDescription field (of the created food record) will terminate with the marker " mL#". You do not need to do this explicitly in the Description field.
+- Read the help from the [Editing Liquid Food] screen for analagous details of field entry and validation.
 """;
 
         public const string JsonFoodBody = """
-# **Add Food using Json**
-- When the **Json** button is tapped from the **Foods Table** screen, this screen called **Add Food using Json** is displayed.
-- Like other screens it has a **help** and a **navigation** button in the top row.
-- Following this is a **text field** that takes up the rest of the screen and is followed by a **Confirm** button.
-- Paste or enter JSON text describing a food item (liquid or solid, but **not recipe**).
-- The notes field is optional free text. If provided it is stored with the food and shown in the Foods table when All is selected.
-- The format of the JSON text needs to be precisely as shown in the example below:
-```
-{
-  "FoodDescription": "Cheese, Mersey Valley Classic #",
-  "Energy": 1690,
-  "Protein": 23.7,
-  "FatTotal": 34.9,
-  "SaturatedFat": 22.4,
-  "TransFat": 1,
-  "PolyunsaturatedFat": 0.5,
-  "MonounsaturatedFat": 10,
-  "Carbohydrate": 0.1,
-  "Sugars": 0.1,
-  "DietaryFibre": 0,
-  "SodiumNa": 643,
-  "CalciumCa": 720,
-  "PotassiumK": 100,
-  "ThiaminB1": 0,
-  "RiboflavinB2": 0.3,
-  "NiacinB3": 0.1,
-  "Folate": 10,
-  "IronFe": 0.2,
-  "MagnesiumMg": 30,
-  "VitaminC": 0,
-  "Caffeine": 0,
-  "Cholesterol": 100,
-  "Alcohol": 0,
-  "notes": "Used on-pack NIP for core nutrients. Remaining micronutrients estimated from AFCD/NUTTAB cheddar cheese equivalents. Website not checked—no URL provided."
-}
-```
-NOTE: **Any line feeds, tabs and spaces outside of "any text" are entirely optional** which means that this Json text is also valid though not easy to read for a human:
- ```
-{"FoodDescription":"Cheese, Mersey Valley Classic #","Energy":1690,"Protein":23.7,"FatTotal":34.9,"SaturatedFat":22.4,"TransFat":1,"PolyunsaturatedFat":0.5,"MonounsaturatedFat":10,"Carbohydrate":0.1,"Sugars":0.1,"DietaryFibre":0,"SodiumNa":643,"CalciumCa":720,"PotassiumK":100,"ThiaminB1":0,"RiboflavinB2":0.3,"NiacinB3":0.1,"Folate":10,"IronFe":0.2,"MagnesiumMg":30,"VitaminC":0,"Caffeine":0,"Cholesterol":100,"Alcohol":0,"notes":"Used on-pack NIP for core nutrients. Remaining micronutrients estimated from AFCD/NUTTAB cheddar cheese equivalents. Website not checked—no URL provided."}   
-```
-- Tap **Confirm** to process the JSON which adds the food to the Foods table. Focus will then pass to the Foods Table screen with the filter text being set to the just created foods description (with the liquid marker appended if relevant). This allows you to review the results of the foods creation, with this being especially important if the Description is unintuitive and finding the food in the table might be difficult.
-    - If the Json text is missing or invalid a Toast message will appear ("Please paste valid JSON" or "Invalid JSON or missing fields") and focus will remain unchanged.
-- **To abort any actions on this screen** you can press either of the two "back" buttons to clear any text from the text field and set focus to the Foods Table screen.
+- When the **JSON** button is pressed from the [Foods Table] screen, this screen called [Add Food using JSON] is displayed.
+- Its purpose is to allow a food (liquid or solid, but **not recipe**) to be added to the Foods table by pasting or entering JSON text that specifies the food.
+
+### **Explanation of GUI elements**
+The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
+- **help button** `?` which displays this help screen.
+- **heading** of this screen [Foods Table]. 
+- **Foods Table button** which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button. This can also be accomplished by the `<-` navigation button at the very top left of this screen.
+- **Confirm** button. Press this to process the JSON text entered in the text field below.
+- **Text field** which takes up the rest of the screen. When empty it faintly displays the text "Paste JSON here.
+    - The format of the JSON text needs to be precisely as shown in the example below:
+    ```
+    {
+      "FoodDescription": "Cheese, Mersey Valley Classic #",
+      "Energy": 1690,
+      "Protein": 23.7,
+      "FatTotal": 34.9,
+      "SaturatedFat": 22.4,
+      "TransFat": 1,
+      "PolyunsaturatedFat": 0.5,
+      "MonounsaturatedFat": 10,
+      "Carbohydrate": 0.1,
+      "Sugars": 0.1,
+      "DietaryFibre": 0,
+      "SodiumNa": 643,
+      "CalciumCa": 720,
+      "PotassiumK": 100,
+      "ThiaminB1": 0,
+      "RiboflavinB2": 0.3,
+      "NiacinB3": 0.1,
+      "Folate": 10,
+      "IronFe": 0.2,
+      "MagnesiumMg": 30,
+      "VitaminC": 0,
+      "Caffeine": 0,
+      "Cholesterol": 100,
+      "Alcohol": 0,
+      "notes": "Used on-pack NIP for core nutrients. Remaining micronutrients estimated
+                from AFCD/NUTTAB cheddar cheese equivalents. Website not checked—no URL 
+                provided."
+    }
+    ```
+    NOTE: **Any line feeds, tabs and spaces outside of "any text" are entirely optional** which means that this Json text is also valid though not easy to read for a human:
+
+     ```
+    {"FoodDescription":"Cheese, Mersey Valley Classic #",
+    "Energy":1690,"Protein":23.7,"FatTotal":34.9,"SaturatedFat":22.4,"TransFat":1,
+    "PolyunsaturatedFat":0.5,"MonounsaturatedFat":10,"Carbohydrate":0.1,"Sugars":0.1,
+    "DietaryFibre":0,"SodiumNa":643,"CalciumCa":720,"PotassiumK":100,"ThiaminB1":0,
+    "RiboflavinB2":0.3,"NiacinB3":0.1,"Folate":10,"IronFe":0.2,"MagnesiumMg":30,
+    "VitaminC":0,"Caffeine":0,"Cholesterol":100,"Alcohol":0,"notes":"Used on-pack 
+    NIP for core nutrients. Remaining micronutrients estimated from AFCD/NUTTAB 
+    cheddar cheese equivalents. Website not checked—no URL provided."}   
+    ```
+    - press the **Confirm** button to process the JSON. This adds the food to the Foods table. Focus will then pass to the [Foods Table] screen with the filter text being set to the just created food's Description (with the liquid marker appended if relevant). This allows you to review the results of the food's creation, with this being especially important if the Description is unintuitive and finding the food in the table might be difficult.
+        - If the Json text is missing or invalid an error dialog titled "Invalid JSON" will appear.
+    - **To abort any actions on this screen** you can press either the "dimmed" **Foods Table button** or the `<-` button (in the top left hand corner of the screen).
 ***
-# **AI generation of JSON**
+### **AI generation of JSON**
 The easiest and supported way of obtaining JSON text is to use AI. The following workflow is recommended:
 - You are assumed to have access to the ChatGPT Pro paid plan (or better). This give you access to GPTs.
-- Log into ChatGpt (https://chatgpt.com) and Explore GPTs. Find the **NIP generator** GPT with the following description:
-```
-Given a food description returns its expanded Nutrition Information Panel (NIP) in Json format. It can be directly added to the Foods table of any Diet Sentry app database. It follows the FSANZ standard 1.2.8 and Schedules 11–12.
-```
+- Log into ChatGpt (https://chatgpt.com) and Explore GPTs. Find the **Nutrition Information Panel (NIP) generator** GPT with the following description:
+    ```
+    Given a food description and/or images, 
+    returns its Nutrition Information Panel (NIP) in a specific JSON format. 
+    It follows the FSANZ standard 1.2.8 and Schedules 11–12. 
+    It can be directly added to the Foods table of the Diet Sentry apps database. 
+    https://github.com/namor5772/DietSentry4Windows.
+    ```
 - Start chatting
 - You can attach photos of labels and product NIPs to the chat prompt as well as just a text description of the food you are interested in.
 - A Diet Sentry compatible JSON text will (almost always) be generated as a chat response. Copy and paste this into the text field on this screen.
-- You can edit this text as desired, eg. to tweak the FoodDescription field, but make sure it is a valid JSON file.
+- You can edit this text as desired, eg. to tweak the FoodDescription field, but make sure it remains a valid JSON file.
 """;
 
         public const string LogFoodBody = """
