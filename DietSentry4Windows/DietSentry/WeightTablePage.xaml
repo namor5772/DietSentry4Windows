@@ -38,7 +38,7 @@
             RowSpacing="16">
             <Grid
                 Grid.Row="0"
-                ColumnDefinitions="Auto,Auto,Auto,*"
+                ColumnDefinitions="Auto,Auto,*"
                 ColumnSpacing="12">
                 <Button
                     Grid.Column="0"
@@ -52,14 +52,25 @@
                     FontAttributes="Bold"
                     FontSize="24"
                     VerticalOptions="Start" />
-                <Button
+                <FlexLayout
                     Grid.Column="2"
-                    Text="Foods Table"
-                    HorizontalOptions="Start"
-                    BackgroundColor="{StaticResource PrimaryDark}"
-                    TextColor="{StaticResource White}"
-                    Clicked="OnBackClicked"
-                    Style="{StaticResource TopRowButtonStyle}" />
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Start"
+                    JustifyContent="Start">
+                    <Button
+                        Text="Foods Table"
+                        HorizontalOptions="Start"
+                        BackgroundColor="{StaticResource PrimaryDark}"
+                        TextColor="{StaticResource White}"
+                        Clicked="OnBackClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                    <Button
+                        Text="Add Weight"
+                        HorizontalOptions="Start"
+                        Clicked="OnAddClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                </FlexLayout>
             </Grid>
 
             <Frame
@@ -81,12 +92,8 @@
                         <VerticalStackLayout Spacing="8">
                             <Label
                                 Text="No weight entries yet." />
-                        <Button
-                            Text="Add"
-                            HorizontalOptions="Start"
-                            Clicked="OnAddClicked" />
-                    </VerticalStackLayout>
-                </CollectionView.EmptyView>
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Frame
@@ -150,20 +157,16 @@
                         HorizontalOptions="Center"
                         Spacing="0">
                         <Button
-                            Text="Add"
-                            Clicked="OnAddClicked"
-                            Style="{StaticResource SelectionActionButtonStyle}" />
-                        <Button
                             Text="Edit"
                             Clicked="OnEditSelectedClicked"
                             Style="{StaticResource SelectionActionButtonStyle}" />
-                    <Button
-                        Text="Delete"
-                        Clicked="OnDeleteSelectedClicked"
-                        Style="{StaticResource SelectionActionButtonStyle}" />
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
-        </Frame>
+                        <Button
+                            Text="Delete"
+                            Clicked="OnDeleteSelectedClicked"
+                            Style="{StaticResource SelectionActionButtonStyle}" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
         </Grid>
 
         <Grid

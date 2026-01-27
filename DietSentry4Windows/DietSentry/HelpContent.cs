@@ -299,7 +299,8 @@ The remaining (**Energy** and **Nutrient fields**) are the same as for the corre
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
 - **help button** `?` which displays this help screen.
 - **heading** of this screen [Foods Table]. 
-- **Foods Table button** which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button. This can also be accomplished by the `<-` navigation button at the very top left of this screen.
+- **Foods Table** button which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button. This can also be accomplished by the `<-` navigation button at the very top left of this screen.
+- **Add Weight** button which opens the **Add weight** dialog so you can enter a new weight and date.
 - **Confirm** button. Press this to process the JSON text entered in the text field below.
 - **Text field** which takes up the rest of the screen. When empty it faintly displays the text "Paste JSON here.
     - The format of the JSON text needs to be precisely as shown in the example below:
@@ -334,7 +335,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
                 provided."
     }
     ```
-    NOTE: **Any line feeds, tabs and spaces outside of "any text" are entirely optional** which means that this Json text is also valid though not easy to read for a human:
+    NOTE: **Any line feeds, tabs and spaces outside of "any text" are entirely optional** which means that this JSON text is also valid though not easy for a human to read:
 
      ```
     {"FoodDescription":"Cheese, Mersey Valley Classic #",
@@ -369,15 +370,17 @@ The easiest and supported way of obtaining JSON text is to use AI. The following
 """;
 
         public const string WeightTableBody = """
+- When the **Weight Table** button is pressed from the [Foods Table] screen, this screen called [Weight Table] is displayed.
+- Its purpose is to display the records from the Weight table and allow records to be added, edited and deleted.
+
+### **Explanation of GUI elements**
+The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
+- **help button** `?` which displays this help screen.
+- **heading** of this screen [Foods Table]. 
+- **Foods Table** button which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button. This can also be accomplished by the `<-` navigation button at the very top left of this screen.
 - **Weight Table**: a scrollable table viewer which displays records from the weight table.
     - Records are displayed in descending date order.
-    - When any record is selected (by tapping it) a selection panel appears at the bottom of the screen. It displays details of the selected record followed by three buttons below it:
-        - **Add**: It enables a weight record to be added to the Weight table.
-            - It opens the **Add weight** dialog so you can enter a new weight and date.
-            - You can optionally enter Comments for the weight entry.
-            - The original selected weight record has no relevance to this activity. It is just a way of making the Add button available.
-            - You cannot use a date that already exists.
-            - Press the **Confirm** button when you are ready to confirm your changes. This wll be ignored if the date already exists or the weight is not a number or is blank. in these cases an appropriate Toast will be temporarily displayed.
+    - When any record is selected (by tapping it) a selection panel appears at the bottom of the screen. It displays details of the selected record followed by two buttons below it:
         - **Edit**: It enables the selected weight record to be modified.
             - It opens the **Edit weight** dialog where you can modify the weight in kg. The date is shown but not editable.
             - You can edit Comments for the weight entry.
@@ -386,7 +389,7 @@ The easiest and supported way of obtaining JSON text is to use AI. The following
             - It opens the **Delete weight?** warning dialog box.
             - Press the **Confirm** button when you are ready to confirm the delete. This then transfers focus back to this screen where the deleted weight record will be disappear from this scrollable table viewer. The selection panel is also closed.
         - You can abort these processes (from the above dialogs) by tapping anywhere outside the dialog box or pressing the "back" button on the bottom menu. This closes the dialog and transfers focus back to this screen. The selection panel is also closed.
-    - If the Weight Table is empty (which is usually the case if the app has just been installed with the default internal databse) there is no way to enable the selection panel so that a weight record can be created by pressing the Add button. Instead the message "The Weight table has no records" is displayed, followed by the **Add** button. Press it to add a new weight record. Once at least one record exists this GUI layout disappears.
+    - If the Weight Table is empty (which is usually the case if the app has just been installed with the default internal databse) the message "The Weight table has no records" is displayed, followed by the **Add Weight** button. Press it to add a new weight record. Once at least one record exists this GUI layout disappears.
     - **The intention is** that each day at preferably the same time you weight yourself naked or with the same weight clothes and record this weight in the Weight table. When analysing your aggregated data from the Eaten table you will see your days weight together with your daily Energy and nutrient amounts. 
 ***
 # **Weight table structure**
