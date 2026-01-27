@@ -190,7 +190,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
     - When **checked** only food logs of foods logged during the displayed date are displayed, whether summed or not.
 - **date dialog** which displays a selected date.
     - When this app is started the default is today's date. It remains persistent while the app stays open.
-- **scrollable table viewer** which displays records (possibly consolidated by date) from the Eaten table. If a particular logged food is selected (by tapping it and then maybe scrolling) a selection panel appears at the bottom of the screen. It displays the description of the selected food log and its time stamp followed by two buttons below it:
+- **scrollable table viewer** 
     - **Edit**: It enables the amount and time stamp of the logged eaten food to be modified.
         - It opens a dialog box where you can specify the amount eaten as well as the date and time this has occurred (with the default being now).
         - Press the **Confirm** button when you are ready to confirm your changes. This then transfers focus back to the [Eaten Table] screen where the just modified food log will be visible and selected. The selection panel for this log (with the Edit and Delete buttons) will close.
@@ -370,27 +370,36 @@ The easiest and supported way of obtaining JSON text is to use AI. The following
 """;
 
         public const string WeightTableBody = """
-- When the **Weight Table** button is pressed from the [Foods Table] screen, this screen called [Weight Table] is displayed.
-- Its purpose is to display the records from the Weight table and allow records to be added, edited and deleted.
+When the **Weight Table** button is pressed from the [Foods Table] screen, this screen called [Weight Table] is displayed.
+
+Its purpose is to display all Weight table records and allow them to be added, edited or deleted.
+
+**The intention is** that each day at preferably the same time you **weigh yourself naked** or with the same weight clothes and record this weight in the Weight table. When analysing your aggregated data from the Eaten table with the All option, you will see your days weight and comments together (of course) with your daily Energy and nutrient amounts. 
 
 ### **Explanation of GUI elements**
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
 - **help button** `?` which displays this help screen.
 - **heading** of this screen [Foods Table]. 
 - **Foods Table** button which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button. This can also be accomplished by the `<-` navigation button at the very top left of this screen.
-- **Weight Table**: a scrollable table viewer which displays records from the weight table.
+- **Add Weight** button which adds a record to the Weight table.
+    - It opens the **Add Weight table record** dialog where you can set the date, add a weight in kgs and optionally add an arbitrary text comment.
+    - The weight must be a positive number, otherwise an error dialog titled [Invalid Weight] will display when the Confirm button is pressed.
+    - If the date already exists (in some Weight table record), an error dialog titled [Date exists] will display if the Confirm button is pressed.
+    - Press the **Confirm** button when you are ready to finalize creating the Weight table record. This then transfers focus back to this screen, the new record appears in the scrollable table viewer and (invisible) focus sets on the `<-` navigation button. The selection panel is also closed.
+- **scrollable table viewer** which displays records from the Weight table.
     - Records are displayed in descending date order.
-    - When any record is selected (by tapping it) a selection panel appears at the bottom of the screen. It displays details of the selected record followed by two buttons below it:
-        - **Edit**: It enables the selected weight record to be modified.
-            - It opens the **Edit weight** dialog where you can modify the weight in kg. The date is shown but not editable.
-            - You can edit Comments for the weight entry.
-            - Press the **Confirm** button when you are ready to confirm your changes. This then transfers focus back to this screen where the just modified weight record will be visible. The selection panel is also closed.
-        - **Delete**: It deletes the selected weight record.
-            - It opens the **Delete weight?** warning dialog box.
-            - Press the **Confirm** button when you are ready to confirm the delete. This then transfers focus back to this screen where the deleted weight record will be disappear from this scrollable table viewer. The selection panel is also closed.
-        - You can abort these processes (from the above dialogs) by tapping anywhere outside the dialog box or pressing the "back" button on the bottom menu. This closes the dialog and transfers focus back to this screen. The selection panel is also closed.
-    - If the Weight Table is empty (which is usually the case if the app has just been installed with the default internal databse) the message "The Weight table has no records" is displayed, followed by the **Add Weight** button. Press it to add a new weight record. Once at least one record exists this GUI layout disappears.
-    - **The intention is** that each day at preferably the same time you weight yourself naked or with the same weight clothes and record this weight in the Weight table. When analysing your aggregated data from the Eaten table you will see your days weight together with your daily Energy and nutrient amounts. 
+    - If a particular record is selected (by tapping it and then maybe scrolling), a selection panel appears at the bottom of the screen. It displays the date and weight fields of the record followed by two buttons below it:
+    - **Edit** button which enables the selected Weight table record to be modified.
+        - It opens the **Edit Weight table record** dialog where you can modify the weight in kg. The date is shown but not editable. You can also edit the Comments field.
+        - Error behaviour is analagous to the **Add Weight table record** dialog described above.
+        - Press the **Confirm** button when you are ready to confirm your changes. This then transfers focus back to this screen. The selection panel is also closed.
+    - **Delete** button which deletes the selected Weight table record.
+        - It opens the **Delete Weight table record?** warning dialog box.
+        - The date and weight field of the selected record are displayd under the heading.
+        - Press the **Confirm** button when you are ready to confirm the delete. This then transfers focus back to this screen where the deleted Weight table record will be disappear from this scrollable table viewer. The selection panel is also closed.
+    - You can abort these processes (from any of the above dialogs) by pressing the **Cancel** button, tapping anywhere outside the dialog box or pressing the `<-` navigation button. This closes the dialog and transfers focus back to this screen. If the selection panel is open it is also closed.
+    - If the Weight Table is empty (which is usually the case if the app has just been installed with the default internal database) the message "No weight entries yet." is displayed (in this scrollable table viewer).
+
 ***
 # **Weight table structure**
 ```

@@ -196,7 +196,7 @@ namespace DietSentry
             if (WeightEntries.Any(entry =>
                     string.Equals(entry.DateWeight, dateText, StringComparison.OrdinalIgnoreCase)))
             {
-                await DisplayAlertAsync("Date exists", "A weight record already exists for that date.", "OK");
+                ShowDateExistsOverlay("A weight record already exists for that date.");
                 return;
             }
 
@@ -361,6 +361,37 @@ namespace DietSentry
             }
 
             InvalidWeightOverlay.IsVisible = false;
+        }
+
+        private void ShowDateExistsOverlay(string message)
+        {
+            if (DateExistsOverlay == null || DateExistsMessageLabel == null)
+            {
+                return;
+            }
+
+            DateExistsMessageLabel.Text = message;
+            DateExistsOverlay.IsVisible = true;
+        }
+
+        private void OnDateExistsOkClicked(object? sender, EventArgs e)
+        {
+            if (DateExistsOverlay == null)
+            {
+                return;
+            }
+
+            DateExistsOverlay.IsVisible = false;
+        }
+
+        private void OnDateExistsBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            if (DateExistsOverlay == null)
+            {
+                return;
+            }
+
+            DateExistsOverlay.IsVisible = false;
         }
 
         private async void OnBackClicked(object? sender, EventArgs e)
