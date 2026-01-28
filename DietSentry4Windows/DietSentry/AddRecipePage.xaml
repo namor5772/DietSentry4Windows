@@ -100,19 +100,19 @@
                 Placeholder="Recipe description" />
         </Grid>
 
-            <Grid
+            <HorizontalStackLayout
                 Grid.Row="2"
-                ColumnDefinitions="*,Auto"
-                ColumnSpacing="8">
-            <Entry
-                x:Name="FoodFilterEntry"
-                Placeholder="Enter food filter text"
-                Completed="OnFoodFilterCompleted" />
-            <Button
-                Grid.Column="1"
-                Text="Clear"
-                Clicked="OnClearFilterClicked" />
-        </Grid>
+                Spacing="8">
+                <Entry
+                    x:Name="FoodFilterEntry"
+                    Placeholder="Enter food filter text"
+                    WidthRequest="260"
+                    HorizontalOptions="Start"
+                    Completed="OnFoodFilterCompleted" />
+                <Button
+                    Text="Clear"
+                    Clicked="OnClearFilterClicked" />
+            </HorizontalStackLayout>
 
             <Frame
                 Grid.Row="3"

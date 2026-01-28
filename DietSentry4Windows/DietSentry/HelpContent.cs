@@ -433,10 +433,9 @@ The remaining fields are self expanatory.
 
 
         private const string RecipeHelpTemplate = """
+By its very nature a recipe food is more complicated than a normal liquid or solid food and hence this screen is more complex. See the **Explanation of GUI elements** section below to see how everything works.
+
 __MODE_INTRO__
-
-By its very nature a recipe food is more complicated than a normal liquid or solid food and hence this screen is more complex.
-
 ***
 ### **What is a recipe food?**
 A recipe food is a record in the Foods table AND and a collection of ingredient records from the Recipe table. Each ingredient is linked to its Foods table record by the FoodId field.
@@ -489,7 +488,7 @@ The **FoodDescription** is the same field as for that ingredients record in the 
 
 The remaining (**Energy** and **Nutrient fields**) are the same as for the corresponding Foods table record (the ingredient), except that they are scaled by the amount of the food used in the recipe. Eg. if Amount=250 then all these field values are multiplied by 2.5. This is analogous to what happens to records in the Eaten table.    
    
-Once all the ingredients of a recipe are known, the end markers of the recipes FoodDescription field in the Foods table record are set to ` {recipe=[weight]g}` where [weight] is the total amount in grams of all the ingredient foods. Furthermore the Energy and Nutrient fields (of this Foods table record) are scaled by 100/[weight]. This guarantees that when you LOG this recipe food using [weight] as the amount consumed you will get the correct Energy and Nutrient values, as if you had consumed the meal represented by the recipe!
+Once all the ingredients of a recipe are known, the end markers of the recipes FoodDescription field in the Foods table record are set to ` {recipe=[weight]g}` where [weight] is the total amount in grams of all the ingredient foods. Furthermore the Energy and Nutrient fields (of this Foods table record) are scaled by 100/[weight]. This guarantees that when you LOG this recipe food using [weight] as the amount consumed you will get the correct Energy and Nutrient values (as if you had consumed the meal represented by the recipe!.)
  
 *** 
 ### **Explanation of GUI elements**
@@ -500,12 +499,11 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
 - **Foods Table** button which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button.
 - **Set notes** button. When pressed populates/overwrites the Notes field of the Foods table record of this recipe with the current ingredients list.
     - one line per ingredient in the format "[amount] g [description]".
-    - The ingredients are listed in descending order they were added to the recipe, ie. the most recent first.
-    - Ipopulwhich opens a dialog box where you can enter arbitrary multi-line text notes about this recipe food. 
-    - There is no warning dialog before overwriting the existing notes.
-- **Edit notes** button. It opens a dialog box titled [Recipe Notes] where you can modify the existing multi-line text notes.
+    - The ingredients are listed in descending order of when they were added to the recipe, ie. the most recent first.
+    - There is no warning dialog before overwriting the existing notes. It just happens in the background.
+- **Edit notes** button. It opens a dialog box titled [Recipe Notes] where you can modify the existing multi-line text notes. It could have been populated by pressing the **Set notes** button!
     - Press the **Confirm** button when you are ready to finalize your modified notes. This then transfers focus back to this screen.
-    - These notes are saved with the recipe food and are shown in the [Foods Table] screen when All is selected.
+    - These notes are saved with the recipe food and are shown in the [Foods Table] screen when this recipe food is listed in the scrollable table viewer and the All option is selected.
     - You can abort this process by tapping anywhere outside the dialog box or pressing the **Cancel** button. This closes the dialog.
 - **Confirm** button which finalizes the recipe food creation or modification.
     - The recipe food is added to the Foods and Recipe table records.
@@ -560,7 +558,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
                 "Copying Recipe" => """
                 This screen lets you create and modify a new recipe food by copying the one you selected.
 
-                Same behaviour as "Editing Recipe" but when you press the "Confirm** button a NEW recipe is created.
+                Same behaviour as "Editing Recipe" but when you press the **Confirm** button a NEW recipe is created.
 
                 It would be identical if you don't make any changes!
                 """,
