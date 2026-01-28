@@ -35,45 +35,56 @@
                     Property="Margin"
                     Value="0,0,4,4" />
             </Style>
-            <Style
-                x:Key="FooterButtonStyle"
-                TargetType="Button">
-                <Setter
-                    Property="Margin"
-                    Value="0,0,4,4" />
-            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <Grid>
         <Grid
             Padding="20"
-            RowDefinitions="Auto,Auto,Auto,*,Auto,*,Auto,Auto"
+            RowDefinitions="Auto,Auto,Auto,*,Auto,*,Auto"
             RowSpacing="12">
             <Grid
                 Grid.Row="0"
-                ColumnDefinitions="Auto,Auto,Auto,*"
+                ColumnDefinitions="Auto,Auto,*"
                 ColumnSpacing="12">
-            <Button
-                Grid.Column="0"
-                Text="?"
-                Style="{StaticResource HelpIconButtonStyle}"
-                Clicked="OnHelpClicked"
-                VerticalOptions="Start" />
-            <Label
-                Grid.Column="1"
-                Text="{Binding ScreenTitle}"
-                FontAttributes="Bold"
-                FontSize="24"
-                VerticalOptions="Start" />
-            <Button
-                Grid.Column="2"
-                Text="Foods Table"
-                BackgroundColor="{StaticResource PrimaryDark}"
-                TextColor="{StaticResource White}"
-                Clicked="OnBackClicked"
-                Style="{StaticResource TopRowButtonStyle}" />
-        </Grid>
+                <Button
+                    Grid.Column="0"
+                    Text="?"
+                    Style="{StaticResource HelpIconButtonStyle}"
+                    Clicked="OnHelpClicked"
+                    VerticalOptions="Start" />
+                <Label
+                    Grid.Column="1"
+                    Text="{Binding ScreenTitle}"
+                    FontAttributes="Bold"
+                    FontSize="24"
+                    VerticalOptions="Start" />
+                <FlexLayout
+                    Grid.Column="2"
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Start"
+                    JustifyContent="Start">
+                    <Button
+                        Text="Foods Table"
+                        BackgroundColor="{StaticResource PrimaryDark}"
+                        TextColor="{StaticResource White}"
+                        Clicked="OnBackClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                    <Button
+                        Text="Set notes"
+                        Clicked="OnSetNotesClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                    <Button
+                        Text="Edit notes"
+                        Clicked="OnEditNotesClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                    <Button
+                        Text="Confirm"
+                        Clicked="OnConfirmClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                </FlexLayout>
+            </Grid>
 
             <Grid
                 Grid.Row="1"
@@ -226,29 +237,9 @@
             </VerticalStackLayout>
         </Frame>
 
-            <FlexLayout
-                Grid.Row="7"
-                Direction="Row"
-                Wrap="Wrap"
-                AlignItems="Center"
-                JustifyContent="Center">
-            <Button
-                Text="Set notes"
-                Clicked="OnSetNotesClicked"
-                Style="{StaticResource FooterButtonStyle}" />
-            <Button
-                Text="Edit notes"
-                Clicked="OnEditNotesClicked"
-                Style="{StaticResource FooterButtonStyle}" />
-            <Button
-                Text="Confirm"
-                Clicked="OnConfirmClicked"
-                Style="{StaticResource FooterButtonStyle}" />
-        </FlexLayout>
-
             <Grid
                 Grid.Row="0"
-                Grid.RowSpan="8"
+                Grid.RowSpan="7"
                 IsVisible="{Binding ShowAddIngredientPanel}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
@@ -312,7 +303,7 @@
 
             <Grid
                 Grid.Row="0"
-                Grid.RowSpan="8"
+                Grid.RowSpan="7"
                 IsVisible="{Binding ShowEditIngredientPanel}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
@@ -376,7 +367,7 @@
 
         <Grid
             Grid.Row="0"
-            Grid.RowSpan="8"
+            Grid.RowSpan="7"
             IsVisible="{Binding ShowEditNotesPanel}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>

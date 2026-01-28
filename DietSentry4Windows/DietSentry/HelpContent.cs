@@ -300,7 +300,6 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
 - **help button** `?` which displays this help screen.
 - **heading** of this screen [Foods Table]. 
 - **Foods Table** button which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button. This can also be accomplished by the `<-` navigation button at the very top left of this screen.
-- **Add Weight** button which opens the **Add weight** dialog so you can enter a new weight and date.
 - **Confirm** button. Press this to process the JSON text entered in the text field below.
 - **Text field** which takes up the rest of the screen. When empty it faintly displays the text "Paste JSON here.
     - The format of the JSON text needs to be precisely as shown in the example below:
@@ -430,19 +429,21 @@ The remaining fields are self expanatory.
         public static string CopyRecipeBody => BuildRecipeHelpText("Copying Recipe");
         public static string EditRecipeBody => BuildRecipeHelpText("Editing Recipe");
 
+//**__TITLE__**
+
+
         private const string RecipeHelpTemplate = """
-# **__TITLE__**
 __MODE_INTRO__
 
 By its very nature a recipe food is more complicated than a normal liquid or solid food and hence this screen is more complex.
 
 ***
-# **What is a recipe food?**
+### **What is a recipe food?**
 A recipe food is a record in the Foods table AND and a collection of ingredient records from the Recipe table. Each ingredient is linked to its Foods table record by the FoodId field.
 
 For the purposes of logging consumption you select a recipe food (from the scrollable table viewer in the Foods Table screen) just like with the simpler solid and liquid foods. It is considered a solid in that its amount is measured in grams. Differences in processing are only apparent when you Edit, Add or Copy it.
 
-You can identify a recipe food by noting that its FoodDescription field ends in text of the form " {recipe=[weight]g}" where [weight] is the total amount in grams of the ingredient foods (all required to be solids or recipes).
+You can identify a recipe food by noting that its FoodDescription field ends in text of the form ` {recipe=[weight]g}` where [weight] is the total amount in grams of the ingredient foods (all required to be solids or recipes).
 
 The **Recipe table structure** is as follows:
 ```
@@ -488,64 +489,93 @@ The **FoodDescription** is the same field as for that ingredients record in the 
 
 The remaining (**Energy** and **Nutrient fields**) are the same as for the corresponding Foods table record (the ingredient), except that they are scaled by the amount of the food used in the recipe. Eg. if Amount=250 then all these field values are multiplied by 2.5. This is analogous to what happens to records in the Eaten table.    
    
-Once all the ingredients of a recipe are known, the end markers of the recipes FoodDescription field in the Foods table record are set to " {recipe=[weight]g}" where [weight] is the total amount in grams of all the ingredient foods. Furthermore the Energy and Nutrient fields (of this Foods table record) are scaled by 100/[weight]. This guarantees that when you LOG this recipe food using [weight] as the amount consumed you will get the correct Energy and Nutrient values (as if you had consumed the meal represented by the recipe).
+Once all the ingredients of a recipe are known, the end markers of the recipes FoodDescription field in the Foods table record are set to ` {recipe=[weight]g}` where [weight] is the total amount in grams of all the ingredient foods. Furthermore the Energy and Nutrient fields (of this Foods table record) are scaled by 100/[weight]. This guarantees that when you LOG this recipe food using [weight] as the amount consumed you will get the correct Energy and Nutrient values, as if you had consumed the meal represented by the recipe!
  
 *** 
-# **Explanation of GUI elements**
+### **Explanation of GUI elements**
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
-- The **heading** of the screen (for example "Add Recipe", "Editing Recipe", or "Copying Recipe"). 
-- The **help button** `?` which displays this help screen.
-- The **navigation button** `<-` which transfers you to the Foods Table screen.
-- A **text field** titled Description.
+- **navigation button** `<-` which transfers you to the [Foods Table] screen.
+- **help button** `?` which displays this help screen.
+- **heading** of this screen [__NAME__]. 
+- **Foods Table** button which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button.
+- **Set notes** button. When pressed populates/overwrites the Notes field of the Foods table record of this recipe with the current ingredients list.
+    - one line per ingredient in the format "[amount] g [description]".
+    - The ingredients are listed in descending order they were added to the recipe, ie. the most recent first.
+    - Ipopulwhich opens a dialog box where you can enter arbitrary multi-line text notes about this recipe food. 
+    - There is no warning dialog before overwriting the existing notes.
+- **Edit notes** button. It opens a dialog box titled [Recipe Notes] where you can modify the existing multi-line text notes.
+    - Press the **Confirm** button when you are ready to finalize your modified notes. This then transfers focus back to this screen.
+    - These notes are saved with the recipe food and are shown in the [Foods Table] screen when All is selected.
+    - You can abort this process by tapping anywhere outside the dialog box or pressing the **Cancel** button. This closes the dialog.
+- **Confirm** button which finalizes the recipe food creation or modification.
+    - The recipe food is added to the Foods and Recipe table records.
+    - Focus passes to the [Foods Table] screen with the filter text being set to the just created/modified food's Description (with any markers appended). This allows you to review the results of the food's creation, with this being especially important if the Description is nonintuitive and finding the food in the table might be difficult.
+    - If the Description fied is blank an error dialog titled [Missing description] appears.
+    - If the recipe has no ingredients an error dialog titled [Missing ingredients] appears.
+    - **To abort any actions on this screen** you can press either the "dimmed" **Foods Table** button or the `<-` button (in the top left hand corner of the screen).
+- **text field** titled Description.
     - __DESCRIPTION_HINT__
-    - It will be the FoodDescription field of this recipe's Foods table record.
     - Once the recipe is saved by pressing the Confirm button the appropriate markers (described above) will be appended to create the final FoodDescription.
-    - If left blank a toast titled "Please enter a description" will briefly appear after the Confirm button is pressed. Focus will remain on this screen.  
-- A **text field** which when empty displays the text "Enter food filter text"
-    - Type any text in the field and press the Enter key or equivalent. This filters the list of foods to those that contain this text anywhere in their description.
-    - You can also type {text1}|{text2} to match descriptions that contain BOTH of these terms.
-    - It is persistent while the app is running.
-    - It is NOT case sensitive. 
-- The **clear text field button** `x` which clears the above text field.    
-- A **scrollable table viewer** which displays records from the Foods table.
-    - When a particular food is selected (by tapping it) a dialog box appears where you can specify the amount in grams of the food that this recipe requires.
-    - Press the **Confirm** button when you are ready to accept this recipe ingredient. This transfers focus back to this screen where the added ingredient will appear in the lower scrollable table viewer.
-    - You can abort this process by tapping anywhere outside the dialog box. This closes it and focus returns to this screen.
-    - If you select a liquid food a dialog with the title "CANNOT ADD THIS FOOD" will appear. Press the OK button or tap anywhere outside the dialog box to close it. Nothing happens and focus returns to this screen.    
-- A **text label** which is of the form "Ingredients[weight] (g) Total"
+    - If made or left blank an error dialog [Missing description] will appear after the Confirm button is pressed.  
+- **Text field** which when empty faintly displays the text "Enter food filter text"
+    - Type any text in the field and press the Enter key or equivalent. This filters the list of foods (visible in the scrollable table viewer below it) to those that contain this text anywhere in their Description.
+    - You can also type \{text1\}|\{text2\} to match descriptions that contain BOTH of these terms.
+    - It is NOT case sensitive.
+- **Clear** button which clears the above text field.    
+- **scrollable table viewer** which displays records from the Foods table.
+    - Only the FoodDescription fields are listed.
+    - When a particular food is selected (by tapping it and then maybe scrolling) a Dialog appears with the Description of the selected food as its heading.
+    - Input the amount in grams of this food (to be added as an ingredient to the recipe) and press the **Confirm** button.
+    - This will create a new ingredient record in the Recipe table (linked to this recipe food) and transfer focus back to this screen where the just added ingredient will be visible in the scrollable table viewer at the bottom of this screen.
+    - You can abort this process by tapping anywhere outside the dialog box or pressing the **Cancel** button. This closes the dialog.
+    - If the Amount is blank or not a valid positive number pressing the **Confirm** button will display an **Invalid amount dialog**.
+- **text label** which is of the form `Ingredients [weight] (g) Total`
     - The [weight] is the total current amount of ingredients in this recipe in grams.
-    - It is automatically updated whenever the ingredients are added, edited or deleted.
-- A **scrollable table viewer** which displays this recipes ingredient records from the Recipe table.
-    - When an ingredient is selected (by tapping it) a selection panel appears near the bottom of the screen. It displays the description of the selected food followed by two buttons below it:
-        - **Edit**: It enables the amount of the ingredient to be modified.
-            - It opens a dialog box where you can modify the amount of the ingredient.
-            - Press the **Confirm** button when you are ready to confirm your changes. This then transfers focus back to this screen where the just modified ingredient will be visible. The Total Ingredients amount will also be adjusted.        
-            - You can abort this process by tapping anywhere outside the dialog box. This closes it and transfers focus back to this screen. The selection panel is also closed. 
-        - **Delete**: deletes the selected ingredient from the Recipe table.
-            - There is no warning dialog, it just irrevocably deletes the ingredient.
-- Two buttons labeled **Set notes** and **Edit notes** beside the Confirm button.
-    - **Set notes** fills the recipes notes field with the current ingredient list (replacing if one exists), one line per ingredient in the format "[amount] [description]".
-    - **Edit notes** opens a dialog where you can directly edit (or just examine) the notes text field.
-    - Notes are saved with the recipe food and shown in the Foods table when All is selected.
-    - __NOTES_HINT__
-- A **Confirm** button.
-    - __CONFIRM_HINT__
-    - If the Description is blank or there are no ingredients in the recipe an informative Toast appears and nothing changes.
-    - If you want to abort any actions on this screen you can press either of the two "back" buttons which sets focus back to the Foods Table screen.    
+    - It is automatically updated whenever the an ingredient is added, edited or deleted.
+- **scrollable table viewer** which displays this recipes ingredient records (from the Recipe table).
+    - When an ingredient is selected (by tapping it and then maybe scrolling) a selection panel appears near the bottom of the screen. It displays the Description of the selected ingredient and the amount in grams used in the recipe food followed by two buttons below it:
+    - **Edit**: It enables the amount of the ingredient to be modified.
+        - It opens a dialog box where you can modify the amount of the ingredient.
+        - Press the **Confirm** button when you are ready to confirm your change. This then transfers focus back to this screen where the just modified ingredient will be visible. It closes the selection panel and also updates The Total Ingredients amount.  
+        - You can abort this process by tapping anywhere outside the dialog box or pressing the **Cancel** button. This closes the dialog and the selection panel.
+        - If the Amount is blank or not a valid positive number pressing the **Confirm** button will display an **Invalid amount dialog**.
+    - **Delete**: deletes the selected ingredient from the Recipe table.
+        - There is no warning dialog, it just irrevocably deletes the ingredient.
+        - This selection panel is closed.
 """;
 
         public static string BuildRecipeHelpText(string screenTitle)
         {
             var modeIntro = screenTitle switch
             {
-                "Editing Recipe" => "This screen lets you edit the recipe food you selected.",
-                "Copying Recipe" => "This screen lets you create and modify a new recipe food by copying the one you selected.",
-                _ => "This screen lets you create a new recipe food.",
+                "Editing Recipe" => """
+                This screen lets you edit the recipe food you selected.
+
+                The Description field is populated and the the second scrollable table viewer shows all the ingredients.
+
+                The Notes field can be viewed and edited by pressing the **Edit notes** button.
+
+                Modify these elements as required and press the **Confirm** button to modify the recipe food.
+                """,
+                "Copying Recipe" => """
+                This screen lets you create and modify a new recipe food by copying the one you selected.
+
+                Same behaviour as "Editing Recipe" but when you press the "Confirm** button a NEW recipe is created.
+
+                It would be identical if you don't make any changes!
+                """,
+                _ => """
+                This screen lets you create a new recipe food.
+
+                Initially there is no Description, no ingredients and the Notes field (Which can be examined/edited by pressing the **Edit notes** button) is blank.
+
+                You need to create all these elements and then press the **Confirm** button to create a NEW recipe.
+                """,
             };
 
             var descriptionHint = screenTitle switch
             {
-                "Add Recipe" => "It starts empty.",
+                "Add Recipe" => "It starts empty, with the faint placeholder text 'Recipe description'.",
                 _ => "It starts with the selected recipe's description (without the recipe marker).",
             };
 
@@ -563,12 +593,20 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
                 _ => "It starts empty.",
             };
 
+            var screenName = screenTitle switch
+            {
+                "Editing Recipe" => "Editing Recipe",
+                "Copying Recipe" => "Copying Recipe",
+                _ => "Add Recipe",
+            };
+
             return RecipeHelpTemplate
                 .Replace("__TITLE__", screenTitle)
                 .Replace("__MODE_INTRO__", modeIntro)
                 .Replace("__DESCRIPTION_HINT__", descriptionHint)
                 .Replace("__CONFIRM_HINT__", confirmHint)
-                .Replace("__NOTES_HINT__", notesHint);
+                .Replace("__NOTES_HINT__", notesHint)
+                .Replace("__NAME__", screenName);
         }
 
         public static string FormatHelpTitle(string title)
