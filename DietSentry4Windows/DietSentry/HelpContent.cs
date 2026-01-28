@@ -9,7 +9,7 @@ This is the main screen of the app.
 
 Its purpose is to display a list of foods from the Foods table and allow interaction with a selected food. The primary purpose being to **LOG the selected food**. The top row also contains buttons for various actions you can take.
 ***
-### **Explanation of GUI elements**
+### Explanation of GUI elements
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
 - **help button** `?` which displays this help screen.
 - **heading** of this screen [Foods Table]. 
@@ -57,7 +57,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
         - This is irrevocable if you press the **Confirm** button.
         - You can abort this process by tapping anywhere outside the dialog box or pressing the **Cancel** button. This closes the dialog.
 ---
-### **Foods table structure**
+### Foods table structure
 ```
 Field name          Type    Units
 
@@ -99,7 +99,7 @@ The notes field is optional free text and is shown only when the All option is s
 - **If a FoodDescription ends in any other pattern of characters than those specified above** the food is considered a Solid, and nutrient values are per 100g. If additionally it ends in ` #` then it is also never a part of the original database.
 - **Foods converted from liquids** include a `{density=...g/mL}` marker in the description to record the density used for conversion.
 
-### **Mandatory Nutrients on a NIP**
+### Mandatory Nutrients on a NIP
 Under Standard 1.2.8 of the FSANZ Food Standards Code, most packaged foods must display a NIP showing:
 - Energy (in kilojoules, and optionally kilocalories)
 - Protein
@@ -113,21 +113,21 @@ These values must be shown per serving and per 100 g (or 100 mL for liquids).
 
 - **The Foods table includes these mandatory nutrients.**
  
-### **When More Nutrients Are Required**
+### When More Nutrients Are Required
 Additional nutrients must be declared if a nutrition claim is made. For example:
 - If a product claims to be a “good source of fibre,” then dietary fibre must be listed.
 - If a claim is made about specific fats (e.g., omega-3, cholesterol, trans fats), those must also be included.
 
 - **The Foods table includes most such possible additional nutrients.**
 
-### **Formatting Rules**
+### Formatting Rules
 - Significant figures: Values must be reported to no more than three significant figures.
 - Decimal places: Protein, fat, saturated fat, carbohydrate, and sugars are rounded to 1 decimal place if under 100 g. Energy and sodium are reported as whole numbers (no decimals).
 - Serving size: Determined by the food business, but must be clearly stated.
 
 - **The Foods table does not explicitly consider servings, though they might be noted in the FoodDescription text field or notes.** 
 
-### **Exemptions**
+### Exemptions
 Some foods don’t require a NIP unless a nutrition claim is made:
 - Unpackaged foods (e.g., fresh fruit, vegetables)
 - Foods made and packaged at point of sale (e.g., bakery bread)
@@ -142,7 +142,7 @@ Some foods don’t require a NIP unless a nutrition claim is made:
         public const string EatenTableBody = """
 The main purpose of this screen is to **display a log of foods** you have consumed. You can also change their time stamps, amount eaten or delete them.
 ***
-## Explanation of GUI elements
+### Explanation of GUI elements
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
 - **help button** `?` which displays this help screen.
 - **heading** of this screen [Eaten Table]. 
@@ -201,7 +201,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
         - You can change you mind about doing this by pressing the **Cancel** button or tapping anywhere outside the dialog box. This closes it and transfers focus in the same way as described above.
     - If food logs consolidated by date are displayed (ie. the "Daily totals" check box is ticked), selection for editing or deletion is NOT POSSIBLE, so nothing happens.
 ***
-# **Eaten table structure**
+### Eaten table structure
 ```
 Field name              Type    Units
 
@@ -254,6 +254,7 @@ The remaining (**Energy** and **Nutrient fields**) are the same as for the corre
 - Notes is an optional free text (multi-line) field. It is saved with the food and shown in the [Foods Table] screen when All is selected.
 - You can press either the "dimmed" **Foods Table button** or the `<-` button (in the top left hand corner of the screen) to cancel the editing process and return focus to the [Foods Table] screen.
 - If confirmation succeeds the selected food is amended and focus passes to the [Foods Table] screen with the filter text being set to the just edited foods description (with markers reinstated). This allows you to review the results of the edit and is especially important if the description has changed significantly and you would not have been able to find the food.
+***
 """;
 
         public const string EditSolidFoodBody = """
@@ -263,6 +264,7 @@ The remaining (**Energy** and **Nutrient fields**) are the same as for the corre
 - Notes is an optional free text (multi-line) field. It is saved with the food and shown in the [Foods Table] screen when All is selected.
 - You can press either the "dimmed" **Foods Table button** or the `<-` button (in the top left hand corner of the screen) to cancel the editing process and return focus to the [Foods Table] screen.
 - If confirmation succeeds the selected food is amended and focus passes to the [Foods Table] screen with the filter text being set to the just edited foods description (with any markers reinstated). This allows you to review the results of the edit and is especially important if the description has changed significantly and you would not have been able to find the food. 
+***
 """;
 
         public const string CopyLiquidFoodBody = """
@@ -275,6 +277,7 @@ The remaining (**Energy** and **Nutrient fields**) are the same as for the corre
 - When the **Copy** button is pressed from the [Foods Table] screen with a **Solid food selected** this screen headed [Copying Solid Food] is displayed.
 - Its layout and presentation is identical to the [Editing Solid Food] screen, the difference being that instead of modifying the selected food record, a new one is created with the displayed field values.
 - Read the help from the [Editing Solid Food] screen for analagous details of field entry and validation.
+***
 """;
 
         public const string AddSolidFoodBody = """
@@ -282,6 +285,7 @@ The remaining (**Energy** and **Nutrient fields**) are the same as for the corre
 - Its layout and presentation is identical to the [Copying Solid Food] screen, the difference being that ALL the input fields are initially empty.
 - the final FoodDescription field (of the created food record) will terminate with the marker " #". You do not need to do this explicitly in the Description field.
 - Read the help from the [Editing Solid Food] screen for analagous details of field entry and validation.
+***
 """;
 
         public const string AddLiquidFoodBody = """
@@ -289,13 +293,14 @@ The remaining (**Energy** and **Nutrient fields**) are the same as for the corre
 - Its layout and presentation is identical to the [Copying Liquid Food] screen, the difference being that ALL the input fields are initially empty.
 - the final FoodDescription field (of the created food record) will terminate with the marker " mL#". You do not need to do this explicitly in the Description field.
 - Read the help from the [Editing Liquid Food] screen for analagous details of field entry and validation.
+***
 """;
 
         public const string JsonFoodBody = """
 - When the **JSON** button is pressed from the [Foods Table] screen, this screen called [Add Food using JSON] is displayed.
 - Its purpose is to allow a food (liquid or solid, but **not recipe**) to be added to the Foods table by pasting or entering JSON text that specifies the food.
 
-### **Explanation of GUI elements**
+### Explanation of GUI elements
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
 - **help button** `?` which displays this help screen.
 - **heading** of this screen [Foods Table]. 
@@ -350,7 +355,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
         - If the Json text is missing or invalid an error dialog titled "Invalid JSON" will appear.
     - **To abort any actions on this screen** you can press either the "dimmed" **Foods Table button** or the `<-` button (in the top left hand corner of the screen).
 ***
-### **AI generation of JSON**
+### AI generation of JSON
 The easiest and supported way of obtaining JSON text is to use AI. The following workflow is recommended:
 - You are assumed to have access to the ChatGPT Pro paid plan (or better). This give you access to GPTs.
 - Log into ChatGpt (https://chatgpt.com) and Explore GPTs. Find the **Nutrition Information Panel (NIP) generator** GPT with the following description:
@@ -366,6 +371,7 @@ The easiest and supported way of obtaining JSON text is to use AI. The following
 - You can attach photos of labels and product NIPs to the chat prompt as well as just a text description of the food you are interested in.
 - A Diet Sentry compatible JSON text will (almost always) be generated as a chat response. Copy and paste this into the text field on this screen.
 - You can edit this text as desired, eg. to tweak the FoodDescription field, but make sure it remains valid JSON text.
+***
 """;
 
         public const string WeightTableBody = """
@@ -375,7 +381,7 @@ Its purpose is to display all Weight table records and allow them to be added, e
 
 **The intention is** that each day at preferably the same time you **weigh yourself naked** or with the same weight clothes and record this weight in the Weight table. When analysing your aggregated data from the Eaten table with the All option, you will see your days weight and comments together (of course) with your daily Energy and nutrient amounts. 
 
-### **Explanation of GUI elements**
+### Explanation of GUI elements
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
 - **help button** `?` which displays this help screen.
 - **heading** of this screen [Foods Table]. 
@@ -414,6 +420,7 @@ The **WeightId** field is never explicitly displayed or considered. It is a Prim
 The **Comments** field is optional and may be blank.
 
 The remaining fields are self expanatory.
+***
 """;
 
         public static string AddFoodByJsonTitle => FormatHelpTitle("Add Food using Json");
@@ -437,7 +444,7 @@ By its very nature a recipe food is more complicated than a normal liquid or sol
 
 __MODE_INTRO__
 ***
-### **What is a recipe food?**
+### What is a recipe food?
 A recipe food is a record in the Foods table AND and a collection of ingredient records from the Recipe table. Each ingredient is linked to its Foods table record by the FoodId field.
 
 For the purposes of logging consumption you select a recipe food (from the scrollable table viewer in the Foods Table screen) just like with the simpler solid and liquid foods. It is considered a solid in that its amount is measured in grams. Differences in processing are only apparent when you Edit, Add or Copy it.
@@ -491,7 +498,7 @@ The remaining (**Energy** and **Nutrient fields**) are the same as for the corre
 Once all the ingredients of a recipe are known, the end markers of the recipes FoodDescription field in the Foods table record are set to ` {recipe=[weight]g}` where [weight] is the total amount in grams of all the ingredient foods. Furthermore the Energy and Nutrient fields (of this Foods table record) are scaled by 100/[weight]. This guarantees that when you LOG this recipe food using [weight] as the amount consumed you will get the correct Energy and Nutrient values (as if you had consumed the meal represented by the recipe!.)
  
 *** 
-### **Explanation of GUI elements**
+### Explanation of GUI elements
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
 - **navigation button** `<-` which transfers you to the [Foods Table] screen.
 - **help button** `?` which displays this help screen.
@@ -540,6 +547,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
     - **Delete**: deletes the selected ingredient from the Recipe table.
         - There is no warning dialog, it just irrevocably deletes the ingredient.
         - This selection panel is closed.
+***
 """;
 
         public static string BuildRecipeHelpText(string screenTitle)
