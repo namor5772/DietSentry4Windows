@@ -56,7 +56,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
         - It opens a dialog which warns you that you will be deleting the selected food.
         - This is irrevocable if you press the **Confirm** button.
         - You can abort this process by tapping anywhere outside the dialog box or pressing the **Cancel** button. This closes the dialog.
----
+***
 ### Foods table structure
 ```
 Field name          Type    Units
@@ -98,7 +98,7 @@ The notes field is optional free text and is shown only when the All option is s
 
 - **If a FoodDescription ends in any other pattern of characters than those specified above** the food is considered a Solid, and nutrient values are per 100g. If additionally it ends in ` #` then it is also never a part of the original database.
 - **Foods converted from liquids** include a `{density=...g/mL}` marker in the description to record the density used for conversion.
-
+***
 ### Mandatory Nutrients on a NIP
 Under Standard 1.2.8 of the FSANZ Food Standards Code, most packaged foods must display a NIP showing:
 - Energy (in kilojoules, and optionally kilocalories)
@@ -112,21 +112,21 @@ Under Standard 1.2.8 of the FSANZ Food Standards Code, most packaged foods must 
 These values must be shown per serving and per 100 g (or 100 mL for liquids).
 
 - **The Foods table includes these mandatory nutrients.**
- 
+*** 
 ### When More Nutrients Are Required
 Additional nutrients must be declared if a nutrition claim is made. For example:
 - If a product claims to be a “good source of fibre,” then dietary fibre must be listed.
 - If a claim is made about specific fats (e.g., omega-3, cholesterol, trans fats), those must also be included.
 
 - **The Foods table includes most such possible additional nutrients.**
-
+***
 ### Formatting Rules
 - Significant figures: Values must be reported to no more than three significant figures.
 - Decimal places: Protein, fat, saturated fat, carbohydrate, and sugars are rounded to 1 decimal place if under 100 g. Energy and sodium are reported as whole numbers (no decimals).
 - Serving size: Determined by the food business, but must be clearly stated.
 
 - **The Foods table does not explicitly consider servings, though they might be noted in the FoodDescription text field or notes.** 
-
+***
 ### Exemptions
 Some foods don’t require a NIP unless a nutrition claim is made:
 - Unpackaged foods (e.g., fresh fruit, vegetables)
@@ -299,7 +299,7 @@ The remaining (**Energy** and **Nutrient fields**) are the same as for the corre
         public const string JsonFoodBody = """
 - When the **JSON** button is pressed from the [Foods Table] screen, this screen called [Add Food using JSON] is displayed.
 - Its purpose is to allow a food (liquid or solid, but **not recipe**) to be added to the Foods table by pasting or entering JSON text that specifies the food.
-
+***
 ### Explanation of GUI elements
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
 - **help button** `?` which displays this help screen.
@@ -380,7 +380,7 @@ When the **Weight Table** button is pressed from the [Foods Table] screen, this 
 Its purpose is to display all Weight table records and allow them to be added, edited or deleted.
 
 **The intention is** that each day at preferably the same time you **weigh yourself naked** or with the same weight clothes and record this weight in the Weight table. When analysing your aggregated data from the Eaten table with the All option, you will see your days weight and comments together (of course) with your daily Energy and nutrient amounts. 
-
+***
 ### Explanation of GUI elements
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
 - **help button** `?` which displays this help screen.
@@ -496,7 +496,6 @@ The **FoodDescription** is the same field as for that ingredients record in the 
 The remaining (**Energy** and **Nutrient fields**) are the same as for the corresponding Foods table record (the ingredient), except that they are scaled by the amount of the food used in the recipe. Eg. if Amount=250 then all these field values are multiplied by 2.5. This is analogous to what happens to records in the Eaten table.    
    
 Once all the ingredients of a recipe are known, the end markers of the recipes FoodDescription field in the Foods table record are set to ` {recipe=[weight]g}` where [weight] is the total amount in grams of all the ingredient foods. Furthermore the Energy and Nutrient fields (of this Foods table record) are scaled by 100/[weight]. This guarantees that when you LOG this recipe food using [weight] as the amount consumed you will get the correct Energy and Nutrient values (as if you had consumed the meal represented by the recipe!.)
- 
 *** 
 ### Explanation of GUI elements
 The GUI elements on the screen are (starting at the top left hand corner and working across and down):   
