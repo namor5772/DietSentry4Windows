@@ -872,142 +872,144 @@
             </VerticalStackLayout>
         </Frame>
 
-        <Grid
-            Grid.Row="0"
-            Grid.RowSpan="5"
-            IsVisible="{Binding ShowEditPanel}">
-            <BoxView Color="#80000000">
-                <BoxView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnEditBackdropTapped" />
-                </BoxView.GestureRecognizers>
-            </BoxView>
-            <Frame
-                Padding="16"
-                CornerRadius="12"
-                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                WidthRequest="364"
-                HasShadow="True">
-                <Frame.Shadow>
-                    <Shadow
-                        Brush="#40000000"
-                        Offset="0,8"
-                        Radius="12"
-                        Opacity="0.6" />
-                </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
-                    <Label
-                        x:Name="EditFoodNameLabel"
-                        FontAttributes="Bold"
-                        FontSize="18" />
-                    <Grid
-                        ColumnDefinitions="Auto,Auto,Auto,*"
-                        ColumnSpacing="8"
-                        RowDefinitions="Auto,Auto"
-                        RowSpacing="8">
-                        <Entry
-                            x:Name="EditAmountEntry"
-                            Placeholder="Amount"
-                            Keyboard="Numeric"
-                            WidthRequest="95"
-                            HorizontalOptions="FillAndExpand"
-                            Grid.Column="0" />
-                        <Label
-                            x:Name="EditUnitLabel"
-                            VerticalOptions="Center"
-                            Grid.Column="1" />
-                        <DatePicker
-                            x:Name="EditDatePicker"
-                            VerticalOptions="Center"
-                            Grid.Row="0"
-                            Grid.Column="2" />
-                        <TimePicker
-                            x:Name="EditTimePicker"
-                            VerticalOptions="Center"
-                            Format="HH:mm"
-                            HorizontalOptions="Start"
-                            MinimumWidthRequest="112"
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Grid.ColumnSpan="4" />
-                    </Grid>
-                    <FlexLayout
-                        Direction="Row"
-                        Wrap="Wrap"
-                        AlignItems="Center"
-                        JustifyContent="Center">
-                        <Button
-                            Text="Confirm"
-                            Clicked="OnEditConfirmClicked"
-                            Margin="0,0,4,4" />
-                        <Button
-                            Text="Cancel"
-                            Clicked="OnEditCancelClicked"
-                            Margin="0,0,4,4" />
-                    </FlexLayout>
-                </VerticalStackLayout>
-            </Frame>
-        </Grid>
+    </Grid>
 
-        <Grid
-            Grid.Row="0"
-            Grid.RowSpan="5"
-            IsVisible="{Binding ShowDeletePanel}">
-            <BoxView Color="#80000000">
-                <BoxView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnDeleteBackdropTapped" />
-                </BoxView.GestureRecognizers>
-            </BoxView>
-            <Frame
-                Padding="16"
-                CornerRadius="12"
-                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                WidthRequest="364"
-                HasShadow="True">
-                <Frame.Shadow>
-                    <Shadow
-                        Brush="#40000000"
-                        Offset="0,8"
-                        Radius="12"
-                        Opacity="0.6" />
-                </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
+    <Grid
+        Grid.Row="0"
+        IsVisible="{Binding ShowEditPanel}"
+        ZIndex="{OnPlatform Android=10, Default=0}">
+        <BoxView Color="#80000000">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnEditBackdropTapped" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+        <Frame
+            Padding="16"
+            CornerRadius="12"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="{OnPlatform Android=291.2, Default=364}"
+            HasShadow="True">
+            <Frame.Shadow>
+                <Shadow
+                    Brush="#40000000"
+                    Offset="0,8"
+                    Radius="12"
+                    Opacity="0.6" />
+            </Frame.Shadow>
+            <VerticalStackLayout Spacing="12">
+                <Label
+                    x:Name="EditFoodNameLabel"
+                    FontAttributes="Bold"
+                    FontSize="18" />
+                <Grid
+                    ColumnDefinitions="Auto,Auto,Auto,*"
+                    ColumnSpacing="8"
+                    RowDefinitions="Auto,Auto"
+                    RowSpacing="8">
+                    <Entry
+                        x:Name="EditAmountEntry"
+                        Placeholder="Amount"
+                        Keyboard="Numeric"
+                        WidthRequest="95"
+                        HorizontalOptions="FillAndExpand"
+                        Grid.Column="0" />
                     <Label
-                        Text="Delete Eaten Food?"
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        HorizontalTextAlignment="Center" />
-                    <Label
-                        x:Name="DeleteDescriptionLabel"
-                        HorizontalTextAlignment="Center" />
-                    <Label
-                        x:Name="DeleteAmountLabel"
-                        HorizontalTextAlignment="Center" />
-                    <FlexLayout
-                        Direction="Row"
-                        Wrap="Wrap"
-                        AlignItems="Center"
-                        JustifyContent="Center">
-                        <Button
-                            Text="Confirm"
-                            Clicked="OnDeleteConfirmClicked"
-                            Margin="0,0,4,4" />
-                        <Button
-                            Text="Cancel"
-                            Clicked="OnDeleteCancelClicked"
-                            Margin="0,0,4,4" />
-                    </FlexLayout>
-                </VerticalStackLayout>
-            </Frame>
-        </Grid>
+                        x:Name="EditUnitLabel"
+                        VerticalOptions="Center"
+                        Grid.Column="1" />
+                    <DatePicker
+                        x:Name="EditDatePicker"
+                        VerticalOptions="Center"
+                        Grid.Row="0"
+                        Grid.Column="2" />
+                    <TimePicker
+                        x:Name="EditTimePicker"
+                        VerticalOptions="Center"
+                        Format="HH:mm"
+                        HorizontalOptions="Start"
+                        MinimumWidthRequest="112"
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4" />
+                </Grid>
+                <FlexLayout
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Center"
+                    JustifyContent="Center">
+                    <Button
+                        Text="Confirm"
+                        Clicked="OnEditConfirmClicked"
+                        Margin="0,0,4,4" />
+                    <Button
+                        Text="Cancel"
+                        Clicked="OnEditCancelClicked"
+                        Margin="0,0,4,4" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
+
+    <Grid
+        Grid.Row="0"
+        IsVisible="{Binding ShowDeletePanel}"
+        ZIndex="{OnPlatform Android=10, Default=0}">
+        <BoxView Color="#80000000">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnDeleteBackdropTapped" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+        <Frame
+            Padding="16"
+            CornerRadius="12"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="{OnPlatform Android=291.2, Default=364}"
+            HasShadow="True">
+            <Frame.Shadow>
+                <Shadow
+                    Brush="#40000000"
+                    Offset="0,8"
+                    Radius="12"
+                    Opacity="0.6" />
+            </Frame.Shadow>
+            <VerticalStackLayout Spacing="12">
+                <Label
+                    Text="Delete Eaten Food?"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center" />
+                <Label
+                    x:Name="DeleteDescriptionLabel"
+                    HorizontalTextAlignment="Center" />
+                <Label
+                    x:Name="DeleteAmountLabel"
+                    HorizontalTextAlignment="Center" />
+                <FlexLayout
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Center"
+                    JustifyContent="Center">
+                    <Button
+                        Text="Confirm"
+                        Clicked="OnDeleteConfirmClicked"
+                        Margin="0,0,4,4" />
+                    <Button
+                        Text="Cancel"
+                        Clicked="OnDeleteCancelClicked"
+                        Margin="0,0,4,4" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Frame>
     </Grid>
 
     <Grid
         x:Name="InvalidAmountOverlay"
-        IsVisible="False">
+        IsVisible="False"
+        ZIndex="{OnPlatform Android=20, Default=0}">
         <BoxView Color="#80000000">
             <BoxView.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnInvalidAmountBackdropTapped" />
@@ -1019,7 +1021,7 @@
             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
             HorizontalOptions="Center"
             VerticalOptions="Center"
-            WidthRequest="320"
+            WidthRequest="{OnPlatform Android=256, Default=320}"
             HasShadow="True">
             <Frame.Shadow>
                 <Shadow
@@ -1054,6 +1056,7 @@
     <Grid
         x:Name="HelpOverlay"
         IsVisible="False"
+        ZIndex="{OnPlatform Android=30, Default=0}"
         BackgroundColor="#80000000"
         VerticalOptions="FillAndExpand"
         HorizontalOptions="FillAndExpand"

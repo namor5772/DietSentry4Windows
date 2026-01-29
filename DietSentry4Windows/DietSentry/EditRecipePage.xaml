@@ -53,6 +53,7 @@
         <Grid
             x:Name="HelpOverlay"
             IsVisible="False"
+            ZIndex="{OnPlatform Android=30, Default=0}"
             BackgroundColor="#80000000"
             RowDefinitions="*,Auto">
             <BoxView

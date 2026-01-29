@@ -172,326 +172,330 @@
             </Frame>
         </Grid>
 
-        <Grid
-            x:Name="HelpOverlay"
-            IsVisible="False"
-            BackgroundColor="#80000000"
-            RowDefinitions="*,Auto">
-            <BoxView
-                Grid.Row="0"
-                BackgroundColor="Transparent">
-                <BoxView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnHelpDismissed" />
-                </BoxView.GestureRecognizers>
-            </BoxView>
-            <Border
-                x:Name="HelpSheet"
-                Grid.Row="1"
-                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
-                Padding="20,16"
-                StrokeThickness="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="16,16,0,0" />
-                </Border.StrokeShape>
-                <Grid RowDefinitions="Auto,*" RowSpacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
-                        <Label
-                            Text="{x:Static local:HelpContent.WeightTableTitle}"
-                            FontAttributes="Bold"
-                            FontSize="18"
-                            VerticalOptions="Center" />
-                        <Button
-                            Grid.Column="1"
-                            Text="Close"
-                            Clicked="OnHelpDismissed"
-                            Padding="6,2"
-                            FontSize="12"
-                            BackgroundColor="Transparent"
-                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
-                    </Grid>
-                    <local:MarkdownView
-                        Grid.Row="1"
-                        MarkdownText="{x:Static local:HelpContent.WeightTableBody}"
-                        VerticalOptions="FillAndExpand" />
+    </Grid>
+
+    <Grid
+        x:Name="HelpOverlay"
+        IsVisible="False"
+        ZIndex="{OnPlatform Android=30, Default=0}"
+        BackgroundColor="#80000000"
+        RowDefinitions="*,Auto">
+        <BoxView
+            Grid.Row="0"
+            BackgroundColor="Transparent">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnHelpDismissed" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+        <Border
+            x:Name="HelpSheet"
+            Grid.Row="1"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}"
+            Padding="20,16"
+            StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="16,16,0,0" />
+            </Border.StrokeShape>
+            <Grid RowDefinitions="Auto,*" RowSpacing="12">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label
+                        Text="{x:Static local:HelpContent.WeightTableTitle}"
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        VerticalOptions="Center" />
+                    <Button
+                        Grid.Column="1"
+                        Text="Close"
+                        Clicked="OnHelpDismissed"
+                        Padding="6,2"
+                        FontSize="12"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
                 </Grid>
-            </Border>
-        </Grid>
+                <local:MarkdownView
+                    Grid.Row="1"
+                    MarkdownText="{x:Static local:HelpContent.WeightTableBody}"
+                    VerticalOptions="FillAndExpand" />
+            </Grid>
+        </Border>
+    </Grid>
 
-        <Grid
-            Grid.Row="0"
-            Grid.RowSpan="3"
-            IsVisible="{Binding ShowAddPanel}">
-            <BoxView Color="#80000000">
-                <BoxView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnAddBackdropTapped" />
-                </BoxView.GestureRecognizers>
-            </BoxView>
-            <Frame
-                Padding="16"
-                CornerRadius="12"
-                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                WidthRequest="364"
-                HasShadow="True">
-                <Frame.Shadow>
-                    <Shadow
-                        Brush="#40000000"
-                        Offset="0,8"
-                        Radius="12"
-                        Opacity="0.6" />
-                </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
-                    <Label
-                        Text="Add Weight table record"
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        HorizontalTextAlignment="Center" />
-                    <Grid
-                        ColumnDefinitions="Auto,*"
-                        ColumnSpacing="8">
-                        <DatePicker
-                            x:Name="AddDatePicker"
-                            VerticalOptions="Center"
-                            Grid.Column="0" />
-                        <Entry
-                            x:Name="AddWeightEntry"
-                            Placeholder="Weight (kg)"
-                            Keyboard="Numeric"
-                            HorizontalOptions="FillAndExpand"
-                            Grid.Column="1" />
-                    </Grid>
-                    <Editor
-                        x:Name="AddCommentsEditor"
-                        Placeholder="Comments"
-                        AutoSize="TextChanges" />
-                    <FlexLayout
-                        Direction="Row"
-                        Wrap="Wrap"
-                        AlignItems="Center"
-                        JustifyContent="Center">
-                        <Button
-                            Text="Confirm"
-                            Clicked="OnAddConfirmClicked"
-                            Margin="0,0,4,4" />
-                        <Button
-                            Text="Cancel"
-                            Clicked="OnAddCancelClicked"
-                            Margin="0,0,4,4" />
-                    </FlexLayout>
-                </VerticalStackLayout>
-            </Frame>
-        </Grid>
+    <Grid
+        Grid.Row="0"
+        IsVisible="{Binding ShowAddPanel}"
+        ZIndex="{OnPlatform Android=10, Default=0}">
+        <BoxView Color="#80000000">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnAddBackdropTapped" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+        <Frame
+            Padding="16"
+            CornerRadius="12"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="{OnPlatform Android=291.2, Default=364}"
+            HasShadow="True">
+            <Frame.Shadow>
+                <Shadow
+                    Brush="#40000000"
+                    Offset="0,8"
+                    Radius="12"
+                    Opacity="0.6" />
+            </Frame.Shadow>
+            <VerticalStackLayout Spacing="12">
+                <Label
+                    Text="Add Weight table record"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center" />
+                <Grid
+                    ColumnDefinitions="Auto,*"
+                    ColumnSpacing="8">
+                    <DatePicker
+                        x:Name="AddDatePicker"
+                        VerticalOptions="Center"
+                        Grid.Column="0" />
+                    <Entry
+                        x:Name="AddWeightEntry"
+                        Placeholder="Weight (kg)"
+                        Keyboard="Numeric"
+                        HorizontalOptions="FillAndExpand"
+                        Grid.Column="1" />
+                </Grid>
+                <Editor
+                    x:Name="AddCommentsEditor"
+                    Placeholder="Comments"
+                    AutoSize="TextChanges" />
+                <FlexLayout
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Center"
+                    JustifyContent="Center">
+                    <Button
+                        Text="Confirm"
+                        Clicked="OnAddConfirmClicked"
+                        Margin="0,0,4,4" />
+                    <Button
+                        Text="Cancel"
+                        Clicked="OnAddCancelClicked"
+                        Margin="0,0,4,4" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
 
-        <Grid
-            Grid.Row="0"
-            Grid.RowSpan="3"
-            IsVisible="{Binding ShowEditPanel}">
-            <BoxView Color="#80000000">
-                <BoxView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnEditBackdropTapped" />
-                </BoxView.GestureRecognizers>
-            </BoxView>
-            <Frame
-                Padding="16"
-                CornerRadius="12"
-                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                WidthRequest="364"
-                HasShadow="True">
-                <Frame.Shadow>
-                    <Shadow
-                        Brush="#40000000"
-                        Offset="0,8"
-                        Radius="12"
-                        Opacity="0.6" />
-                </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
+    <Grid
+        Grid.Row="0"
+        IsVisible="{Binding ShowEditPanel}"
+        ZIndex="{OnPlatform Android=10, Default=0}">
+        <BoxView Color="#80000000">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnEditBackdropTapped" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+        <Frame
+            Padding="16"
+            CornerRadius="12"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="{OnPlatform Android=291.2, Default=364}"
+            HasShadow="True">
+            <Frame.Shadow>
+                <Shadow
+                    Brush="#40000000"
+                    Offset="0,8"
+                    Radius="12"
+                    Opacity="0.6" />
+            </Frame.Shadow>
+            <VerticalStackLayout Spacing="12">
+                <Label
+                    Text="Edit Weight table record"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center" />
+                <Grid
+                    ColumnDefinitions="Auto,*"
+                    ColumnSpacing="8">
                     <Label
-                        Text="Edit Weight table record"
+                        x:Name="EditDateLabel"
+                        VerticalOptions="Center"
                         FontAttributes="Bold"
-                        FontSize="18"
-                        HorizontalTextAlignment="Center" />
-                    <Grid
-                        ColumnDefinitions="Auto,*"
-                        ColumnSpacing="8">
-                        <Label
-                            x:Name="EditDateLabel"
-                            VerticalOptions="Center"
-                            FontAttributes="Bold"
-                            Grid.Column="0" />
-                        <Entry
-                            x:Name="EditWeightEntry"
-                            Placeholder="Weight (kg)"
-                            Keyboard="Numeric"
-                            HorizontalOptions="FillAndExpand"
-                            Grid.Column="1" />
-                    </Grid>
-                    <Editor
-                        x:Name="EditCommentsEditor"
-                        Placeholder="Comments"
-                        AutoSize="TextChanges" />
-                    <FlexLayout
-                        Direction="Row"
-                        Wrap="Wrap"
-                        AlignItems="Center"
-                        JustifyContent="Center">
-                        <Button
-                            Text="Confirm"
-                            Clicked="OnEditConfirmClicked"
-                            Margin="0,0,4,4" />
-                        <Button
-                            Text="Cancel"
-                            Clicked="OnEditCancelClicked"
-                            Margin="0,0,4,4" />
-                    </FlexLayout>
-                </VerticalStackLayout>
-            </Frame>
-        </Grid>
+                        Grid.Column="0" />
+                    <Entry
+                        x:Name="EditWeightEntry"
+                        Placeholder="Weight (kg)"
+                        Keyboard="Numeric"
+                        HorizontalOptions="FillAndExpand"
+                        Grid.Column="1" />
+                </Grid>
+                <Editor
+                    x:Name="EditCommentsEditor"
+                    Placeholder="Comments"
+                    AutoSize="TextChanges" />
+                <FlexLayout
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Center"
+                    JustifyContent="Center">
+                    <Button
+                        Text="Confirm"
+                        Clicked="OnEditConfirmClicked"
+                        Margin="0,0,4,4" />
+                    <Button
+                        Text="Cancel"
+                        Clicked="OnEditCancelClicked"
+                        Margin="0,0,4,4" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
 
-        <Grid
-            Grid.Row="0"
-            Grid.RowSpan="3"
-            IsVisible="{Binding ShowDeletePanel}">
-            <BoxView Color="#80000000">
-                <BoxView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnDeleteBackdropTapped" />
-                </BoxView.GestureRecognizers>
-            </BoxView>
-            <Frame
-                Padding="16"
-                CornerRadius="12"
-                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                WidthRequest="364"
-                HasShadow="True">
-                <Frame.Shadow>
-                    <Shadow
-                        Brush="#40000000"
-                        Offset="0,8"
-                        Radius="12"
-                        Opacity="0.6" />
-                </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
-                    <Label
-                        Text="Delete Weight table record?"
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        HorizontalTextAlignment="Center" />
-                    <Label
-                        x:Name="DeleteDetailsLabel"
-                        HorizontalTextAlignment="Center" />
-                    <FlexLayout
-                        Direction="Row"
-                        Wrap="Wrap"
-                        AlignItems="Center"
-                        JustifyContent="Center">
-                        <Button
-                            Text="Confirm"
-                            Clicked="OnDeleteConfirmClicked"
-                            Margin="0,0,4,4" />
-                        <Button
-                            Text="Cancel"
-                            Clicked="OnDeleteCancelClicked"
-                            Margin="0,0,4,4" />
-                    </FlexLayout>
-                </VerticalStackLayout>
-            </Frame>
-        </Grid>
+    <Grid
+        Grid.Row="0"
+        IsVisible="{Binding ShowDeletePanel}"
+        ZIndex="{OnPlatform Android=10, Default=0}">
+        <BoxView Color="#80000000">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnDeleteBackdropTapped" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+        <Frame
+            Padding="16"
+            CornerRadius="12"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="{OnPlatform Android=291.2, Default=364}"
+            HasShadow="True">
+            <Frame.Shadow>
+                <Shadow
+                    Brush="#40000000"
+                    Offset="0,8"
+                    Radius="12"
+                    Opacity="0.6" />
+            </Frame.Shadow>
+            <VerticalStackLayout Spacing="12">
+                <Label
+                    Text="Delete Weight table record?"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center" />
+                <Label
+                    x:Name="DeleteDetailsLabel"
+                    HorizontalTextAlignment="Center" />
+                <FlexLayout
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Center"
+                    JustifyContent="Center">
+                    <Button
+                        Text="Confirm"
+                        Clicked="OnDeleteConfirmClicked"
+                        Margin="0,0,4,4" />
+                    <Button
+                        Text="Cancel"
+                        Clicked="OnDeleteCancelClicked"
+                        Margin="0,0,4,4" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
 
-        <Grid
-            x:Name="InvalidWeightOverlay"
-            IsVisible="False">
-            <BoxView Color="#80000000">
-                <BoxView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnInvalidWeightBackdropTapped" />
-                </BoxView.GestureRecognizers>
-            </BoxView>
-            <Frame
-                Padding="16"
-                CornerRadius="12"
-                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                WidthRequest="320"
-                HasShadow="True">
-                <Frame.Shadow>
-                    <Shadow
-                        Brush="#40000000"
-                        Offset="0,8"
-                        Radius="12"
-                        Opacity="0.6" />
-                </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
-                    <Label
-                        Text="Invalid weight"
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        HorizontalTextAlignment="Center" />
-                    <Label
-                        x:Name="InvalidWeightMessageLabel"
-                        HorizontalTextAlignment="Center" />
-                    <FlexLayout
-                        Direction="Row"
-                        Wrap="Wrap"
-                        AlignItems="Center"
-                        JustifyContent="Center">
-                        <Button
-                            Text="OK"
-                            Clicked="OnInvalidWeightOkClicked"
-                            Margin="0,0,4,4" />
-                    </FlexLayout>
-                </VerticalStackLayout>
-            </Frame>
-        </Grid>
+    <Grid
+        x:Name="InvalidWeightOverlay"
+        IsVisible="False"
+        ZIndex="{OnPlatform Android=20, Default=0}">
+        <BoxView Color="#80000000">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnInvalidWeightBackdropTapped" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+        <Frame
+            Padding="16"
+            CornerRadius="12"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="{OnPlatform Android=256, Default=320}"
+            HasShadow="True">
+            <Frame.Shadow>
+                <Shadow
+                    Brush="#40000000"
+                    Offset="0,8"
+                    Radius="12"
+                    Opacity="0.6" />
+            </Frame.Shadow>
+            <VerticalStackLayout Spacing="12">
+                <Label
+                    Text="Invalid weight"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center" />
+                <Label
+                    x:Name="InvalidWeightMessageLabel"
+                    HorizontalTextAlignment="Center" />
+                <FlexLayout
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Center"
+                    JustifyContent="Center">
+                    <Button
+                        Text="OK"
+                        Clicked="OnInvalidWeightOkClicked"
+                        Margin="0,0,4,4" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
 
-        <Grid
-            x:Name="DateExistsOverlay"
-            IsVisible="False">
-            <BoxView Color="#80000000">
-                <BoxView.GestureRecognizers>
-                    <TapGestureRecognizer Tapped="OnDateExistsBackdropTapped" />
-                </BoxView.GestureRecognizers>
-            </BoxView>
-            <Frame
-                Padding="16"
-                CornerRadius="12"
-                BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                WidthRequest="320"
-                HasShadow="True">
-                <Frame.Shadow>
-                    <Shadow
-                        Brush="#40000000"
-                        Offset="0,8"
-                        Radius="12"
-                        Opacity="0.6" />
-                </Frame.Shadow>
-                <VerticalStackLayout Spacing="12">
-                    <Label
-                        Text="Date exists"
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        HorizontalTextAlignment="Center" />
-                    <Label
-                        x:Name="DateExistsMessageLabel"
-                        HorizontalTextAlignment="Center" />
-                    <FlexLayout
-                        Direction="Row"
-                        Wrap="Wrap"
-                        AlignItems="Center"
-                        JustifyContent="Center">
-                        <Button
-                            Text="OK"
-                            Clicked="OnDateExistsOkClicked"
-                            Margin="0,0,4,4" />
-                    </FlexLayout>
-                </VerticalStackLayout>
-            </Frame>
-        </Grid>
+    <Grid
+        x:Name="DateExistsOverlay"
+        IsVisible="False"
+        ZIndex="{OnPlatform Android=20, Default=0}">
+        <BoxView Color="#80000000">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnDateExistsBackdropTapped" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+        <Frame
+            Padding="16"
+            CornerRadius="12"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="{OnPlatform Android=256, Default=320}"
+            HasShadow="True">
+            <Frame.Shadow>
+                <Shadow
+                    Brush="#40000000"
+                    Offset="0,8"
+                    Radius="12"
+                    Opacity="0.6" />
+            </Frame.Shadow>
+            <VerticalStackLayout Spacing="12">
+                <Label
+                    Text="Date exists"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center" />
+                <Label
+                    x:Name="DateExistsMessageLabel"
+                    HorizontalTextAlignment="Center" />
+                <FlexLayout
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Center"
+                    JustifyContent="Center">
+                    <Button
+                        Text="OK"
+                        Clicked="OnDateExistsOkClicked"
+                        Margin="0,0,4,4" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Frame>
     </Grid>
 
 </ContentPage>

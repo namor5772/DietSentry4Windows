@@ -72,7 +72,8 @@
 
         <Grid
             x:Name="MissingDescriptionOverlay"
-            IsVisible="False">
+            IsVisible="False"
+            ZIndex="{OnPlatform Android=20, Default=0}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnMissingDescriptionBackdropTapped" />
@@ -84,7 +85,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="320"
+                WidthRequest="{OnPlatform Android=256, Default=320}"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -118,7 +119,8 @@
 
         <Grid
             x:Name="InvalidJsonOverlay"
-            IsVisible="False">
+            IsVisible="False"
+            ZIndex="{OnPlatform Android=20, Default=0}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnInvalidJsonBackdropTapped" />
@@ -130,7 +132,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="320"
+                WidthRequest="{OnPlatform Android=256, Default=320}"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -165,6 +167,7 @@
         <Grid
             x:Name="HelpOverlay"
             IsVisible="False"
+            ZIndex="{OnPlatform Android=30, Default=0}"
             BackgroundColor="#80000000"
             RowDefinitions="*,Auto">
             <BoxView

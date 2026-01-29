@@ -240,10 +240,12 @@
             </VerticalStackLayout>
         </Frame>
 
-            <Grid
-                Grid.Row="0"
-                Grid.RowSpan="7"
-                IsVisible="{Binding ShowAddIngredientPanel}">
+        </Grid>
+
+        <Grid
+            Grid.Row="0"
+            IsVisible="{Binding ShowAddIngredientPanel}"
+            ZIndex="{OnPlatform Android=10, Default=0}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnAddIngredientBackdropTapped" />
@@ -255,7 +257,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="364"
+                WidthRequest="{OnPlatform Android=291.2, Default=364}"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -304,10 +306,10 @@
             </Frame>
         </Grid>
 
-            <Grid
-                Grid.Row="0"
-                Grid.RowSpan="7"
-                IsVisible="{Binding ShowEditIngredientPanel}">
+        <Grid
+            Grid.Row="0"
+            IsVisible="{Binding ShowEditIngredientPanel}"
+            ZIndex="{OnPlatform Android=10, Default=0}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnEditIngredientBackdropTapped" />
@@ -319,7 +321,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="364"
+                WidthRequest="{OnPlatform Android=291.2, Default=364}"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -370,8 +372,8 @@
 
         <Grid
             Grid.Row="0"
-            Grid.RowSpan="7"
-            IsVisible="{Binding ShowEditNotesPanel}">
+            IsVisible="{Binding ShowEditNotesPanel}"
+            ZIndex="{OnPlatform Android=10, Default=0}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnEditNotesBackdropTapped" />
@@ -383,7 +385,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="364"
+                WidthRequest="{OnPlatform Android=291.2, Default=364}"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -425,11 +427,11 @@
                 </Grid>
             </Frame>
         </Grid>
-        </Grid>
 
         <Grid
             x:Name="InvalidAmountOverlay"
-            IsVisible="False">
+            IsVisible="False"
+            ZIndex="{OnPlatform Android=20, Default=0}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnInvalidAmountBackdropTapped" />
@@ -441,7 +443,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="320"
+                WidthRequest="{OnPlatform Android=256, Default=320}"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -475,7 +477,8 @@
 
         <Grid
             x:Name="MissingDescriptionOverlay"
-            IsVisible="False">
+            IsVisible="False"
+            ZIndex="{OnPlatform Android=20, Default=0}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnMissingDescriptionBackdropTapped" />
@@ -487,7 +490,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="320"
+                WidthRequest="{OnPlatform Android=256, Default=320}"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -521,7 +524,8 @@
 
         <Grid
             x:Name="MissingIngredientsOverlay"
-            IsVisible="False">
+            IsVisible="False"
+            ZIndex="{OnPlatform Android=20, Default=0}">
             <BoxView Color="#80000000">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnMissingIngredientsBackdropTapped" />
@@ -533,7 +537,7 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                WidthRequest="320"
+                WidthRequest="{OnPlatform Android=256, Default=320}"
                 HasShadow="True">
                 <Frame.Shadow>
                     <Shadow
@@ -568,6 +572,7 @@
         <Grid
             x:Name="HelpOverlay"
             IsVisible="False"
+            ZIndex="{OnPlatform Android=30, Default=0}"
             BackgroundColor="#80000000"
             RowDefinitions="*,Auto">
             <BoxView
