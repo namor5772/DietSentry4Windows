@@ -98,10 +98,6 @@
                             Text="Export csv"
                             Clicked="OnExportCsvClicked"
                             Style="{StaticResource TopRowButtonStyle}" />
-                        <Button
-                            Text="Palette"
-                            Clicked="OnPaletteClicked"
-                            Style="{StaticResource TopRowButtonStyle}" />
                     </FlexLayout>
             </Grid>
 

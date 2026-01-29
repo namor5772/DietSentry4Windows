@@ -375,11 +375,6 @@ namespace DietSentry
             ShowExportCsvPanel = false;
         }
 
-        private async void OnPaletteClicked(object? sender, EventArgs e)
-        {
-            await Shell.Current.GoToAsync("palette");
-        }
-
         private async void OnCopyFoodClicked(object? sender, EventArgs e)
         {
             if (SelectedFood == null)
