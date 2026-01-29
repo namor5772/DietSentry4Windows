@@ -38,6 +38,7 @@
             RowSpacing="16">
             <Grid
                 Grid.Row="0"
+                RowDefinitions="{OnPlatform Android='Auto,Auto', Default='Auto'}"
                 ColumnDefinitions="Auto,Auto,*"
                 ColumnSpacing="12">
                 <Button
@@ -53,7 +54,9 @@
                     FontSize="24"
                     VerticalOptions="Start" />
                     <FlexLayout
-                        Grid.Column="2"
+                        Grid.Column="{OnPlatform Android=0, Default=2}"
+                        Grid.ColumnSpan="{OnPlatform Android=3, Default=1}"
+                        Grid.Row="{OnPlatform Android=1, Default=0}"
                         Direction="Row"
                         Wrap="Wrap"
                         AlignItems="Start"
