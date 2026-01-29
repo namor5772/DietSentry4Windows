@@ -16,5 +16,24 @@
             Routing.RegisterRoute("copyRecipe", typeof(CopyRecipePage));
             Routing.RegisterRoute("weightTable", typeof(WeightTablePage));
         }
+
+        protected override void OnNavigated(ShellNavigatedEventArgs args)
+        {
+            base.OnNavigated(args);
+
+            if (DeviceInfo.Platform != DevicePlatform.Android)
+            {
+                return;
+            }
+
+            var page = CurrentPage;
+            if (page == null)
+            {
+                return;
+            }
+
+            var showBackButton = page is MainPage;
+            Shell.SetBackButtonBehavior(page, new BackButtonBehavior { IsVisible = showBackButton });
+        }
     }
 }
