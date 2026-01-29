@@ -16,7 +16,7 @@
                     Value="0,0,4,4" />
                 <Setter
                     Property="WidthRequest"
-                    Value="112" />
+                    Value="{OnPlatform Android=89.6, Default=112}" />
             </Style>
             <Style
                 x:Key="SelectionActionButtonStyle"

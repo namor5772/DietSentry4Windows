@@ -26,6 +26,7 @@
                         Text="Back to Foods Table"
                         BackgroundColor="{StaticResource PrimaryDark}"
                         TextColor="{StaticResource White}"
+                        WidthRequest="{OnPlatform Android=89.6, Default=-1}"
                         Clicked="OnBackClicked" />
                 </Grid>
 
