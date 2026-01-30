@@ -12,11 +12,13 @@
                 <Grid
                     RowDefinitions="{OnPlatform Android='Auto,Auto', Default='Auto'}"
                     ColumnDefinitions="Auto,*,Auto"
+                RowSpacing="{OnPlatform Android=7}"
                     ColumnSpacing="12">
                     <Button
                         Grid.Column="0"
                         Text="?"
                         Style="{StaticResource HelpIconButtonStyle}"
+                    Margin="{OnPlatform Android='0,2,0,0', Default='0'}"
                         Clicked="OnHelpClicked" />
                     <Label
                         Grid.Column="1"

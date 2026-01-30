@@ -17,6 +17,12 @@
                 <Setter
                     Property="WidthRequest"
                     Value="{OnPlatform Android=80.64, Default=112}" />
+                <Setter
+                    Property="HeightRequest"
+                    Value="{OnPlatform Android=30}" />
+                <Setter
+                    Property="MinimumHeightRequest"
+                    Value="{OnPlatform Android=30}" />
             </Style>
             <Style
                 x:Key="SelectionActionButtonStyle"
@@ -47,12 +53,14 @@
                 Grid.Row="0"
                 RowDefinitions="{OnPlatform Android='Auto,Auto', Default='Auto'}"
                 ColumnDefinitions="Auto,Auto,*"
+                RowSpacing="{OnPlatform Android=7}"
                 ColumnSpacing="12">
                 <Button
                     Grid.Column="0"
                     Text="?"
                     Style="{StaticResource HelpIconButtonStyle}"
                     Clicked="OnHelpClicked"
+                    Margin="{OnPlatform Android='0,2,0,0', Default='0'}"
                     VerticalOptions="Start" />
                 <Label
                     Grid.Column="1"
@@ -91,6 +99,7 @@
 
             <Grid
                 Grid.Row="1"
+                Margin="{OnPlatform Android='0,-40,0,0', Default='0'}"
                 ColumnDefinitions="Auto,*"
                 ColumnSpacing="12">
             <Label
@@ -105,7 +114,8 @@
 
             <HorizontalStackLayout
                 Grid.Row="2"
-                Spacing="8">
+                Spacing="8"
+                Margin="{OnPlatform Android='0,-15,0,0', Default='0'}">
                 <Entry
                     x:Name="FoodFilterEntry"
                     Placeholder="Enter food filter text"

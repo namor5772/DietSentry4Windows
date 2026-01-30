@@ -11,6 +11,7 @@
                 <Grid
                     RowDefinitions="{OnPlatform Android='Auto,Auto', Default='Auto'}"
                     ColumnDefinitions="Auto,*,Auto"
+                RowSpacing="{OnPlatform Android=7}"
                     ColumnSpacing="12">
                     <Label
                         Grid.Column="1"
