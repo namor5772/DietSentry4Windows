@@ -243,10 +243,12 @@
         </Grid>
 
         <Grid
+            BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
             Grid.Row="0"
             IsVisible="{Binding ShowAddIngredientPanel}"
-            ZIndex="{OnPlatform Android=10, Default=0}">
-            <BoxView Color="#80000000">
+            ZIndex="{OnPlatform Android=0, Default=10}">
+            <BoxView
+                Color="{OnPlatform Android=Transparent, Default=#80000000}">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnAddIngredientBackdropTapped" />
                 </BoxView.GestureRecognizers>
@@ -307,10 +309,12 @@
         </Grid>
 
         <Grid
+            BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
             Grid.Row="0"
             IsVisible="{Binding ShowEditIngredientPanel}"
-            ZIndex="{OnPlatform Android=10, Default=0}">
-            <BoxView Color="#80000000">
+            ZIndex="{OnPlatform Android=0, Default=10}">
+            <BoxView
+                Color="{OnPlatform Android=Transparent, Default=#80000000}">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnEditIngredientBackdropTapped" />
                 </BoxView.GestureRecognizers>
@@ -371,10 +375,12 @@
         </Grid>
 
         <Grid
+            BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
             Grid.Row="0"
             IsVisible="{Binding ShowEditNotesPanel}"
-            ZIndex="{OnPlatform Android=10, Default=0}">
-            <BoxView Color="#80000000">
+            ZIndex="{OnPlatform Android=0, Default=10}">
+            <BoxView
+                Color="{OnPlatform Android=Transparent, Default=#80000000}">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnEditNotesBackdropTapped" />
                 </BoxView.GestureRecognizers>
@@ -429,10 +435,12 @@
         </Grid>
 
         <Grid
+            BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
             x:Name="InvalidAmountOverlay"
             IsVisible="False"
-            ZIndex="{OnPlatform Android=20, Default=0}">
-            <BoxView Color="#80000000">
+            ZIndex="{OnPlatform Android=0, Default=20}">
+            <BoxView
+                Color="{OnPlatform Android=Transparent, Default=#80000000}">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnInvalidAmountBackdropTapped" />
                 </BoxView.GestureRecognizers>
@@ -476,10 +484,12 @@
         </Grid>
 
         <Grid
+            BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
             x:Name="MissingDescriptionOverlay"
             IsVisible="False"
-            ZIndex="{OnPlatform Android=20, Default=0}">
-            <BoxView Color="#80000000">
+            ZIndex="{OnPlatform Android=0, Default=20}">
+            <BoxView
+                Color="{OnPlatform Android=Transparent, Default=#80000000}">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnMissingDescriptionBackdropTapped" />
                 </BoxView.GestureRecognizers>
@@ -523,10 +533,12 @@
         </Grid>
 
         <Grid
+            BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
             x:Name="MissingIngredientsOverlay"
             IsVisible="False"
-            ZIndex="{OnPlatform Android=20, Default=0}">
-            <BoxView Color="#80000000">
+            ZIndex="{OnPlatform Android=0, Default=20}">
+            <BoxView
+                Color="{OnPlatform Android=Transparent, Default=#80000000}">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnMissingIngredientsBackdropTapped" />
                 </BoxView.GestureRecognizers>
@@ -572,12 +584,12 @@
         <Grid
             x:Name="HelpOverlay"
             IsVisible="False"
-            ZIndex="{OnPlatform Android=30, Default=0}"
-            BackgroundColor="#80000000"
+            ZIndex="{OnPlatform Android=0, Default=30}"
+            BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
             RowDefinitions="*,Auto">
             <BoxView
                 Grid.Row="0"
-                BackgroundColor="Transparent">
+                BackgroundColor="{OnPlatform Android=Transparent, Default=#80000000}">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnHelpDismissed" />
                 </BoxView.GestureRecognizers>
