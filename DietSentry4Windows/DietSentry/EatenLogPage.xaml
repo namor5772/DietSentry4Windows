@@ -875,12 +875,13 @@
     </Grid>
 
     <Grid
-        BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
+        BackgroundColor="Transparent"
         Grid.Row="0"
         IsVisible="{Binding ShowEditPanel}"
         ZIndex="{OnPlatform Android=0, Default=10}">
         <BoxView
-            Color="{OnPlatform Android=Transparent, Default=#80000000}">
+            BackgroundColor="Transparent"
+            Color="#80000000">
             <BoxView.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnEditBackdropTapped" />
             </BoxView.GestureRecognizers>
@@ -955,12 +956,13 @@
     </Grid>
 
     <Grid
-        BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
+        BackgroundColor="Transparent"
         Grid.Row="0"
         IsVisible="{Binding ShowDeletePanel}"
         ZIndex="{OnPlatform Android=0, Default=10}">
         <BoxView
-            Color="{OnPlatform Android=Transparent, Default=#80000000}">
+            BackgroundColor="Transparent"
+            Color="#80000000">
             <BoxView.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnDeleteBackdropTapped" />
             </BoxView.GestureRecognizers>
@@ -1011,12 +1013,13 @@
     </Grid>
 
     <Grid
-        BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
+        BackgroundColor="Transparent"
         x:Name="InvalidAmountOverlay"
         IsVisible="False"
         ZIndex="{OnPlatform Android=0, Default=20}">
         <BoxView
-            Color="{OnPlatform Android=Transparent, Default=#80000000}">
+            BackgroundColor="Transparent"
+            Color="#80000000">
             <BoxView.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnInvalidAmountBackdropTapped" />
             </BoxView.GestureRecognizers>
@@ -1063,13 +1066,14 @@
         x:Name="HelpOverlay"
         IsVisible="False"
         ZIndex="{OnPlatform Android=0, Default=30}"
-        BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
+        BackgroundColor="Transparent"
         VerticalOptions="FillAndExpand"
         HorizontalOptions="FillAndExpand"
         RowDefinitions="*,Auto">
         <BoxView
             Grid.Row="0"
-            BackgroundColor="{OnPlatform Android=Transparent, Default=#80000000}">
+            BackgroundColor="Transparent"
+            Color="#80000000">
             <BoxView.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnHelpDismissed" />
             </BoxView.GestureRecognizers>

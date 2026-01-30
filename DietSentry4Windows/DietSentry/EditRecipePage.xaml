@@ -54,11 +54,12 @@
             x:Name="HelpOverlay"
             IsVisible="False"
             ZIndex="{OnPlatform Android=0, Default=30}"
-            BackgroundColor="{OnPlatform Android=#80000000, Default=Transparent}"
+            BackgroundColor="Transparent"
             RowDefinitions="*,Auto">
             <BoxView
                 Grid.Row="0"
-                BackgroundColor="{OnPlatform Android=Transparent, Default=#80000000}">
+                BackgroundColor="Transparent"
+                Color="#80000000">
                 <BoxView.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnHelpDismissed" />
                 </BoxView.GestureRecognizers>
