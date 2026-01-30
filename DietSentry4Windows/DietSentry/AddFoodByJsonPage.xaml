@@ -11,10 +11,10 @@
                 TargetType="Button">
                 <Setter
                     Property="Margin"
-                    Value="0,0,4,4" />
+                    Value="{OnPlatform Android='0,0,2,2', Default='0,0,4,4'}" />
                 <Setter
                     Property="WidthRequest"
-                    Value="{OnPlatform Android=89.6, Default=112}" />
+                    Value="{OnPlatform Android=80.64, Default=112}" />
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
