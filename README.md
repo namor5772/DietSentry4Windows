@@ -20,6 +20,13 @@ EVERYTHING was done using OpenAI codex. No manual coding was performed, ever!
 - Weight table with add/edit/delete workflows and comments.
 - Multi-screen navigation via `Shell`.
 
+## Platform-Specific UI Notes (Recent)
+
+- Android: top-row buttons on main screens are narrower and wrap across multiple rows to use full width.
+- Android: Foods Table lower selection buttons use a tighter width (`WidthRequest` 57) for compact layout.
+- Android: dialog overlays are rendered above scrollable content with explicit scrims to avoid black-screen backdrops.
+- Android: Weight Table item template allows taps to reach the `CollectionView` selection handler.
+
 ## Not Yet Implemented
 
 The following actions currently show a "Not implemented" dialog:
