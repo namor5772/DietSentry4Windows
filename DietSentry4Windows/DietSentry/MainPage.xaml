@@ -46,6 +46,7 @@
                     Text="?"
                     Style="{StaticResource HelpIconButtonStyle}"
                     Clicked="OnHelpClicked"
+                    Margin="{OnPlatform Android='0,2,0,0', Default='0'}"
                     VerticalOptions="Start" />
                 <Label
                     Grid.Column="1"
@@ -53,6 +54,30 @@
                     FontAttributes="Bold"
                     FontSize="24"
                     VerticalOptions="Start" />
+                <HorizontalStackLayout
+                    Grid.Column="2"
+                    Grid.Row="0"
+                    IsVisible="{OnPlatform Android=True, Default=False}"
+                    Spacing="8"
+                    Margin="{OnPlatform Android='0,-7,0,0', Default='0'}"
+                    VerticalOptions="Start">
+                    <RadioButton
+                        x:Name="MinModeRadioTop"
+                        Content="Min"
+                        GroupName="NutritionModeAndroid"
+                        CheckedChanged="OnNutritionModeChanged" />
+                    <RadioButton
+                        x:Name="NipModeRadioTop"
+                        Content="NIP"
+                        GroupName="NutritionModeAndroid"
+                        CheckedChanged="OnNutritionModeChanged" />
+                    <RadioButton
+                        x:Name="AllModeRadioTop"
+                        Content="All"
+                        GroupName="NutritionModeAndroid"
+                        IsChecked="True"
+                        CheckedChanged="OnNutritionModeChanged" />
+                </HorizontalStackLayout>
                     <FlexLayout
                         Grid.Column="{OnPlatform Android=0, Default=2}"
                         Grid.ColumnSpan="{OnPlatform Android=3, Default=1}"
@@ -106,7 +131,9 @@
 
             <HorizontalStackLayout
                 Grid.Row="1"
-                Spacing="8">
+                Spacing="8"
+                Margin="{OnPlatform Android='0,-16,0,0', Default='0'}"
+                IsVisible="{OnPlatform Android=False, Default=True}">
                 <RadioButton
                     x:Name="MinModeRadio"
                     Content="Min"
@@ -127,7 +154,8 @@
 
             <HorizontalStackLayout
                 Grid.Row="2"
-                Spacing="8">
+                Spacing="8"
+                Margin="{OnPlatform Android='0,-16,0,0', Default='0'}">
                 <Entry
                     x:Name="FoodFilterEntry"
                     Placeholder="Enter food filter text"

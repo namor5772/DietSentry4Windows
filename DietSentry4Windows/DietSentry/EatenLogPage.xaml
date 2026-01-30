@@ -46,6 +46,7 @@
                     Text="?"
                     Style="{StaticResource HelpIconButtonStyle}"
                     Clicked="OnHelpClicked"
+                    Margin="{OnPlatform Android='0,2,0,0', Default='0'}"
                     VerticalOptions="Start" />
                 <Label
                     Grid.Column="1"
@@ -53,10 +54,46 @@
                     FontAttributes="Bold"
                     FontSize="24"
                     VerticalOptions="Start" />
+                <HorizontalStackLayout
+                    Grid.Column="2"
+                    Grid.Row="0"
+                    IsVisible="{OnPlatform Android=True, Default=False}"
+                    Spacing="8"
+                    Margin="{OnPlatform Android='0,-7,0,0', Default='0'}"
+                    VerticalOptions="Start">
+                    <RadioButton
+                        x:Name="MinModeRadioTop"
+                        Content="Min"
+                        GroupName="EatenNutritionModeAndroid"
+                        CheckedChanged="OnNutritionModeChanged" />
+                    <RadioButton
+                        x:Name="NipModeRadioTop"
+                        Content="NIP"
+                        GroupName="EatenNutritionModeAndroid"
+                        CheckedChanged="OnNutritionModeChanged" />
+                    <RadioButton
+                        x:Name="AllModeRadioTop"
+                        Content="All"
+                        GroupName="EatenNutritionModeAndroid"
+                        IsChecked="True"
+                        CheckedChanged="OnNutritionModeChanged" />
+                </HorizontalStackLayout>
                 <Button
-                    Grid.Column="{OnPlatform Android=0, Default=2}"
-                    Grid.ColumnSpan="{OnPlatform Android=4, Default=1}"
-                    Grid.Row="{OnPlatform Android=1, Default=0}"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    Grid.Row="1"
+                    IsVisible="{OnPlatform Android=True, Default=False}"
+                    Text="Foods Table"
+                    HorizontalOptions="Start"
+                    BackgroundColor="{StaticResource PrimaryDark}"
+                    TextColor="{StaticResource White}"
+                    Clicked="OnBackClicked"
+                    Style="{StaticResource TopRowButtonStyle}" />
+                <Button
+                    Grid.Column="2"
+                    Grid.ColumnSpan="1"
+                    Grid.Row="0"
+                    IsVisible="{OnPlatform Android=False, Default=True}"
                     Text="Foods Table"
                     HorizontalOptions="Start"
                     BackgroundColor="{StaticResource PrimaryDark}"
@@ -67,7 +104,9 @@
 
             <HorizontalStackLayout
                 Grid.Row="1"
-                Spacing="8">
+                Spacing="8"
+                Margin="{OnPlatform Android='0,-16,0,0', Default='0'}"
+                IsVisible="{OnPlatform Android=False, Default=True}">
                 <RadioButton
                     x:Name="MinModeRadio"
                     Content="Min"
@@ -128,7 +167,8 @@
                         <DataTemplate x:DataType="local:EatenFood">
                             <Frame
                                 BorderColor="LightGray"
-                                Padding="10">
+                                Padding="10"
+                                InputTransparent="{OnPlatform Android=True, Default=False}">
                                 <VerticalStackLayout Spacing="4">
                                     <Label Text="{Binding DateTimeDisplay}" />
                                     <Label

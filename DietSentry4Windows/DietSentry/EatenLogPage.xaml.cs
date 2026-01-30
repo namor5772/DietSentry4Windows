@@ -384,15 +384,15 @@ namespace DietSentry
                 return;
             }
 
-            if (sender == MinModeRadio)
+            if (sender == MinModeRadio || sender == MinModeRadioTop)
             {
                 SetNutritionDisplayMode(NutritionDisplayMode.Min);
             }
-            else if (sender == NipModeRadio)
+            else if (sender == NipModeRadio || sender == NipModeRadioTop)
             {
                 SetNutritionDisplayMode(NutritionDisplayMode.Nip);
             }
-            else if (sender == AllModeRadio)
+            else if (sender == AllModeRadio || sender == AllModeRadioTop)
             {
                 SetNutritionDisplayMode(NutritionDisplayMode.All);
             }
@@ -422,6 +422,9 @@ namespace DietSentry
             MinModeRadio.IsChecked = savedMode == NutritionDisplayMode.Min;
             NipModeRadio.IsChecked = savedMode == NutritionDisplayMode.Nip;
             AllModeRadio.IsChecked = savedMode == NutritionDisplayMode.All;
+            MinModeRadioTop.IsChecked = savedMode == NutritionDisplayMode.Min;
+            NipModeRadioTop.IsChecked = savedMode == NutritionDisplayMode.Nip;
+            AllModeRadioTop.IsChecked = savedMode == NutritionDisplayMode.All;
             _suppressModeEvents = false;
             OnPropertyChanged(nameof(ShowMinOnly));
             OnPropertyChanged(nameof(ShowNipOnly));
