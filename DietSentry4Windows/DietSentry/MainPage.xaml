@@ -824,11 +824,11 @@
                         Text="Cancel"
                         Clicked="OnExportDbCancelClicked"
                         Margin="0,0,4,4" />
-                    <Button
-                        Text="Change folder"
-                        Clicked="OnChangeExportFolderClicked"
-                        Margin="0,0,4,4"
-                        IsVisible="{OnPlatform Android=True, Default=False}" />
+                <Button
+                    Text="Change folder"
+                    Clicked="OnChangeExportFolderClicked"
+                    Margin="0,0,4,4"
+                    IsVisible="{OnPlatform Android=True, WinUI=True, Default=False}" />
                 </FlexLayout>
             </VerticalStackLayout>
         </Frame>
@@ -892,11 +892,11 @@
                         Text="Cancel"
                         Clicked="OnImportDbCancelClicked"
                         Margin="0,0,4,4" />
-                    <Button
-                        Text="Change folder"
-                        Clicked="OnChangeImportFolderClicked"
-                        Margin="0,0,4,4"
-                        IsVisible="{OnPlatform Android=True, Default=False}" />
+                <Button
+                    Text="Change folder"
+                    Clicked="OnChangeImportFolderClicked"
+                    Margin="0,0,4,4"
+                    IsVisible="{OnPlatform Android=True, WinUI=True, Default=False}" />
                 </FlexLayout>
             </VerticalStackLayout>
         </Frame>
@@ -955,11 +955,11 @@
                         Text="Cancel"
                         Clicked="OnExportCsvCancelClicked"
                         Margin="0,0,4,4" />
-                    <Button
-                        Text="Change folder"
-                        Clicked="OnChangeExportCsvFolderClicked"
-                        Margin="0,0,4,4"
-                        IsVisible="{OnPlatform Android=True, Default=False}" />
+                <Button
+                    Text="Change folder"
+                    Clicked="OnChangeExportCsvFolderClicked"
+                    Margin="0,0,4,4"
+                    IsVisible="{OnPlatform Android=True, WinUI=True, Default=False}" />
                 </FlexLayout>
             </VerticalStackLayout>
         </Frame>

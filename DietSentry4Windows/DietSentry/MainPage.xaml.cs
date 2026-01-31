@@ -6,12 +6,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
 #if ANDROID
 using Android.App;
 using Android.Net;
 using Android.Provider;
-using Microsoft.Maui.ApplicationModel;
+#endif
+#if WINDOWS
+using Microsoft.Maui.Platform;
+using Windows.Storage.Pickers;
+using WinRT.Interop;
 #endif
 
 namespace DietSentry
@@ -264,6 +269,19 @@ namespace DietSentry
             {
                 ExportTargetPathLabel.Text = targetPath;
             }
+#elif WINDOWS
+            var directory = await PickAndStoreWindowsExchangeDirectoryAsync();
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                return;
+            }
+
+            var targetPath = Path.Combine(directory, DatabaseFileName);
+            _exportTargetPath = targetPath;
+            if (ExportTargetPathLabel != null)
+            {
+                ExportTargetPathLabel.Text = targetPath;
+            }
 #endif
         }
 
@@ -414,6 +432,27 @@ namespace DietSentry
                     $"Folder updated.\n\nNo {DatabaseFileName} found.\n\nPlace it in:\n{displayDirectory}\n\nThen try again.",
                     "OK");
             }
+#elif WINDOWS
+            var directory = await PickAndStoreWindowsExchangeDirectoryAsync();
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                return;
+            }
+
+            var sourcePath = Path.Combine(directory, DatabaseFileName);
+            _importSourcePath = sourcePath;
+            if (ImportSourcePathLabel != null)
+            {
+                ImportSourcePathLabel.Text = sourcePath;
+            }
+
+            if (!File.Exists(sourcePath))
+            {
+                await DisplayAlertAsync(
+                    "Import db",
+                    $"Folder updated.\n\nNo {DatabaseFileName} found.\n\nPlace it in:\n{directory}\n\nThen try again.",
+                    "OK");
+            }
 #endif
         }
 
@@ -524,6 +563,19 @@ namespace DietSentry
 
             _exportCsvTargetFolderUri = folderUri;
             var targetPath = BuildAndroidFileDisplay(folderUri, DailyCsvFileName);
+            _exportCsvTargetPath = targetPath;
+            if (ExportCsvTargetPathLabel != null)
+            {
+                ExportCsvTargetPathLabel.Text = targetPath;
+            }
+#elif WINDOWS
+            var directory = await PickAndStoreWindowsExchangeDirectoryAsync();
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                return;
+            }
+
+            var targetPath = Path.Combine(directory, DailyCsvFileName);
             _exportCsvTargetPath = targetPath;
             if (ExportCsvTargetPathLabel != null)
             {
@@ -1159,6 +1211,12 @@ namespace DietSentry
         private static string GetExchangeDirectory()
         {
 #if WINDOWS
+            var storedDirectory = Preferences.Default.Get(ExchangeFolderPathKey, string.Empty);
+            if (!string.IsNullOrWhiteSpace(storedDirectory) && Directory.Exists(storedDirectory))
+            {
+                return storedDirectory;
+            }
+
             var profile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             var downloads = string.IsNullOrWhiteSpace(profile) ? string.Empty : Path.Combine(profile, "Downloads");
             if (!string.IsNullOrWhiteSpace(downloads) && Directory.Exists(downloads))
@@ -1449,6 +1507,38 @@ namespace DietSentry
         }
 #endif
 
+#if WINDOWS
+        private static async Task<string?> PickAndStoreWindowsExchangeDirectoryAsync()
+        {
+            var picked = await PickWindowsExchangeDirectoryAsync();
+            if (string.IsNullOrWhiteSpace(picked))
+            {
+                return null;
+            }
+
+            Preferences.Default.Set(ExchangeFolderPathKey, picked);
+            return picked;
+        }
+
+        private static Task<string?> PickWindowsExchangeDirectoryAsync()
+        {
+            return MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                var window = Application.Current?.Windows.FirstOrDefault();
+                if (window?.Handler?.PlatformView is not MauiWinUIWindow nativeWindow)
+                {
+                    return null;
+                }
+
+                var picker = new FolderPicker();
+                picker.FileTypeFilter.Add("*");
+                InitializeWithWindow.Initialize(picker, nativeWindow.WindowHandle);
+                var folder = await picker.PickSingleFolderAsync();
+                return folder?.Path;
+            });
+        }
+#endif
+
         private static string BuildEatenDailyAllCsv(
             IReadOnlyList<EatenFood> eatenFoods,
             IReadOnlyList<WeightEntry> weightEntries)
@@ -1626,6 +1716,9 @@ namespace DietSentry
 
 #if ANDROID
         private const string ExchangeFolderUriKey = "exchange_folder_uri";
+#endif
+#if WINDOWS
+        private const string ExchangeFolderPathKey = "exchange_folder_path";
 #endif
         private const string DatabaseFileName = "foods.db";
         private const string DailyCsvFileName = "EatenDailyAll.csv";
