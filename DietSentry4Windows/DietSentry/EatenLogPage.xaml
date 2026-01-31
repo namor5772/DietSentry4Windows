@@ -134,7 +134,8 @@
             <Grid
                 Grid.Row="2"
                 ColumnDefinitions="Auto,Auto,Auto,Auto,*"
-                ColumnSpacing="8">
+                ColumnSpacing="8"
+                Margin="{OnPlatform Android='0,-30,0,0', Default='0'}">
                 <CheckBox
                     x:Name="DailyTotalsCheckBox"
                     CheckedChanged="OnDailyTotalsChanged" />
@@ -160,7 +161,8 @@
             <Frame
                 Grid.Row="3"
                 BorderColor="LightGray"
-                Padding="10">
+                Padding="10"
+                Margin="{OnPlatform Android='0,-10,0,0', Default='0'}">
                 <Grid RowDefinitions="*">
                 <CollectionView
                     x:Name="EatenCollectionView"
@@ -170,6 +172,11 @@
                     SelectionMode="Single"
                     SelectionChanged="OnEatenSelectionChanged"
                     IsVisible="{Binding ShowEatenFoods}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout
+                            Orientation="Vertical"
+                            ItemSpacing="4" />
+                    </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="local:EatenFood">
                             <Frame
@@ -505,6 +512,11 @@
                     ItemSizingStrategy="MeasureAllItems"
                     SelectionMode="None"
                     IsVisible="{Binding ShowDailyTotals}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout
+                            Orientation="Vertical"
+                            ItemSpacing="4" />
+                    </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="local:DailyTotals">
                             <Frame
