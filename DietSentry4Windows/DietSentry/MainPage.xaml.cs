@@ -7,6 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Maui.Storage;
+#if ANDROID
+using Android.App;
+using Android.Net;
+using Android.Provider;
+using Microsoft.Maui.ApplicationModel;
+#endif
 
 namespace DietSentry
 {
@@ -30,6 +36,11 @@ namespace DietSentry
         private string? _exportTargetPath;
         private string? _importSourcePath;
         private string? _exportCsvTargetPath;
+#if ANDROID
+        private Android.Net.Uri? _exportTargetFolderUri;
+        private Android.Net.Uri? _importSourceFileUri;
+        private Android.Net.Uri? _exportCsvTargetFolderUri;
+#endif
 
         public ObservableCollection<Food> Foods { get; } = new();
         public bool ShowNipOnly => _nutritionDisplayMode == NutritionDisplayMode.Nip;
@@ -68,7 +79,7 @@ namespace DietSentry
                     return;
                 }
 
-                _insertedFoodDescription = Uri.UnescapeDataString(value);
+                _insertedFoodDescription = System.Uri.UnescapeDataString(value);
             }
         }
         public bool ShowLogPanel
@@ -205,8 +216,26 @@ namespace DietSentry
             await Shell.Current.GoToAsync("addFoodByJson");
         }
 
-        private void OnExportDbClicked(object? sender, EventArgs e)
+        private async void OnExportDbClicked(object? sender, EventArgs e)
         {
+#if ANDROID
+            var folderUri = await GetAndroidExchangeFolderAsync();
+            if (folderUri == null)
+            {
+                return;
+            }
+
+            _exportTargetFolderUri = folderUri;
+            var targetPath = BuildAndroidFileDisplay(folderUri, DatabaseFileName);
+            _exportTargetPath = targetPath;
+            if (ExportTargetPathLabel != null)
+            {
+                ExportTargetPathLabel.Text = targetPath;
+            }
+
+            ShowExportPanel = true;
+            return;
+#else
             var directory = GetExchangeDirectory();
             var targetPath = Path.Combine(directory, DatabaseFileName);
             _exportTargetPath = targetPath;
@@ -216,10 +245,51 @@ namespace DietSentry
             }
 
             ShowExportPanel = true;
+#endif
+        }
+
+        private async void OnChangeExportFolderClicked(object? sender, EventArgs e)
+        {
+#if ANDROID
+            var folderUri = await PickAndStoreAndroidExchangeFolderAsync();
+            if (folderUri == null)
+            {
+                return;
+            }
+
+            _exportTargetFolderUri = folderUri;
+            var targetPath = BuildAndroidFileDisplay(folderUri, DatabaseFileName);
+            _exportTargetPath = targetPath;
+            if (ExportTargetPathLabel != null)
+            {
+                ExportTargetPathLabel.Text = targetPath;
+            }
+#endif
         }
 
         private async void OnExportDbConfirmClicked(object? sender, EventArgs e)
         {
+#if ANDROID
+            var folderUri = _exportTargetFolderUri;
+            _exportTargetFolderUri = null;
+            _exportTargetPath = null;
+            ShowExportPanel = false;
+
+            if (folderUri == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await ExportDatabaseToAndroidFolderAsync(folderUri);
+            }
+            catch (Exception)
+            {
+                // Suppress export errors to avoid additional dialogs after confirmation.
+            }
+            return;
+#else
             var targetPath = _exportTargetPath;
             _exportTargetPath = null;
             ShowExportPanel = false;
@@ -246,22 +316,57 @@ namespace DietSentry
             {
                 // Suppress export errors to avoid additional dialogs after confirmation.
             }
+#endif
         }
 
         private void OnExportDbCancelClicked(object? sender, EventArgs e)
         {
             _exportTargetPath = null;
+#if ANDROID
+            _exportTargetFolderUri = null;
+#endif
             ShowExportPanel = false;
         }
 
         private void OnExportDbBackdropTapped(object? sender, TappedEventArgs e)
         {
             _exportTargetPath = null;
+#if ANDROID
+            _exportTargetFolderUri = null;
+#endif
             ShowExportPanel = false;
         }
 
         private async void OnImportDbClicked(object? sender, EventArgs e)
         {
+#if ANDROID
+            var folderUri = await GetAndroidExchangeFolderAsync();
+            if (folderUri == null)
+            {
+                return;
+            }
+
+            var sourceUri = FindAndroidFileUri(folderUri, DatabaseFileName);
+            if (sourceUri == null)
+            {
+                var displayDirectory = BuildAndroidDirectoryDisplay(folderUri);
+                await DisplayAlertAsync(
+                    "Import db",
+                    $"No {DatabaseFileName} found.\n\nPlace it in:\n{displayDirectory}\n\nThen try again.",
+                    "OK");
+                return;
+            }
+
+            _importSourceFileUri = sourceUri;
+            var sourcePath = BuildAndroidFileDisplay(folderUri, DatabaseFileName);
+            _importSourcePath = sourcePath;
+            if (ImportSourcePathLabel != null)
+            {
+                ImportSourcePathLabel.Text = sourcePath;
+            }
+
+            ShowImportPanel = true;
+#else
             var directory = GetExchangeDirectory();
             var sourcePath = Path.Combine(directory, DatabaseFileName);
             if (!File.Exists(sourcePath))
@@ -280,10 +385,62 @@ namespace DietSentry
             }
 
             ShowImportPanel = true;
+#endif
+        }
+
+        private async void OnChangeImportFolderClicked(object? sender, EventArgs e)
+        {
+#if ANDROID
+            var folderUri = await PickAndStoreAndroidExchangeFolderAsync();
+            if (folderUri == null)
+            {
+                return;
+            }
+
+            var sourceUri = FindAndroidFileUri(folderUri, DatabaseFileName);
+            _importSourceFileUri = sourceUri;
+            var sourcePath = BuildAndroidFileDisplay(folderUri, DatabaseFileName);
+            _importSourcePath = sourcePath;
+            if (ImportSourcePathLabel != null)
+            {
+                ImportSourcePathLabel.Text = sourcePath;
+            }
+
+            if (sourceUri == null)
+            {
+                var displayDirectory = BuildAndroidDirectoryDisplay(folderUri);
+                await DisplayAlertAsync(
+                    "Import db",
+                    $"Folder updated.\n\nNo {DatabaseFileName} found.\n\nPlace it in:\n{displayDirectory}\n\nThen try again.",
+                    "OK");
+            }
+#endif
         }
 
         private async void OnImportDbConfirmClicked(object? sender, EventArgs e)
         {
+#if ANDROID
+            var sourceUri = _importSourceFileUri;
+            _importSourceFileUri = null;
+            _importSourcePath = null;
+            ShowImportPanel = false;
+
+            if (sourceUri == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await ImportDatabaseFromAndroidUriAsync(sourceUri);
+                await LoadFoodsAsync(FoodFilterEntry?.Text);
+            }
+            catch (Exception)
+            {
+                // Suppress import errors to avoid additional dialogs after confirmation.
+            }
+            return;
+#else
             var sourcePath = _importSourcePath;
             _importSourcePath = null;
             ShowImportPanel = false;
@@ -304,22 +461,46 @@ namespace DietSentry
             {
                 // Suppress import errors to avoid additional dialogs after confirmation.
             }
+#endif
         }
 
         private void OnImportDbCancelClicked(object? sender, EventArgs e)
         {
             _importSourcePath = null;
+#if ANDROID
+            _importSourceFileUri = null;
+#endif
             ShowImportPanel = false;
         }
 
         private void OnImportDbBackdropTapped(object? sender, TappedEventArgs e)
         {
             _importSourcePath = null;
+#if ANDROID
+            _importSourceFileUri = null;
+#endif
             ShowImportPanel = false;
         }
 
-        private void OnExportCsvClicked(object? sender, EventArgs e)
+        private async void OnExportCsvClicked(object? sender, EventArgs e)
         {
+#if ANDROID
+            var folderUri = await GetAndroidExchangeFolderAsync();
+            if (folderUri == null)
+            {
+                return;
+            }
+
+            _exportCsvTargetFolderUri = folderUri;
+            var targetPath = BuildAndroidFileDisplay(folderUri, DailyCsvFileName);
+            _exportCsvTargetPath = targetPath;
+            if (ExportCsvTargetPathLabel != null)
+            {
+                ExportCsvTargetPathLabel.Text = targetPath;
+            }
+
+            ShowExportCsvPanel = true;
+#else
             var directory = GetExchangeDirectory();
             var targetPath = Path.Combine(directory, DailyCsvFileName);
             _exportCsvTargetPath = targetPath;
@@ -329,10 +510,51 @@ namespace DietSentry
             }
 
             ShowExportCsvPanel = true;
+#endif
+        }
+
+        private async void OnChangeExportCsvFolderClicked(object? sender, EventArgs e)
+        {
+#if ANDROID
+            var folderUri = await PickAndStoreAndroidExchangeFolderAsync();
+            if (folderUri == null)
+            {
+                return;
+            }
+
+            _exportCsvTargetFolderUri = folderUri;
+            var targetPath = BuildAndroidFileDisplay(folderUri, DailyCsvFileName);
+            _exportCsvTargetPath = targetPath;
+            if (ExportCsvTargetPathLabel != null)
+            {
+                ExportCsvTargetPathLabel.Text = targetPath;
+            }
+#endif
         }
 
         private async void OnExportCsvConfirmClicked(object? sender, EventArgs e)
         {
+#if ANDROID
+            var folderUri = _exportCsvTargetFolderUri;
+            _exportCsvTargetFolderUri = null;
+            _exportCsvTargetPath = null;
+            ShowExportCsvPanel = false;
+
+            if (folderUri == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await ExportCsvToAndroidFolderAsync(folderUri);
+            }
+            catch (Exception)
+            {
+                // Suppress export errors to avoid additional dialogs after confirmation.
+            }
+            return;
+#else
             var targetPath = _exportCsvTargetPath;
             _exportCsvTargetPath = null;
             ShowExportCsvPanel = false;
@@ -361,17 +583,24 @@ namespace DietSentry
             {
                 // Suppress export errors to avoid additional dialogs after confirmation.
             }
+#endif
         }
 
         private void OnExportCsvCancelClicked(object? sender, EventArgs e)
         {
             _exportCsvTargetPath = null;
+#if ANDROID
+            _exportCsvTargetFolderUri = null;
+#endif
             ShowExportCsvPanel = false;
         }
 
         private void OnExportCsvBackdropTapped(object? sender, TappedEventArgs e)
         {
             _exportCsvTargetPath = null;
+#if ANDROID
+            _exportCsvTargetFolderUri = null;
+#endif
             ShowExportCsvPanel = false;
         }
 
@@ -946,6 +1175,280 @@ namespace DietSentry
             return FileSystem.AppDataDirectory;
         }
 
+#if ANDROID
+        private static async Task<Android.Net.Uri?> GetAndroidExchangeFolderAsync()
+        {
+            Android.Net.Uri? storedUri = null;
+            var stored = Preferences.Default.Get(ExchangeFolderUriKey, string.Empty);
+            if (!string.IsNullOrWhiteSpace(stored))
+            {
+                try
+                {
+                    storedUri = Android.Net.Uri.Parse(stored);
+                }
+                catch (Exception)
+                {
+                    storedUri = null;
+                }
+            }
+
+            if (storedUri != null)
+            {
+                if (CanReadAndroidTree(storedUri))
+                {
+                    return storedUri;
+                }
+            }
+
+            var picked = await PickAndStoreAndroidExchangeFolderAsync();
+            if (picked == null)
+            {
+                return null;
+            }
+            return picked;
+        }
+
+        private static async Task<Android.Net.Uri?> PickAndroidFolderAsync()
+        {
+            var tcs = new TaskCompletionSource<Android.Net.Uri?>();
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    var uri = await MainActivity.PickFolderAsync();
+                    tcs.TrySetResult(uri);
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
+            });
+
+            return await tcs.Task.ConfigureAwait(false);
+        }
+
+        private static async Task<Android.Net.Uri?> PickAndStoreAndroidExchangeFolderAsync()
+        {
+            var picked = await PickAndroidFolderAsync();
+            if (picked == null)
+            {
+                return null;
+            }
+
+            Preferences.Default.Set(ExchangeFolderUriKey, picked.ToString());
+            return picked;
+        }
+
+        private static string BuildAndroidDirectoryDisplay(Android.Net.Uri uri)
+        {
+            const string fallback = "Selected folder";
+            try
+            {
+                var docId = DocumentsContract.GetTreeDocumentId(uri);
+                if (string.IsNullOrWhiteSpace(docId))
+                {
+                    return fallback;
+                }
+
+                var parts = docId.Split(':', 2, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 0)
+                {
+                    return docId;
+                }
+
+                if (parts.Length == 1)
+                {
+                    return string.Equals(parts[0], "primary", StringComparison.OrdinalIgnoreCase)
+                        ? "Internal storage"
+                        : parts[0];
+                }
+
+                var volume = parts[0];
+                var path = parts[1].Trim('/');
+                if (string.Equals(volume, "primary", StringComparison.OrdinalIgnoreCase))
+                {
+                    return string.IsNullOrWhiteSpace(path)
+                        ? "Internal storage"
+                        : $"Internal storage/{path}";
+                }
+
+                return string.IsNullOrWhiteSpace(path) ? volume : $"{volume}/{path}";
+            }
+            catch (Exception)
+            {
+                return fallback;
+            }
+        }
+
+        private static string BuildAndroidFileDisplay(Android.Net.Uri uri, string fileName)
+        {
+            var directory = BuildAndroidDirectoryDisplay(uri);
+            return string.IsNullOrWhiteSpace(directory) ? fileName : $"{directory}/{fileName}";
+        }
+
+        private static bool CanReadAndroidTree(Android.Net.Uri folderUri)
+        {
+            try
+            {
+                var resolver = Platform.AppContext.ContentResolver;
+                if (resolver == null)
+                {
+                    return false;
+                }
+
+                var treeId = DocumentsContract.GetTreeDocumentId(folderUri);
+                var childrenUri = DocumentsContract.BuildChildDocumentsUriUsingTree(folderUri, treeId);
+                using var cursor = resolver.Query(
+                    childrenUri,
+                    new[] { DocumentsContract.Document.ColumnDocumentId },
+                    null,
+                    null,
+                    null);
+                return cursor != null;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private static Android.Net.Uri? FindAndroidFileUri(Android.Net.Uri folderUri, string fileName)
+        {
+            try
+            {
+                var resolver = Platform.AppContext.ContentResolver;
+                if (resolver == null)
+                {
+                    return null;
+                }
+
+                var treeId = DocumentsContract.GetTreeDocumentId(folderUri);
+                var childrenUri = DocumentsContract.BuildChildDocumentsUriUsingTree(folderUri, treeId);
+                using var cursor = resolver.Query(
+                    childrenUri,
+                    new[]
+                    {
+                        DocumentsContract.Document.ColumnDocumentId,
+                        DocumentsContract.Document.ColumnDisplayName
+                    },
+                    null,
+                    null,
+                    null);
+
+                if (cursor == null)
+                {
+                    return null;
+                }
+
+                var idIndex = cursor.GetColumnIndex(DocumentsContract.Document.ColumnDocumentId);
+                var nameIndex = cursor.GetColumnIndex(DocumentsContract.Document.ColumnDisplayName);
+                if (idIndex < 0 || nameIndex < 0)
+                {
+                    return null;
+                }
+
+                while (cursor.MoveToNext())
+                {
+                    var name = cursor.GetString(nameIndex);
+                    if (!string.Equals(name, fileName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    var documentId = cursor.GetString(idIndex);
+                    return DocumentsContract.BuildDocumentUriUsingTree(folderUri, documentId);
+                }
+
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private static Android.Net.Uri? CreateAndroidFileUri(
+            Android.Net.Uri folderUri,
+            string fileName,
+            string mimeType)
+        {
+            try
+            {
+                var resolver = Platform.AppContext.ContentResolver;
+                if (resolver == null)
+                {
+                    return null;
+                }
+
+                var treeId = DocumentsContract.GetTreeDocumentId(folderUri);
+                var parentUri = DocumentsContract.BuildDocumentUriUsingTree(folderUri, treeId);
+                return DocumentsContract.CreateDocument(resolver, parentUri, mimeType, fileName);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private static async Task ExportDatabaseToAndroidFolderAsync(Android.Net.Uri folderUri)
+        {
+            var fileUri = FindAndroidFileUri(folderUri, DatabaseFileName)
+                ?? CreateAndroidFileUri(folderUri, DatabaseFileName, "application/octet-stream");
+            if (fileUri == null)
+            {
+                return;
+            }
+
+            await DatabaseInitializer.EnsureDatabaseAsync();
+            var sourcePath = DatabaseInitializer.GetDatabasePath();
+            await using var sourceStream = File.OpenRead(sourcePath);
+            await using var targetStream = Platform.AppContext.ContentResolver?.OpenOutputStream(fileUri, "w");
+            if (targetStream == null)
+            {
+                return;
+            }
+
+            await sourceStream.CopyToAsync(targetStream);
+        }
+
+        private static async Task ImportDatabaseFromAndroidUriAsync(Android.Net.Uri sourceUri)
+        {
+            var inputStream = Platform.AppContext.ContentResolver?.OpenInputStream(sourceUri);
+            if (inputStream == null)
+            {
+                return;
+            }
+
+            await DatabaseInitializer.EnsureDatabaseAsync();
+            var targetPath = DatabaseInitializer.GetDatabasePath();
+            await using var targetStream = File.Create(targetPath);
+            await inputStream.CopyToAsync(targetStream);
+        }
+
+        private async Task ExportCsvToAndroidFolderAsync(Android.Net.Uri folderUri)
+        {
+            var fileUri = FindAndroidFileUri(folderUri, DailyCsvFileName)
+                ?? CreateAndroidFileUri(folderUri, DailyCsvFileName, "text/csv");
+            if (fileUri == null)
+            {
+                return;
+            }
+
+            await DatabaseInitializer.EnsureDatabaseAsync();
+            var eatenFoods = (await _databaseService.GetEatenFoodsAsync()).ToList();
+            var weightEntries = (await _databaseService.GetWeightEntriesAsync()).ToList();
+            var csv = BuildEatenDailyAllCsv(eatenFoods, weightEntries);
+            await using var targetStream = Platform.AppContext.ContentResolver?.OpenOutputStream(fileUri, "w");
+            if (targetStream == null)
+            {
+                return;
+            }
+
+            await using var writer = new StreamWriter(targetStream, new UTF8Encoding(false));
+            await writer.WriteAsync(csv);
+        }
+#endif
+
         private static string BuildEatenDailyAllCsv(
             IReadOnlyList<EatenFood> eatenFoods,
             IReadOnlyList<WeightEntry> weightEntries)
@@ -1121,6 +1624,9 @@ namespace DietSentry
             All
         }
 
+#if ANDROID
+        private const string ExchangeFolderUriKey = "exchange_folder_uri";
+#endif
         private const string DatabaseFileName = "foods.db";
         private const string DailyCsvFileName = "EatenDailyAll.csv";
     }

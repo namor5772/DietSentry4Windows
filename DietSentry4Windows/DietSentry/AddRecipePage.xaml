@@ -124,6 +124,8 @@
                     Completed="OnFoodFilterCompleted" />
                 <Button
                     Text="Clear"
+                    HeightRequest="{OnPlatform Android=30}"
+                    MinimumHeightRequest="{OnPlatform Android=30}"
                     Clicked="OnClearFilterClicked" />
             </HorizontalStackLayout>
 
@@ -241,10 +243,12 @@
                     <Button
                         Text="Edit"
                         Clicked="OnEditRecipeClicked"
+                        WidthRequest="{OnPlatform Android=55, Default=79}"
                         Style="{StaticResource SelectionActionButtonStyle}" />
                     <Button
                         Text="Delete"
                         Clicked="OnDeleteRecipeClicked"
+                        WidthRequest="{OnPlatform Android=55, Default=79}"
                         Style="{StaticResource SelectionActionButtonStyle}" />
                 </FlexLayout>
             </VerticalStackLayout>

@@ -30,8 +30,8 @@
         <Setter Property="BorderWidth" Value="0"/>
         <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="Padding" Value="{OnPlatform Android='11,8', Default='14,10'}"/>
-        <Setter Property="HeightRequest" Value="{OnPlatform Android=35}" />
-        <Setter Property="MinimumHeightRequest" Value="{OnPlatform Android=35, Default=44}"/>
+        <Setter Property="HeightRequest" Value="{OnPlatform Android=30}" />
+        <Setter Property="MinimumHeightRequest" Value="{OnPlatform Android=30, Default=44}"/>
         <Setter Property="MinimumWidthRequest" Value="{OnPlatform Android=35, Default=44}"/>
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>

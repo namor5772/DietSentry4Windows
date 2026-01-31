@@ -171,13 +171,17 @@
                     Completed="OnFoodFilterCompleted" />
                 <Button
                     Text="Clear"
+                    HeightRequest="{OnPlatform Android=30}"
+                    MinimumHeightRequest="{OnPlatform Android=30}"
                     Clicked="OnClearFilterClicked" />
             </HorizontalStackLayout>
 
             <Frame
                 Grid.Row="3"
                 BorderColor="LightGray"
-                Padding="10">
+                Padding="10"
+                VerticalOptions="{OnPlatform Android=FillAndExpand, Default=FillAndExpand}"
+                HorizontalOptions="FillAndExpand">
                 <Grid RowDefinitions="*">
                 <CollectionView
                     x:Name="FoodsCollectionView"
@@ -186,7 +190,8 @@
                     ItemSizingStrategy="MeasureAllItems"
                     SelectionMode="Single"
                     SelectionChanged="OnFoodSelectionChanged"
-                    VerticalOptions="FillAndExpand">
+                    VerticalOptions="FillAndExpand"
+                    HorizontalOptions="FillAndExpand">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="local:Food">
                             <VerticalStackLayout Spacing="4" Padding="4">
@@ -489,15 +494,21 @@
                                         Grid.Column="1"
                                         Text="{Binding Alcohol, Converter={StaticResource NumericFormatConverter}}"
                                         HorizontalTextAlignment="End" />
-                                    <Label
+                                    <Grid
                                         Grid.Row="23"
-                                        Grid.Column="0"
-                                        Text="Notes:" />
-                                    <Label
-                                        Grid.Row="23"
-                                        Grid.Column="1"
-                                        Text="{Binding Notes}"
-                                        LineBreakMode="WordWrap" />
+                                        Grid.ColumnSpan="2"
+                                        ColumnDefinitions="Auto,*"
+                                        ColumnSpacing="6">
+                                        <Label
+                                            Grid.Column="0"
+                                            Text="Notes:" />
+                                        <Label
+                                            Grid.Column="1"
+                                            Text="{Binding Notes}"
+                                            LineBreakMode="WordWrap"
+                                            HorizontalOptions="FillAndExpand"
+                                            VerticalOptions="Start" />
+                                    </Grid>
                                 </Grid>
                             </VerticalStackLayout>
                         </DataTemplate>
@@ -813,6 +824,11 @@
                         Text="Cancel"
                         Clicked="OnExportDbCancelClicked"
                         Margin="0,0,4,4" />
+                    <Button
+                        Text="Change folder"
+                        Clicked="OnChangeExportFolderClicked"
+                        Margin="0,0,4,4"
+                        IsVisible="{OnPlatform Android=True, Default=False}" />
                 </FlexLayout>
             </VerticalStackLayout>
         </Frame>
@@ -876,6 +892,11 @@
                         Text="Cancel"
                         Clicked="OnImportDbCancelClicked"
                         Margin="0,0,4,4" />
+                    <Button
+                        Text="Change folder"
+                        Clicked="OnChangeImportFolderClicked"
+                        Margin="0,0,4,4"
+                        IsVisible="{OnPlatform Android=True, Default=False}" />
                 </FlexLayout>
             </VerticalStackLayout>
         </Frame>
@@ -934,6 +955,11 @@
                         Text="Cancel"
                         Clicked="OnExportCsvCancelClicked"
                         Margin="0,0,4,4" />
+                    <Button
+                        Text="Change folder"
+                        Clicked="OnChangeExportCsvFolderClicked"
+                        Margin="0,0,4,4"
+                        IsVisible="{OnPlatform Android=True, Default=False}" />
                 </FlexLayout>
             </VerticalStackLayout>
         </Frame>
