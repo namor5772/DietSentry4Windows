@@ -1356,6 +1356,10 @@ namespace DietSentry
 
                 var treeId = DocumentsContract.GetTreeDocumentId(folderUri);
                 var childrenUri = DocumentsContract.BuildChildDocumentsUriUsingTree(folderUri, treeId);
+                if (childrenUri == null)
+                {
+                    return false;
+                }
                 using var cursor = resolver.Query(
                     childrenUri,
                     new[] { DocumentsContract.Document.ColumnDocumentId },
@@ -1382,6 +1386,10 @@ namespace DietSentry
 
                 var treeId = DocumentsContract.GetTreeDocumentId(folderUri);
                 var childrenUri = DocumentsContract.BuildChildDocumentsUriUsingTree(folderUri, treeId);
+                if (childrenUri == null)
+                {
+                    return null;
+                }
                 using var cursor = resolver.Query(
                     childrenUri,
                     new[]
@@ -1440,6 +1448,11 @@ namespace DietSentry
 
                 var treeId = DocumentsContract.GetTreeDocumentId(folderUri);
                 var parentUri = DocumentsContract.BuildDocumentUriUsingTree(folderUri, treeId);
+                if (parentUri == null)
+                {
+                    return null;
+                }
+
                 return DocumentsContract.CreateDocument(resolver, parentUri, mimeType, fileName);
             }
             catch (Exception)
