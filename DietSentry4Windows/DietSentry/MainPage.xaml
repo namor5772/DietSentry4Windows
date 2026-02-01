@@ -176,6 +176,7 @@
                 Grid.Row="3"
                 BorderColor="LightGray"
                 Padding="10"
+                Margin="{OnPlatform Android='0,-8,0,0', Default='0'}"
                 VerticalOptions="{OnPlatform Android=FillAndExpand, Default=FillAndExpand}"
                 HorizontalOptions="FillAndExpand">
                 <Grid RowDefinitions="*">
