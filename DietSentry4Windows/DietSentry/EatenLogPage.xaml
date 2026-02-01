@@ -90,7 +90,7 @@
                     Grid.ColumnSpan="4"
                     Grid.Row="1"
                     IsVisible="{OnPlatform Android=True, Default=False}"
-                    Spacing="8">
+                    Spacing="{OnPlatform Android=2, Default=8}">
                     <Button
                         Text="Foods Table"
                         HorizontalOptions="Start"
