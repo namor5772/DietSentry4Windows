@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
@@ -36,15 +35,12 @@ namespace DietSentry
         private bool _showDeletePanel;
         private bool _showExportPanel;
         private bool _showImportPanel;
-        private bool _showExportCsvPanel;
         private string? _insertedFoodDescription;
         private string? _exportTargetPath;
         private string? _importSourcePath;
-        private string? _exportCsvTargetPath;
 #if ANDROID
         private Android.Net.Uri? _exportTargetFolderUri;
         private Android.Net.Uri? _importSourceFileUri;
-        private Android.Net.Uri? _exportCsvTargetFolderUri;
 #endif
 
         public ObservableCollection<Food> Foods { get; } = new();
@@ -521,141 +517,6 @@ namespace DietSentry
             ShowImportPanel = false;
         }
 
-        private async void OnExportCsvClicked(object? sender, EventArgs e)
-        {
-#if ANDROID
-            var folderUri = await GetAndroidExchangeFolderAsync();
-            if (folderUri == null)
-            {
-                return;
-            }
-
-            _exportCsvTargetFolderUri = folderUri;
-            var targetPath = BuildAndroidFileDisplay(folderUri, DailyCsvFileName);
-            _exportCsvTargetPath = targetPath;
-            if (ExportCsvTargetPathLabel != null)
-            {
-                ExportCsvTargetPathLabel.Text = targetPath;
-            }
-
-            ShowExportCsvPanel = true;
-#else
-            var directory = GetExchangeDirectory();
-            var targetPath = Path.Combine(directory, DailyCsvFileName);
-            _exportCsvTargetPath = targetPath;
-            if (ExportCsvTargetPathLabel != null)
-            {
-                ExportCsvTargetPathLabel.Text = targetPath;
-            }
-
-            ShowExportCsvPanel = true;
-#endif
-        }
-
-        private async void OnChangeExportCsvFolderClicked(object? sender, EventArgs e)
-        {
-#if ANDROID
-            var folderUri = await PickAndStoreAndroidExchangeFolderAsync();
-            if (folderUri == null)
-            {
-                return;
-            }
-
-            _exportCsvTargetFolderUri = folderUri;
-            var targetPath = BuildAndroidFileDisplay(folderUri, DailyCsvFileName);
-            _exportCsvTargetPath = targetPath;
-            if (ExportCsvTargetPathLabel != null)
-            {
-                ExportCsvTargetPathLabel.Text = targetPath;
-            }
-#elif WINDOWS
-            var directory = await PickAndStoreWindowsExchangeDirectoryAsync();
-            if (string.IsNullOrWhiteSpace(directory))
-            {
-                return;
-            }
-
-            var targetPath = Path.Combine(directory, DailyCsvFileName);
-            _exportCsvTargetPath = targetPath;
-            if (ExportCsvTargetPathLabel != null)
-            {
-                ExportCsvTargetPathLabel.Text = targetPath;
-            }
-#endif
-        }
-
-        private async void OnExportCsvConfirmClicked(object? sender, EventArgs e)
-        {
-#if ANDROID
-            var folderUri = _exportCsvTargetFolderUri;
-            _exportCsvTargetFolderUri = null;
-            _exportCsvTargetPath = null;
-            ShowExportCsvPanel = false;
-
-            if (folderUri == null)
-            {
-                return;
-            }
-
-            try
-            {
-                await ExportCsvToAndroidFolderAsync(folderUri);
-            }
-            catch (Exception)
-            {
-                // Suppress export errors to avoid additional dialogs after confirmation.
-            }
-            return;
-#else
-            var targetPath = _exportCsvTargetPath;
-            _exportCsvTargetPath = null;
-            ShowExportCsvPanel = false;
-
-            if (string.IsNullOrWhiteSpace(targetPath))
-            {
-                return;
-            }
-
-            var directory = Path.GetDirectoryName(targetPath);
-            if (string.IsNullOrWhiteSpace(directory))
-            {
-                return;
-            }
-
-            try
-            {
-                Directory.CreateDirectory(directory);
-                await DatabaseInitializer.EnsureDatabaseAsync();
-                var eatenFoods = (await _databaseService.GetEatenFoodsAsync()).ToList();
-                var weightEntries = (await _databaseService.GetWeightEntriesAsync()).ToList();
-                var csv = BuildEatenDailyAllCsv(eatenFoods, weightEntries);
-                await File.WriteAllTextAsync(targetPath, csv, new UTF8Encoding(false));
-            }
-            catch (Exception)
-            {
-                // Suppress export errors to avoid additional dialogs after confirmation.
-            }
-#endif
-        }
-
-        private void OnExportCsvCancelClicked(object? sender, EventArgs e)
-        {
-            _exportCsvTargetPath = null;
-#if ANDROID
-            _exportCsvTargetFolderUri = null;
-#endif
-            ShowExportCsvPanel = false;
-        }
-
-        private void OnExportCsvBackdropTapped(object? sender, TappedEventArgs e)
-        {
-            _exportCsvTargetPath = null;
-#if ANDROID
-            _exportCsvTargetFolderUri = null;
-#endif
-            ShowExportCsvPanel = false;
-        }
-
         private async void OnCopyFoodClicked(object? sender, EventArgs e)
         {
             if (SelectedFood == null)
@@ -813,21 +674,6 @@ namespace DietSentry
                 }
 
                 _showImportPanel = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool ShowExportCsvPanel
-        {
-            get => _showExportCsvPanel;
-            private set
-            {
-                if (_showExportCsvPanel == value)
-                {
-                    return;
-                }
-
-                _showExportCsvPanel = value;
                 OnPropertyChanged();
             }
         }
@@ -1495,29 +1341,6 @@ namespace DietSentry
             await using var targetStream = File.Create(targetPath);
             await inputStream.CopyToAsync(targetStream);
         }
-
-        private async Task ExportCsvToAndroidFolderAsync(Android.Net.Uri folderUri)
-        {
-            var fileUri = FindAndroidFileUri(folderUri, DailyCsvFileName)
-                ?? CreateAndroidFileUri(folderUri, DailyCsvFileName, "text/csv");
-            if (fileUri == null)
-            {
-                return;
-            }
-
-            await DatabaseInitializer.EnsureDatabaseAsync();
-            var eatenFoods = (await _databaseService.GetEatenFoodsAsync()).ToList();
-            var weightEntries = (await _databaseService.GetWeightEntriesAsync()).ToList();
-            var csv = BuildEatenDailyAllCsv(eatenFoods, weightEntries);
-            await using var targetStream = Platform.AppContext.ContentResolver?.OpenOutputStream(fileUri, "w");
-            if (targetStream == null)
-            {
-                return;
-            }
-
-            await using var writer = new StreamWriter(targetStream, new UTF8Encoding(false));
-            await writer.WriteAsync(csv);
-        }
 #endif
 
 #if WINDOWS
@@ -1552,174 +1375,6 @@ namespace DietSentry
         }
 #endif
 
-        private static string BuildEatenDailyAllCsv(
-            IReadOnlyList<EatenFood> eatenFoods,
-            IReadOnlyList<WeightEntry> weightEntries)
-        {
-            var lines = new List<string>();
-            var header = new[]
-            {
-                "Date",
-                "My weight (kg)",
-                "Comments",
-                "Amount (g or mL)",
-                "Energy (kJ):",
-                "Protein (g):",
-                "Fat, total (g):",
-                "- Saturated (g):",
-                "- Trans (mg):",
-                "- Polyunsaturated (g):",
-                "- Monounsaturated (g):",
-                "Carbohydrate (g):",
-                "- Sugars (g):",
-                "Sodium (mg):",
-                "Dietary Fibre (g):",
-                "Calcium (mg):",
-                "Potassium (mg):",
-                "Thiamin B1 (mg):",
-                "Riboflavin B2 (mg):",
-                "Niacin B3 (mg):",
-                "Folate (ug):",
-                "Iron (mg):",
-                "Magnesium (mg):",
-                "Vitamin C (mg):",
-                "Caffeine (mg):",
-                "Cholesterol (mg):",
-                "Alcohol (g):"
-            };
-            lines.Add(string.Join(",", header.Select(CsvCell)));
-
-            var weightByDate = weightEntries
-                .Where(entry => !string.IsNullOrWhiteSpace(entry.DateWeight))
-                .GroupBy(entry => entry.DateWeight)
-                .ToDictionary(group => group.Key, group => group.First());
-            var totals = AggregateDailyTotals(eatenFoods, weightByDate);
-            foreach (var total in totals)
-            {
-                var weightText = weightByDate.TryGetValue(total.Date, out var weightEntry)
-                    ? FormatWeight(weightEntry.Weight)
-                    : "NA";
-                var commentsText = weightEntry?.Comments ?? string.Empty;
-                var row = new[]
-                {
-                    total.Date,
-                    weightText,
-                    commentsText,
-                    FormatNumber(total.AmountEaten),
-                    FormatNumber(total.Energy),
-                    FormatNumber(total.Protein),
-                    FormatNumber(total.FatTotal),
-                    FormatNumber(total.SaturatedFat),
-                    FormatNumber(total.TransFat),
-                    FormatNumber(total.PolyunsaturatedFat),
-                    FormatNumber(total.MonounsaturatedFat),
-                    FormatNumber(total.Carbohydrate),
-                    FormatNumber(total.Sugars),
-                    FormatNumber(total.SodiumNa),
-                    FormatNumber(total.DietaryFibre),
-                    FormatNumber(total.CalciumCa),
-                    FormatNumber(total.PotassiumK),
-                    FormatNumber(total.ThiaminB1),
-                    FormatNumber(total.RiboflavinB2),
-                    FormatNumber(total.NiacinB3),
-                    FormatNumber(total.Folate),
-                    FormatNumber(total.IronFe),
-                    FormatNumber(total.MagnesiumMg),
-                    FormatNumber(total.VitaminC),
-                    FormatNumber(total.Caffeine),
-                    FormatNumber(total.Cholesterol),
-                    FormatNumber(total.Alcohol)
-                };
-                lines.Add(string.Join(",", row.Select(CsvCell)));
-            }
-
-            return string.Join("\n", lines);
-        }
-
-        private static IReadOnlyList<DailyTotals> AggregateDailyTotals(
-            IReadOnlyList<EatenFood> eatenFoods,
-            IReadOnlyDictionary<string, WeightEntry> weightByDate)
-        {
-            var grouped = eatenFoods.GroupBy(food => food.DateEaten);
-            var totals = new List<DailyTotals>();
-            foreach (var group in grouped)
-            {
-                var items = group.ToList();
-                weightByDate.TryGetValue(group.Key, out var weightEntry);
-                var comments = weightEntry?.Comments ?? string.Empty;
-                var weightDisplay = weightEntry == null
-                    ? "NA"
-                    : weightEntry.Weight.ToString("N1", CultureInfo.InvariantCulture);
-
-                totals.Add(new DailyTotals
-                {
-                    Date = group.Key,
-                    UnitLabel = "mixed units",
-                    AmountEaten = items.Sum(item => item.AmountEaten),
-                    Energy = items.Sum(item => item.Energy),
-                    Protein = items.Sum(item => item.Protein),
-                    FatTotal = items.Sum(item => item.FatTotal),
-                    SaturatedFat = items.Sum(item => item.SaturatedFat),
-                    TransFat = items.Sum(item => item.TransFat),
-                    PolyunsaturatedFat = items.Sum(item => item.PolyunsaturatedFat),
-                    MonounsaturatedFat = items.Sum(item => item.MonounsaturatedFat),
-                    Carbohydrate = items.Sum(item => item.Carbohydrate),
-                    Sugars = items.Sum(item => item.Sugars),
-                    DietaryFibre = items.Sum(item => item.DietaryFibre),
-                    SodiumNa = items.Sum(item => item.SodiumNa),
-                    CalciumCa = items.Sum(item => item.CalciumCa),
-                    PotassiumK = items.Sum(item => item.PotassiumK),
-                    ThiaminB1 = items.Sum(item => item.ThiaminB1),
-                    RiboflavinB2 = items.Sum(item => item.RiboflavinB2),
-                    NiacinB3 = items.Sum(item => item.NiacinB3),
-                    Folate = items.Sum(item => item.Folate),
-                    IronFe = items.Sum(item => item.IronFe),
-                    MagnesiumMg = items.Sum(item => item.MagnesiumMg),
-                    VitaminC = items.Sum(item => item.VitaminC),
-                    Caffeine = items.Sum(item => item.Caffeine),
-                    Cholesterol = items.Sum(item => item.Cholesterol),
-                    Alcohol = items.Sum(item => item.Alcohol),
-                    WeightDisplay = weightDisplay,
-                    Comments = comments
-                });
-            }
-
-            return totals
-                .OrderByDescending(total => ParseDate(total.Date))
-                .ToList();
-        }
-
-        private static DateTime ParseDate(string value)
-        {
-            if (DateTime.TryParseExact(
-                value,
-                "d-MMM-yy",
-                CultureInfo.CurrentCulture,
-                DateTimeStyles.None,
-                out var result))
-            {
-                return result;
-            }
-
-            return DateTime.MinValue;
-        }
-
-        private static string CsvCell(string value)
-        {
-            var escaped = value.Replace("\"", "\"\"");
-            return $"\"{escaped}\"";
-        }
-
-        private static string FormatNumber(double value)
-        {
-            return value.ToString("N1", CultureInfo.InvariantCulture);
-        }
-
-        private static string FormatWeight(double value)
-        {
-            return value.ToString("0.0", CultureInfo.InvariantCulture);
-        }
-
         private enum NutritionDisplayMode
         {
             Min,
@@ -1734,6 +1389,5 @@ namespace DietSentry
         private const string ExchangeFolderPathKey = "exchange_folder_path";
 #endif
         private const string DatabaseFileName = "foods.db";
-        private const string DailyCsvFileName = "EatenDailyAll.csv";
     }
 }

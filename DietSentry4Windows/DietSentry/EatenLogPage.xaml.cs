@@ -2,9 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Storage;
+#if ANDROID
+using Android.App;
+using Android.Net;
+using Android.Provider;
+#endif
+#if WINDOWS
+using Microsoft.Maui.Platform;
+using Windows.Storage.Pickers;
+using WinRT.Interop;
+#endif
 
 namespace DietSentry
 {
@@ -24,8 +37,13 @@ namespace DietSentry
         private EatenFood? _selectedEatenFood;
         private bool _showEditPanel;
         private bool _showDeletePanel;
+        private bool _showExportCsvPanel;
+        private string? _exportCsvTargetPath;
         private List<EatenFood> _allEatenFoods = new();
         private List<WeightEntry> _weightEntries = new();
+#if ANDROID
+        private Android.Net.Uri? _exportCsvTargetFolderUri;
+#endif
 
         public ObservableCollection<EatenFood> EatenFoods { get; } = new();
         public ObservableCollection<DailyTotals> DailyTotals { get; } = new();
@@ -156,6 +174,21 @@ namespace DietSentry
                 }
 
                 _showDeletePanel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowExportCsvPanel
+        {
+            get => _showExportCsvPanel;
+            private set
+            {
+                if (_showExportCsvPanel == value)
+                {
+                    return;
+                }
+
+                _showExportCsvPanel = value;
                 OnPropertyChanged();
             }
         }
@@ -633,6 +666,611 @@ namespace DietSentry
             ShowDeletePanel = false;
             SelectedEatenFood = null;
         }
+
+        private async void OnExportCsvClicked(object? sender, EventArgs e)
+        {
+#if ANDROID
+            var folderUri = await GetAndroidExchangeFolderAsync();
+            if (folderUri == null)
+            {
+                return;
+            }
+
+            _exportCsvTargetFolderUri = folderUri;
+            var targetPath = BuildAndroidFileDisplay(folderUri, DailyCsvFileName);
+            _exportCsvTargetPath = targetPath;
+            if (ExportCsvTargetPathLabel != null)
+            {
+                ExportCsvTargetPathLabel.Text = targetPath;
+            }
+
+            ShowExportCsvPanel = true;
+#else
+            var directory = GetExchangeDirectory();
+            var targetPath = Path.Combine(directory, DailyCsvFileName);
+            _exportCsvTargetPath = targetPath;
+            if (ExportCsvTargetPathLabel != null)
+            {
+                ExportCsvTargetPathLabel.Text = targetPath;
+            }
+
+            ShowExportCsvPanel = true;
+#endif
+        }
+
+        private async void OnChangeExportCsvFolderClicked(object? sender, EventArgs e)
+        {
+#if ANDROID
+            var folderUri = await PickAndStoreAndroidExchangeFolderAsync();
+            if (folderUri == null)
+            {
+                return;
+            }
+
+            _exportCsvTargetFolderUri = folderUri;
+            var targetPath = BuildAndroidFileDisplay(folderUri, DailyCsvFileName);
+            _exportCsvTargetPath = targetPath;
+            if (ExportCsvTargetPathLabel != null)
+            {
+                ExportCsvTargetPathLabel.Text = targetPath;
+            }
+#elif WINDOWS
+            var directory = await PickAndStoreWindowsExchangeDirectoryAsync();
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                return;
+            }
+
+            var targetPath = Path.Combine(directory, DailyCsvFileName);
+            _exportCsvTargetPath = targetPath;
+            if (ExportCsvTargetPathLabel != null)
+            {
+                ExportCsvTargetPathLabel.Text = targetPath;
+            }
+#endif
+        }
+
+        private async void OnExportCsvConfirmClicked(object? sender, EventArgs e)
+        {
+#if ANDROID
+            var folderUri = _exportCsvTargetFolderUri;
+            _exportCsvTargetFolderUri = null;
+            _exportCsvTargetPath = null;
+            ShowExportCsvPanel = false;
+
+            if (folderUri == null)
+            {
+                return;
+            }
+
+            try
+            {
+                await ExportCsvToAndroidFolderAsync(folderUri);
+            }
+            catch (Exception)
+            {
+                // Suppress export errors to avoid additional dialogs after confirmation.
+            }
+            return;
+#else
+            var targetPath = _exportCsvTargetPath;
+            _exportCsvTargetPath = null;
+            ShowExportCsvPanel = false;
+
+            if (string.IsNullOrWhiteSpace(targetPath))
+            {
+                return;
+            }
+
+            var directory = Path.GetDirectoryName(targetPath);
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                return;
+            }
+
+            try
+            {
+                Directory.CreateDirectory(directory);
+                await DatabaseInitializer.EnsureDatabaseAsync();
+                var eatenFoods = (await _databaseService.GetEatenFoodsAsync()).ToList();
+                var weightEntries = (await _databaseService.GetWeightEntriesAsync()).ToList();
+                var csv = BuildEatenDailyAllCsv(eatenFoods, weightEntries);
+                await File.WriteAllTextAsync(targetPath, csv, new UTF8Encoding(false));
+            }
+            catch (Exception)
+            {
+                // Suppress export errors to avoid additional dialogs after confirmation.
+            }
+#endif
+        }
+
+        private void OnExportCsvCancelClicked(object? sender, EventArgs e)
+        {
+            _exportCsvTargetPath = null;
+#if ANDROID
+            _exportCsvTargetFolderUri = null;
+#endif
+            ShowExportCsvPanel = false;
+        }
+
+        private void OnExportCsvBackdropTapped(object? sender, TappedEventArgs e)
+        {
+            _exportCsvTargetPath = null;
+#if ANDROID
+            _exportCsvTargetFolderUri = null;
+#endif
+            ShowExportCsvPanel = false;
+        }
+
+        private static string CsvCell(string value)
+        {
+            var escaped = value.Replace("\"", "\"\"");
+            return $"\"{escaped}\"";
+        }
+
+        private static string FormatNumber(double value)
+        {
+            return value.ToString("N1", CultureInfo.InvariantCulture);
+        }
+
+        private static string FormatWeight(double value)
+        {
+            return value.ToString("0.0", CultureInfo.InvariantCulture);
+        }
+
+        private static string GetExchangeDirectory()
+        {
+#if WINDOWS
+            var storedDirectory = Preferences.Default.Get(ExchangeFolderPathKey, string.Empty);
+            if (!string.IsNullOrWhiteSpace(storedDirectory) && Directory.Exists(storedDirectory))
+            {
+                return storedDirectory;
+            }
+
+            var profile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var downloads = string.IsNullOrWhiteSpace(profile) ? string.Empty : Path.Combine(profile, "Downloads");
+            if (!string.IsNullOrWhiteSpace(downloads) && Directory.Exists(downloads))
+            {
+                return downloads;
+            }
+#endif
+            var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            if (!string.IsNullOrWhiteSpace(documents))
+            {
+                return documents;
+            }
+
+            return FileSystem.AppDataDirectory;
+        }
+
+        private static string BuildEatenDailyAllCsv(
+            IReadOnlyList<EatenFood> eatenFoods,
+            IReadOnlyList<WeightEntry> weightEntries)
+        {
+            var lines = new List<string>();
+            var header = new[]
+            {
+                "Date",
+                "My weight (kg)",
+                "Comments",
+                "Amount (g or mL)",
+                "Energy (kJ):",
+                "Protein (g):",
+                "Fat, total (g):",
+                "- Saturated (g):",
+                "- Trans (mg):",
+                "- Polyunsaturated (g):",
+                "- Monounsaturated (g):",
+                "Carbohydrate (g):",
+                "- Sugars (g):",
+                "Sodium (mg):",
+                "Dietary Fibre (g):",
+                "Calcium (mg):",
+                "Potassium (mg):",
+                "Thiamin B1 (mg):",
+                "Riboflavin B2 (mg):",
+                "Niacin B3 (mg):",
+                "Folate (ug):",
+                "Iron (mg):",
+                "Magnesium (mg):",
+                "Vitamin C (mg):",
+                "Caffeine (mg):",
+                "Cholesterol (mg):",
+                "Alcohol (g):"
+            };
+            lines.Add(string.Join(",", header.Select(CsvCell)));
+
+            var weightByDate = weightEntries
+                .Where(entry => !string.IsNullOrWhiteSpace(entry.DateWeight))
+                .GroupBy(entry => entry.DateWeight)
+                .ToDictionary(group => group.Key, group => group.First());
+            var totals = AggregateDailyTotalsForCsv(eatenFoods, weightByDate);
+            foreach (var total in totals)
+            {
+                var weightText = weightByDate.TryGetValue(total.Date, out var weightEntry)
+                    ? FormatWeight(weightEntry.Weight)
+                    : "NA";
+                var commentsText = weightEntry?.Comments ?? string.Empty;
+                var row = new[]
+                {
+                    total.Date,
+                    weightText,
+                    commentsText,
+                    FormatNumber(total.AmountEaten),
+                    FormatNumber(total.Energy),
+                    FormatNumber(total.Protein),
+                    FormatNumber(total.FatTotal),
+                    FormatNumber(total.SaturatedFat),
+                    FormatNumber(total.TransFat),
+                    FormatNumber(total.PolyunsaturatedFat),
+                    FormatNumber(total.MonounsaturatedFat),
+                    FormatNumber(total.Carbohydrate),
+                    FormatNumber(total.Sugars),
+                    FormatNumber(total.SodiumNa),
+                    FormatNumber(total.DietaryFibre),
+                    FormatNumber(total.CalciumCa),
+                    FormatNumber(total.PotassiumK),
+                    FormatNumber(total.ThiaminB1),
+                    FormatNumber(total.RiboflavinB2),
+                    FormatNumber(total.NiacinB3),
+                    FormatNumber(total.Folate),
+                    FormatNumber(total.IronFe),
+                    FormatNumber(total.MagnesiumMg),
+                    FormatNumber(total.VitaminC),
+                    FormatNumber(total.Caffeine),
+                    FormatNumber(total.Cholesterol),
+                    FormatNumber(total.Alcohol)
+                };
+                lines.Add(string.Join(",", row.Select(CsvCell)));
+            }
+
+            return string.Join("\n", lines);
+        }
+
+        private static IReadOnlyList<DailyTotals> AggregateDailyTotalsForCsv(
+            IReadOnlyList<EatenFood> eatenFoods,
+            IReadOnlyDictionary<string, WeightEntry> weightByDate)
+        {
+            var grouped = eatenFoods.GroupBy(food => food.DateEaten);
+            var totals = new List<DailyTotals>();
+            foreach (var group in grouped)
+            {
+                var items = group.ToList();
+                weightByDate.TryGetValue(group.Key, out var weightEntry);
+                var comments = weightEntry?.Comments ?? string.Empty;
+                var weightDisplay = weightEntry == null
+                    ? "NA"
+                    : weightEntry.Weight.ToString("N1", CultureInfo.InvariantCulture);
+
+                totals.Add(new DailyTotals
+                {
+                    Date = group.Key,
+                    UnitLabel = "mixed units",
+                    AmountEaten = items.Sum(item => item.AmountEaten),
+                    Energy = items.Sum(item => item.Energy),
+                    Protein = items.Sum(item => item.Protein),
+                    FatTotal = items.Sum(item => item.FatTotal),
+                    SaturatedFat = items.Sum(item => item.SaturatedFat),
+                    TransFat = items.Sum(item => item.TransFat),
+                    PolyunsaturatedFat = items.Sum(item => item.PolyunsaturatedFat),
+                    MonounsaturatedFat = items.Sum(item => item.MonounsaturatedFat),
+                    Carbohydrate = items.Sum(item => item.Carbohydrate),
+                    Sugars = items.Sum(item => item.Sugars),
+                    DietaryFibre = items.Sum(item => item.DietaryFibre),
+                    SodiumNa = items.Sum(item => item.SodiumNa),
+                    CalciumCa = items.Sum(item => item.CalciumCa),
+                    PotassiumK = items.Sum(item => item.PotassiumK),
+                    ThiaminB1 = items.Sum(item => item.ThiaminB1),
+                    RiboflavinB2 = items.Sum(item => item.RiboflavinB2),
+                    NiacinB3 = items.Sum(item => item.NiacinB3),
+                    Folate = items.Sum(item => item.Folate),
+                    IronFe = items.Sum(item => item.IronFe),
+                    MagnesiumMg = items.Sum(item => item.MagnesiumMg),
+                    VitaminC = items.Sum(item => item.VitaminC),
+                    Caffeine = items.Sum(item => item.Caffeine),
+                    Cholesterol = items.Sum(item => item.Cholesterol),
+                    Alcohol = items.Sum(item => item.Alcohol),
+                    WeightDisplay = weightDisplay,
+                    Comments = comments
+                });
+            }
+
+            return totals
+                .OrderByDescending(total => ParseDate(total.Date))
+                .ToList();
+        }
+
+#if ANDROID
+        private static bool CanReadAndroidTree(Android.Net.Uri folderUri)
+        {
+            try
+            {
+                var resolver = Platform.AppContext.ContentResolver;
+                if (resolver == null)
+                {
+                    return false;
+                }
+
+                var treeId = DocumentsContract.GetTreeDocumentId(folderUri);
+                var childrenUri = DocumentsContract.BuildChildDocumentsUriUsingTree(folderUri, treeId);
+                if (childrenUri == null)
+                {
+                    return false;
+                }
+                using var cursor = resolver.Query(
+                    childrenUri,
+                    new[] { DocumentsContract.Document.ColumnDocumentId },
+                    null,
+                    null,
+                    null);
+                return cursor != null;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private static Android.Net.Uri? FindAndroidFileUri(Android.Net.Uri folderUri, string fileName)
+        {
+            try
+            {
+                var resolver = Platform.AppContext.ContentResolver;
+                if (resolver == null)
+                {
+                    return null;
+                }
+
+                var treeId = DocumentsContract.GetTreeDocumentId(folderUri);
+                var childrenUri = DocumentsContract.BuildChildDocumentsUriUsingTree(folderUri, treeId);
+                if (childrenUri == null)
+                {
+                    return null;
+                }
+                using var cursor = resolver.Query(
+                    childrenUri,
+                    new[]
+                    {
+                        DocumentsContract.Document.ColumnDocumentId,
+                        DocumentsContract.Document.ColumnDisplayName
+                    },
+                    null,
+                    null,
+                    null);
+
+                if (cursor == null)
+                {
+                    return null;
+                }
+
+                var idIndex = cursor.GetColumnIndex(DocumentsContract.Document.ColumnDocumentId);
+                var nameIndex = cursor.GetColumnIndex(DocumentsContract.Document.ColumnDisplayName);
+                if (idIndex < 0 || nameIndex < 0)
+                {
+                    return null;
+                }
+
+                while (cursor.MoveToNext())
+                {
+                    var name = cursor.GetString(nameIndex);
+                    if (!string.Equals(name, fileName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    var documentId = cursor.GetString(idIndex);
+                    return DocumentsContract.BuildDocumentUriUsingTree(folderUri, documentId);
+                }
+
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private static Android.Net.Uri? CreateAndroidFileUri(
+            Android.Net.Uri folderUri,
+            string fileName,
+            string mimeType)
+        {
+            try
+            {
+                var resolver = Platform.AppContext.ContentResolver;
+                if (resolver == null)
+                {
+                    return null;
+                }
+
+                var treeId = DocumentsContract.GetTreeDocumentId(folderUri);
+                var parentUri = DocumentsContract.BuildDocumentUriUsingTree(folderUri, treeId);
+                if (parentUri == null)
+                {
+                    return null;
+                }
+
+                return DocumentsContract.CreateDocument(resolver, parentUri, mimeType, fileName);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private static string BuildAndroidDirectoryDisplay(Android.Net.Uri uri)
+        {
+            const string fallback = "Selected folder";
+            try
+            {
+                var docId = DocumentsContract.GetTreeDocumentId(uri);
+                if (string.IsNullOrWhiteSpace(docId))
+                {
+                    return fallback;
+                }
+
+                var parts = docId.Split(':', 2, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 0)
+                {
+                    return docId;
+                }
+
+                if (parts.Length == 1)
+                {
+                    return string.Equals(parts[0], "primary", StringComparison.OrdinalIgnoreCase)
+                        ? "Internal storage"
+                        : parts[0];
+                }
+
+                var volume = parts[0];
+                var path = parts[1].Trim('/');
+                if (string.Equals(volume, "primary", StringComparison.OrdinalIgnoreCase))
+                {
+                    return string.IsNullOrWhiteSpace(path)
+                        ? "Internal storage"
+                        : $"Internal storage/{path}";
+                }
+
+                return string.IsNullOrWhiteSpace(path) ? volume : $"{volume}/{path}";
+            }
+            catch (Exception)
+            {
+                return fallback;
+            }
+        }
+
+        private static string BuildAndroidFileDisplay(Android.Net.Uri uri, string fileName)
+        {
+            var directory = BuildAndroidDirectoryDisplay(uri);
+            return string.IsNullOrWhiteSpace(directory) ? fileName : $"{directory}/{fileName}";
+        }
+
+        private static async Task<Android.Net.Uri?> GetAndroidExchangeFolderAsync()
+        {
+            Android.Net.Uri? storedUri = null;
+            var stored = Preferences.Default.Get(ExchangeFolderUriKey, string.Empty);
+            if (!string.IsNullOrWhiteSpace(stored))
+            {
+                try
+                {
+                    storedUri = Android.Net.Uri.Parse(stored);
+                }
+                catch (Exception)
+                {
+                    storedUri = null;
+                }
+            }
+
+            if (storedUri != null)
+            {
+                if (CanReadAndroidTree(storedUri))
+                {
+                    return storedUri;
+                }
+            }
+
+            var picked = await PickAndStoreAndroidExchangeFolderAsync();
+            if (picked == null)
+            {
+                return null;
+            }
+            return picked;
+        }
+
+        private static async Task<Android.Net.Uri?> PickAndroidFolderAsync()
+        {
+            var tcs = new TaskCompletionSource<Android.Net.Uri?>();
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                try
+                {
+                    var uri = await MainActivity.PickFolderAsync();
+                    tcs.TrySetResult(uri);
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
+            });
+
+            return await tcs.Task.ConfigureAwait(false);
+        }
+
+        private static async Task<Android.Net.Uri?> PickAndStoreAndroidExchangeFolderAsync()
+        {
+            var picked = await PickAndroidFolderAsync();
+            if (picked == null)
+            {
+                return null;
+            }
+
+            Preferences.Default.Set(ExchangeFolderUriKey, picked.ToString());
+            return picked;
+        }
+
+        private async Task ExportCsvToAndroidFolderAsync(Android.Net.Uri folderUri)
+        {
+            var fileUri = FindAndroidFileUri(folderUri, DailyCsvFileName)
+                ?? CreateAndroidFileUri(folderUri, DailyCsvFileName, "text/csv");
+            if (fileUri == null)
+            {
+                return;
+            }
+
+            await DatabaseInitializer.EnsureDatabaseAsync();
+            var eatenFoods = (await _databaseService.GetEatenFoodsAsync()).ToList();
+            var weightEntries = (await _databaseService.GetWeightEntriesAsync()).ToList();
+            var csv = BuildEatenDailyAllCsv(eatenFoods, weightEntries);
+            await using var targetStream = Platform.AppContext.ContentResolver?.OpenOutputStream(fileUri, "w");
+            if (targetStream == null)
+            {
+                return;
+            }
+
+            await using var writer = new StreamWriter(targetStream, new UTF8Encoding(false));
+            await writer.WriteAsync(csv);
+        }
+#endif
+
+#if WINDOWS
+        private static async Task<string?> PickAndStoreWindowsExchangeDirectoryAsync()
+        {
+            var picked = await PickWindowsExchangeDirectoryAsync();
+            if (string.IsNullOrWhiteSpace(picked))
+            {
+                return null;
+            }
+
+            Preferences.Default.Set(ExchangeFolderPathKey, picked);
+            return picked;
+        }
+
+        private static Task<string?> PickWindowsExchangeDirectoryAsync()
+        {
+            return MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                var window = Application.Current?.Windows.FirstOrDefault();
+                if (window?.Handler?.PlatformView is not MauiWinUIWindow nativeWindow)
+                {
+                    return null;
+                }
+
+                var picker = new FolderPicker();
+                picker.FileTypeFilter.Add("*");
+                InitializeWithWindow.Initialize(picker, nativeWindow.WindowHandle);
+                var folder = await picker.PickSingleFolderAsync();
+                return folder?.Path;
+            });
+        }
+#endif
+
+        private const string DailyCsvFileName = "EatenDailyAll.csv";
+#if ANDROID
+        private const string ExchangeFolderUriKey = "exchange_folder_uri";
+#endif
+#if WINDOWS
+        private const string ExchangeFolderPathKey = "exchange_folder_path";
+#endif
 
         private enum NutritionDisplayMode
         {

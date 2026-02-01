@@ -129,10 +129,6 @@
                             Text="Import db"
                             Clicked="OnImportDbClicked"
                             Style="{StaticResource TopRowButtonStyle}" />
-                        <Button
-                            Text="Export csv"
-                            Clicked="OnExportCsvClicked"
-                            Style="{StaticResource TopRowButtonStyle}" />
                     </FlexLayout>
             </Grid>
 
@@ -895,69 +891,6 @@
                 <Button
                     Text="Change folder"
                     Clicked="OnChangeImportFolderClicked"
-                    Margin="0,0,4,4"
-                    IsVisible="{OnPlatform Android=True, WinUI=True, Default=False}" />
-                </FlexLayout>
-            </VerticalStackLayout>
-        </Frame>
-    </Grid>
-
-    <Grid
-        BackgroundColor="Transparent"
-        Grid.Row="0"
-        IsVisible="{Binding ShowExportCsvPanel}"
-        ZIndex="{OnPlatform Android=0, Default=10}">
-        <BoxView
-            BackgroundColor="Transparent"
-            Color="#80000000">
-            <BoxView.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnExportCsvBackdropTapped" />
-            </BoxView.GestureRecognizers>
-        </BoxView>
-        <Frame
-            Padding="16"
-            CornerRadius="12"
-            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
-            HorizontalOptions="Center"
-            VerticalOptions="Center"
-            WidthRequest="{OnPlatform Android=291.2, Default=364}"
-            HasShadow="True">
-            <Frame.Shadow>
-                <Shadow
-                    Brush="#40000000"
-                    Offset="0,8"
-                    Radius="12"
-                    Opacity="0.6" />
-            </Frame.Shadow>
-            <VerticalStackLayout Spacing="12">
-                <Label
-                    Text="Export CSV?"
-                    FontAttributes="Bold"
-                    FontSize="18"
-                    HorizontalTextAlignment="Center" />
-                <Label
-                    Text="This will overwrite:"
-                    HorizontalTextAlignment="Center" />
-                <Label
-                    x:Name="ExportCsvTargetPathLabel"
-                    LineBreakMode="WordWrap"
-                    HorizontalTextAlignment="Center" />
-                <FlexLayout
-                    Direction="Row"
-                    Wrap="Wrap"
-                    AlignItems="Center"
-                    JustifyContent="Center">
-                    <Button
-                        Text="Confirm"
-                        Clicked="OnExportCsvConfirmClicked"
-                        Margin="0,0,4,4" />
-                    <Button
-                        Text="Cancel"
-                        Clicked="OnExportCsvCancelClicked"
-                        Margin="0,0,4,4" />
-                <Button
-                    Text="Change folder"
-                    Clicked="OnChangeExportCsvFolderClicked"
                     Margin="0,0,4,4"
                     IsVisible="{OnPlatform Android=True, WinUI=True, Default=False}" />
                 </FlexLayout>

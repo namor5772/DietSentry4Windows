@@ -85,28 +85,42 @@
                         IsChecked="True"
                         CheckedChanged="OnNutritionModeChanged" />
                 </HorizontalStackLayout>
-                <Button
+                <HorizontalStackLayout
                     Grid.Column="0"
                     Grid.ColumnSpan="4"
                     Grid.Row="1"
                     IsVisible="{OnPlatform Android=True, Default=False}"
-                    Text="Foods Table"
-                    HorizontalOptions="Start"
-                    BackgroundColor="{StaticResource PrimaryDark}"
-                    TextColor="{StaticResource White}"
-                    Clicked="OnBackClicked"
-                    Style="{StaticResource TopRowButtonStyle}" />
-                <Button
+                    Spacing="8">
+                    <Button
+                        Text="Foods Table"
+                        HorizontalOptions="Start"
+                        BackgroundColor="{StaticResource PrimaryDark}"
+                        TextColor="{StaticResource White}"
+                        Clicked="OnBackClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                    <Button
+                        Text="Export csv"
+                        Clicked="OnExportCsvClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout
                     Grid.Column="2"
-                    Grid.ColumnSpan="1"
+                    Grid.ColumnSpan="2"
                     Grid.Row="0"
                     IsVisible="{OnPlatform Android=False, Default=True}"
-                    Text="Foods Table"
-                    HorizontalOptions="Start"
-                    BackgroundColor="{StaticResource PrimaryDark}"
-                    TextColor="{StaticResource White}"
-                    Clicked="OnBackClicked"
-                    Style="{StaticResource TopRowButtonStyle}" />
+                    Spacing="8">
+                    <Button
+                        Text="Foods Table"
+                        HorizontalOptions="Start"
+                        BackgroundColor="{StaticResource PrimaryDark}"
+                        TextColor="{StaticResource White}"
+                        Clicked="OnBackClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                    <Button
+                        Text="Export csv"
+                        Clicked="OnExportCsvClicked"
+                        Style="{StaticResource TopRowButtonStyle}" />
+                </HorizontalStackLayout>
             </Grid>
 
             <HorizontalStackLayout
@@ -1066,6 +1080,69 @@
                         Text="Cancel"
                         Clicked="OnDeleteCancelClicked"
                         Margin="0,0,4,4" />
+                </FlexLayout>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
+
+    <Grid
+        BackgroundColor="Transparent"
+        Grid.Row="0"
+        IsVisible="{Binding ShowExportCsvPanel}"
+        ZIndex="{OnPlatform Android=0, Default=10}">
+        <BoxView
+            BackgroundColor="Transparent"
+            Color="#80000000">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnExportCsvBackdropTapped" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+        <Frame
+            Padding="16"
+            CornerRadius="12"
+            BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            WidthRequest="{OnPlatform Android=291.2, Default=364}"
+            HasShadow="True">
+            <Frame.Shadow>
+                <Shadow
+                    Brush="#40000000"
+                    Offset="0,8"
+                    Radius="12"
+                    Opacity="0.6" />
+            </Frame.Shadow>
+            <VerticalStackLayout Spacing="12">
+                <Label
+                    Text="Export CSV?"
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HorizontalTextAlignment="Center" />
+                <Label
+                    Text="This will overwrite:"
+                    HorizontalTextAlignment="Center" />
+                <Label
+                    x:Name="ExportCsvTargetPathLabel"
+                    LineBreakMode="WordWrap"
+                    HorizontalTextAlignment="Center" />
+                <FlexLayout
+                    Direction="Row"
+                    Wrap="Wrap"
+                    AlignItems="Center"
+                    JustifyContent="Center">
+                    <Button
+                        Text="Confirm"
+                        Clicked="OnExportCsvConfirmClicked"
+                        Margin="0,0,4,4" />
+                    <Button
+                        Text="Cancel"
+                        Clicked="OnExportCsvCancelClicked"
+                        Margin="0,0,4,4" />
+                    <Button
+                        Text="Change folder"
+                        Clicked="OnChangeExportCsvFolderClicked"
+                        Margin="0,0,4,4"
+                        IsVisible="{OnPlatform Android=True, WinUI=True, Default=False}" />
                 </FlexLayout>
             </VerticalStackLayout>
         </Frame>

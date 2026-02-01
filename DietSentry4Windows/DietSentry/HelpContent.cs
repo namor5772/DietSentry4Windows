@@ -22,7 +22,6 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
     - **JSON** button which transfers you to the [Add Food using JSON] screen.
     - **Export db** which exports/copies the apps internal foods.db database file to the location shown in the dialog window that appears.
     - **Import db** which imports/copies a foods.db database file from the location shown in the dialog window that appears and into the **internal location** used by this app.
-    - **Export csv** which exports a csv version of an aggregated form of the Eaten table to a location shown in the dialog window that appears. In particular it is the text form of what is displayed in the [Eaten Table] screen with the All option selected. the [Daily totals] option checked and no [Filter by date]. In addition the Weight table comments are included between the My Weight and Amount columns.        
 - **Radio buttons** with three options (Min, NIP, All). The selection is persistent within and between app restarts. 
     - **Min**: only displays the text description of food items.
     - **NIP**: additionally displays the minimum mandated nutrient information (per 100g or 100mL of the food) as required by FSANZ on Nutritional Information Panels (NIPs).
@@ -147,6 +146,7 @@ The GUI elements on the screen are (starting at the top left hand corner and wor
 - **help button** `?` which displays this help screen.
 - **heading** of this screen [Eaten Table]. 
 - **Foods Table button** which transfers you to the [Foods Table] screen. It is slightly "dimmer" to indicate that it is a navigation button. This can also be accomplished by the `<-` navigation button at the very top left of this screen.
+- **Export csv** which exports a csv version of an aggregated form of the Eaten table to a location shown in the dialog window that appears. In particular it is the text form of what is displayed in the [Eaten Table] screen with the All option selected, the [Daily totals] option checked and no [Filter by date]. In addition the Weight table comments are included between the My Weight and Amount columns.
 - **Radio buttons** with three options (Min, NIP, All). The selection is persistent between app restarts. 
     - **Min**: There are two cases:
         - when the [Daily totals] checkbox is **unchecked**, logs for individual foods are displayed comprising three rows:
