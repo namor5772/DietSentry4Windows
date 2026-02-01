@@ -135,7 +135,7 @@
             <HorizontalStackLayout
                 Grid.Row="1"
                 Spacing="8"
-                Margin="{OnPlatform Android='0,-16,0,0', Default='0'}"
+                Margin="{OnPlatform Android='0,20,0,0', Default='0'}"
                 IsVisible="{OnPlatform Android=False, Default=True}">
                 <RadioButton
                     x:Name="MinModeRadio"
@@ -158,7 +158,7 @@
             <HorizontalStackLayout
                 Grid.Row="2"
                 Spacing="8"
-                Margin="{OnPlatform Android='0,-25,0,0', Default='0'}">
+                Margin="{OnPlatform Android='0,-32,0,0', Default='0'}">
                 <Entry
                     x:Name="FoodFilterEntry"
                     Placeholder="Enter food filter text"
