@@ -119,6 +119,9 @@
                 <Entry
                     x:Name="FoodFilterEntry"
                     Placeholder="Enter food filter text"
+                    BackgroundColor="{OnPlatform Android=LightGray, Default={x:Null}}"
+                    TextColor="{OnPlatform Android={StaticResource Black}, Default={x:Null}}"
+                    PlaceholderColor="{OnPlatform Android={StaticResource White}, Default={x:Null}}"
                     WidthRequest="260"
                     HorizontalOptions="Start"
                     Completed="OnFoodFilterCompleted" />
