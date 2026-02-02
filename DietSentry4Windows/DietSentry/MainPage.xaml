@@ -215,7 +215,7 @@
                                     ColumnDefinitions="Auto,*"
                                     RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto"
                                     ColumnSpacing="12"
-                                    RowSpacing="2"
+                                    RowSpacing="{OnPlatform Android=0, Default=2}"
                                     IsVisible="{Binding Source={x:Reference FoodsPage}, Path=ShowNipOnly}">
                                     <Label
                                         Grid.Row="0"
@@ -285,7 +285,7 @@
                                     ColumnDefinitions="Auto,*"
                                     RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
                                     ColumnSpacing="12"
-                                    RowSpacing="2"
+                                    RowSpacing="{OnPlatform Android=0, Default=2}"
                                     IsVisible="{Binding Source={x:Reference FoodsPage}, Path=ShowAll}">
                                     <Label
                                         Grid.Row="0"
