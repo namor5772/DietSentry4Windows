@@ -44,6 +44,7 @@ namespace DietSentry
 #endif
 
         public ObservableCollection<Food> Foods { get; } = new();
+        public bool ShowMinOnly => _nutritionDisplayMode == NutritionDisplayMode.Min;
         public bool ShowNipOnly => _nutritionDisplayMode == NutritionDisplayMode.Nip;
         public bool ShowAll => _nutritionDisplayMode == NutritionDisplayMode.All;
         public Food? SelectedFood
@@ -1032,6 +1033,7 @@ namespace DietSentry
 
             _nutritionDisplayMode = mode;
             Preferences.Default.Set(NutritionModeKey, (int)mode);
+            OnPropertyChanged(nameof(ShowMinOnly));
             OnPropertyChanged(nameof(ShowNipOnly));
             OnPropertyChanged(nameof(ShowAll));
         }
@@ -1050,6 +1052,7 @@ namespace DietSentry
             NipModeRadioTop.IsChecked = savedMode == NutritionDisplayMode.Nip;
             AllModeRadioTop.IsChecked = savedMode == NutritionDisplayMode.All;
             _suppressModeEvents = false;
+            OnPropertyChanged(nameof(ShowMinOnly));
             OnPropertyChanged(nameof(ShowNipOnly));
             OnPropertyChanged(nameof(ShowAll));
         }
