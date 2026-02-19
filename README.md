@@ -1,8 +1,10 @@
 # DietSentry4Windows
 
-DietSentry4Windows is a .NET MAUI rewrite of the DietSentry Android app (as available in the https://github.com/namor5772/DietSentry4Android repo) . It provides a cross-platform UI for browsing foods, logging eaten items, and managing weight records. The UI and behavior are intentionally aligned with the original Android app (see `reference-android/`).
+DietSentry4Windows is a .NET MAUI rewrite of the DietSentry Android app (as available in the https://github.com/namor5772/DietSentry4Android repo). It provides a cross-platform UI for browsing foods, logging eaten items, and managing weight records. The UI and behavior are intentionally aligned with the original Android app (see `reference-android/`).
 
-EVERYTHING was done using OpenAI codex. No manual coding was performed, ever!
+## AI-Assisted Development
+
+This project was initially built entirely using OpenAI Codex — no manual coding was performed during that phase. Development has since transitioned to **Claude Code** (Anthropic) for ongoing improvements and feature work. See `CLAUDE.md` for Claude Code guidance and `AGENTS.md` for the original Codex agent guidelines.
 
 ## Project Layout
 
@@ -12,6 +14,8 @@ EVERYTHING was done using OpenAI codex. No manual coding was performed, ever!
 - `DietSentry4Windows/DietSentry/Resources/`: icons, splash, fonts, and styles.
 - `DietSentry4Windows/DietSentry/Resources/Raw/foods.db`: packaged seed database.
 - `reference-android/`: source for the original Android app; used for parity.
+- `CLAUDE.md`: guidance for Claude Code when working in this repo.
+- `AGENTS.md`: original guidelines used by OpenAI Codex during initial development.
 
 ## Features
 
